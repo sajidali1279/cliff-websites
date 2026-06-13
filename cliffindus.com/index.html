@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cliff Industries — Software for Local Business</title>
+  <meta name="description" content="Cliff Industries builds mobile apps, web dashboards, and backend systems for local businesses."/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:    #0F172A;
+      --dark2:   #1E293B;
+      --dark3:   #334155;
+      --blue:    #3B82F6;
+      --blue-lt: #60A5FA;
+      --blue-dk: #2563EB;
+      --text:    #F8FAFC;
+      --muted:   #94A3B8;
+      --border:  #1E3A8A;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(15,23,42,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(30,58,138,0.3);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(37,99,235,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 100px; padding: 6px 16px; margin-bottom: 32px;
+      font-size: 13px; font-weight: 600; color: var(--blue-lt); letter-spacing: .5px;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+      max-width: 900px;
+    }
+    .hero h1 span { color: var(--blue-lt); }
+    .hero p {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 48px;
+    }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue-dk); color: #fff;
+      text-decoration: none; border-radius: 12px;
+      padding: 14px 28px; font-size: 15px; font-weight: 700;
+      transition: background .2s, transform .2s;
+    }
+    .hero-cta:hover { background: var(--blue); transform: translateY(-2px); }
+    .hero-scroll {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      color: var(--muted); font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .hero-scroll::after {
+      content: '';
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+    }
+
+    /* ── SECTIONS ── */
+    section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px); font-weight: 800;
+      letter-spacing: -1px; line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .section-sub { font-size: 17px; color: var(--muted); max-width: 560px; margin-bottom: 56px; }
+
+    /* ── WORK ── */
+    #work { border-top: 1px solid var(--dark3); }
+    .work-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+    .work-card {
+      background: var(--dark2);
+      border: 1px solid var(--dark3);
+      border-radius: 20px;
+      padding: 32px;
+      transition: border-color .2s, transform .2s;
+      text-decoration: none; color: inherit;
+      display: block;
+    }
+    .work-card:hover { border-color: var(--blue); transform: translateY(-4px); }
+    .work-card-logo {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: #1D3557;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px; font-size: 24px;
+    }
+    .work-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .work-card p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+    .work-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25);
+      color: var(--blue-lt); font-size: 11px; font-weight: 600;
+      padding: 4px 10px; border-radius: 6px; letter-spacing: .3px;
+    }
+    .work-card-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--blue-lt); font-size: 13px; font-weight: 600;
+      margin-top: 20px; text-decoration: none;
+    }
+    .work-card-link:hover { text-decoration: underline; }
+
+    /* ── CAPABILITIES ── */
+    #capabilities { border-top: 1px solid var(--dark3); }
+    .cap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .cap-card {
+      background: var(--dark2); border: 1px solid var(--dark3);
+      border-radius: 16px; padding: 24px;
+    }
+    .cap-icon { font-size: 28px; margin-bottom: 14px; }
+    .cap-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .cap-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* ── ABOUT ── */
+    #about { border-top: 1px solid var(--dark3); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+    }
+    .about-text p { font-size: 16px; color: var(--muted); line-height: 1.8; margin-bottom: 16px; }
+    .about-text p strong { color: var(--text); }
+    .about-stats { display: flex; flex-direction: column; gap: 24px; }
+    .stat { padding: 24px; background: var(--dark2); border: 1px solid var(--dark3); border-radius: 16px; }
+    .stat-num { font-size: 36px; font-weight: 800; color: var(--blue-lt); line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+    /* ── CONTACT ── */
+    #contact {
+      border-top: 1px solid var(--dark3);
+      text-align: center;
+    }
+    #contact .section-sub { margin-left: auto; margin-right: auto; }
+    .contact-email {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--dark2); border: 1px solid var(--dark3);
+      border-radius: 100px; padding: 14px 28px;
+      color: var(--text); text-decoration: none; font-size: 15px; font-weight: 600;
+      transition: border-color .2s;
+    }
+    .contact-email:hover { border-color: var(--blue); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--dark3);
+      padding: 40px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    footer p { font-size: 13px; color: var(--muted); }
+    footer a { color: var(--muted); text-decoration: none; font-size: 13px; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .nav-links { gap: 20px; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 300 80" height="32" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ng1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#60A5FA"/><stop offset="100%" style="stop-color:#2563EB"/></linearGradient>
+          <linearGradient id="ng2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#1D4ED8"/><stop offset="100%" style="stop-color:#1E40AF"/></linearGradient>
+        </defs>
+        <polygon points="6,62 6,10 48,10 48,36 66,62" fill="url(#ng1)"/>
+        <polygon points="48,10 58,10 58,36 48,36" fill="url(#ng2)"/>
+        <line x1="6" y1="10" x2="48" y2="10" stroke="#93C5FD" stroke-width="2.5" stroke-linecap="round"/>
+        <text x="84" y="40" font-family="system-ui,sans-serif" font-size="32" font-weight="800" fill="#F8FAFC" letter-spacing="2">CLIFF</text>
+        <line x1="84" y1="50" x2="278" y2="50" stroke="#334155" stroke-width="1"/>
+        <text x="85" y="66" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#60A5FA" letter-spacing="7">INDUSTRIES</text>
+      </svg>
+    </a>
+    <div class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">⚡ Software for local business</div>
+    <h1>We build the systems that <span>run local business</span></h1>
+    <p>Mobile apps, web dashboards, and backend infrastructure — built for the businesses that serve your community.</p>
+    <a href="#work" class="hero-cta">See our work →</a>
+    <div class="hero-scroll">Scroll</div>
+  </div>
+
+  <!-- WORK -->
+  <section id="work">
+    <div class="section-label">Our Work</div>
+    <h2 class="section-title">Products we've built</h2>
+    <p class="section-sub">End-to-end platforms — from the mobile app your customers hold to the dashboard your team runs.</p>
+    <div class="work-grid">
+
+      <a class="work-card" href="https://luckystop.cliffindus.com" target="_blank">
+        <div class="work-card-logo">⛽</div>
+        <h3>Lucky Stop Rewards</h3>
+        <p>Full-stack loyalty and operations platform for a gas station convenience store chain. Customers earn cashback, employees manage transactions, and managers run the store — all from one app.</p>
+        <div class="work-tags">
+          <span class="tag">React Native</span>
+          <span class="tag">Node.js</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">Expo EAS</span>
+          <span class="tag">Firebase</span>
+        </div>
+        <span class="work-card-link">View product →</span>
+      </a>
+
+      <div class="work-card" style="border-style: dashed; opacity: 0.5; cursor: default;">
+        <div class="work-card-logo" style="background:#1E293B">🏪</div>
+        <h3>Your Business Here</h3>
+        <p>We're open to new partnerships with local businesses looking to modernise their operations or launch a customer-facing product.</p>
+        <span class="work-card-link" style="pointer-events:none">Get in touch →</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section id="capabilities">
+    <div class="section-label">Capabilities</div>
+    <h2 class="section-title">What we build</h2>
+    <p class="section-sub">Full-stack from day one. We handle every layer so you don't have to coordinate between teams.</p>
+    <div class="cap-grid">
+      <div class="cap-card">
+        <div class="cap-icon">📱</div>
+        <h4>Mobile Apps</h4>
+        <p>iOS and Android from a single codebase. React Native + Expo EAS for reliable delivery.</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon">🖥️</div>
+        <h4>Web Dashboards</h4>
+        <p>Admin portals and management tools your team can use from any browser.</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon">⚙️</div>
+        <h4>Backend Systems</h4>
+        <p>REST APIs, databases, and cloud infrastructure built to scale with your business.</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon">🔔</div>
+        <h4>Push Notifications</h4>
+        <p>Firebase Cloud Messaging — real-time alerts for customers and staff.</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon">🔐</div>
+        <h4>Auth & Security</h4>
+        <p>Phone OTP login, role-based access control, and secure API design.</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-icon">📊</div>
+        <h4>Analytics & Reports</h4>
+        <p>Store-level dashboards, transaction history, and AI-assisted insights.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-label">About</div>
+    <div class="about-grid">
+      <div class="about-text">
+        <h2 class="section-title">Built for the businesses that run your neighborhood</h2>
+        <p>Cliff Industries builds software for <strong>local and regional businesses</strong> — the gas stations, restaurants, and retail stores that are the backbone of every community.</p>
+        <p>We believe local businesses deserve the same quality of technology that large chains have. We build <strong>complete platforms</strong> — not templates — tailored to how your business actually works.</p>
+        <p>Based in <strong>Texas, USA</strong>. Currently focused on retail, hospitality, and operations management software.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat">
+          <div class="stat-num">12+</div>
+          <div class="stat-label">Store locations served</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">5</div>
+          <div class="stat-label">Platform roles supported (Customer → DevAdmin)</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Platforms built (iOS, Android, Web)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-label">Contact</div>
+    <h2 class="section-title">Let's talk about your project</h2>
+    <p class="section-sub">Have a local business that needs a mobile app, an operations tool, or a loyalty platform? Get in touch.</p>
+    <a class="contact-email" href="mailto:sksajidali1279@gmail.com">
+      ✉️ &nbsp;sksajidali1279@gmail.com
+    </a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Cliff Industries. All rights reserved.</p>
+    <div style="display:flex;gap:24px">
+      <a href="https://luckystop.cliffindus.com">Lucky Stop</a>
+      <a href="mailto:sksajidali1279@gmail.com">Contact</a>
+    </div>
+  </footer>
+
+</body>
+</html>
