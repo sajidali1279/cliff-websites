@@ -7,589 +7,773 @@
   <meta name="description" content="Cliff Industries builds mobile apps, web dashboards, and backend systems for local businesses."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #09090B;
-      --surface: #18181B;
-      --border:  rgba(255,255,255,0.07);
-      --border2: rgba(255,255,255,0.12);
-      --blue:    #3B82F6;
-      --blue-lt: #60A5FA;
-      --indigo:  #818CF8;
-      --text:    #FAFAFA;
-      --muted:   #71717A;
-      --muted2:  #A1A1AA;
+      /* Zinc scale */
+      --z950: #09090B;
+      --z900: #18181B;
+      --z800: #27272A;
+      --z700: #3F3F46;
+      --z600: #52525B;
+      --z400: #A1A1AA;
+      --z300: #D4D4D8;
+      --z200: #E4E4E7;
+      --z100: #F4F4F5;
+      --z50:  #FAFAFA;
+      /* Borders */
+      --b1: rgba(255,255,255,0.06);
+      --b2: rgba(255,255,255,0.10);
+      --b3: rgba(255,255,255,0.16);
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--z950);
+      color: var(--z50);
       line-height: 1.6;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ── SCROLLBAR ── */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: #27272A; border-radius: 3px; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--z950); }
+    ::-webkit-scrollbar-thumb { background: var(--z800); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--z700); }
 
-    /* ── NAV ── */
+    /* ── NAV ─────────────────────────────────────────────── */
     nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-      height: 60px;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      height: 56px;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 40px;
-      background: rgba(9,9,11,0.8);
-      backdrop-filter: blur(16px) saturate(180%);
-      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      background: rgba(9,9,11,0.82);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--b1);
     }
-    .nav-logo {
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none;
-    }
-    .nav-logo-mark {
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-mark {
+      width: 28px; height: 28px;
       display: flex; align-items: center; justify-content: center;
     }
     .nav-wordmark {
-      font-size: 15px; font-weight: 700; color: var(--text);
-      letter-spacing: -0.3px;
+      font-size: 14px; font-weight: 700; letter-spacing: -0.2px; color: var(--z50);
     }
-    .nav-wordmark span { color: var(--blue-lt); }
-    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-wordmark em { font-style: normal; color: var(--z400); font-weight: 500; }
+    .nav-links { display: flex; align-items: center; gap: 2px; }
     .nav-links a {
-      color: var(--muted2); text-decoration: none;
-      font-size: 14px; font-weight: 500;
-      padding: 6px 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 500; color: var(--z400);
+      text-decoration: none; padding: 5px 12px; border-radius: 7px;
       transition: color .15s, background .15s;
     }
-    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .nav-links a:hover { color: var(--z50); background: rgba(255,255,255,0.05); }
     .nav-cta {
-      background: var(--text) !important; color: var(--bg) !important;
-      font-weight: 600 !important; padding: 6px 16px !important;
+      background: var(--z50) !important; color: var(--z950) !important;
+      font-weight: 600 !important;
     }
-    .nav-cta:hover { background: #E4E4E7 !important; }
+    .nav-cta:hover { background: var(--z200) !important; }
 
-    /* ── HERO ── */
+    /* ── HERO ────────────────────────────────────────────── */
     .hero {
       position: relative;
-      min-height: 100vh;
+      min-height: 100svh;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       text-align: center;
-      padding: 120px 24px 80px;
+      padding: 100px 24px 80px;
       overflow: hidden;
     }
 
     /* Dot grid */
     .hero::before {
       content: '';
-      position: absolute; inset: 0;
-      background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
-      background-size: 28px 28px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
-      pointer-events: none;
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, black 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, black 30%, transparent 100%);
     }
 
-    /* Gradient orbs */
-    .orb {
-      position: absolute; border-radius: 50%; pointer-events: none;
-      filter: blur(100px); opacity: 0.18;
-    }
-    .orb-1 {
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, #3B82F6, transparent);
-      top: -100px; left: -100px;
-      animation: float1 12s ease-in-out infinite;
-    }
-    .orb-2 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, #818CF8, transparent);
-      bottom: -100px; right: -100px;
-      animation: float2 10s ease-in-out infinite;
-    }
-    .orb-3 {
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, #06B6D4, transparent);
-      top: 50%; left: 50%; transform: translate(-50%, -50%);
-      animation: float3 8s ease-in-out infinite;
-      opacity: 0.10;
+    /* Radial glow */
+    .hero::after {
+      content: '';
+      position: absolute; pointer-events: none;
+      width: 900px; height: 600px;
+      background: radial-gradient(ellipse, rgba(255,255,255,0.025) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -60%);
     }
 
-    @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,-30px)} }
-    @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,30px)} }
-    @keyframes float3 { 0%,100%{transform:translate(-50%,-50%)} 50%{transform:translate(-46%,-54%)} }
+    .hero-content { position: relative; z-index: 1; max-width: 860px; }
 
-    .hero-content { position: relative; z-index: 1; max-width: 900px; }
-
+    /* Announcement badge */
     .hero-badge {
       display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(59,130,246,0.08);
-      border: 1px solid rgba(59,130,246,0.2);
-      border-radius: 100px; padding: 5px 14px 5px 8px;
-      margin-bottom: 32px; cursor: default;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--b2);
+      border-radius: 100px; padding: 4px 14px 4px 8px;
+      margin-bottom: 28px; cursor: default;
+      transition: border-color .2s, background .2s;
     }
-    .hero-badge-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--blue-lt);
-      box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
-      animation: pulse 2s ease-in-out infinite;
+    .hero-badge:hover { border-color: var(--b3); background: rgba(255,255,255,0.06); }
+    .badge-ping {
+      position: relative; width: 6px; height: 6px;
     }
-    @keyframes pulse { 0%,100%{box-shadow:0 0 0 3px rgba(96,165,250,0.2)} 50%{box-shadow:0 0 0 6px rgba(96,165,250,0)} }
-    .hero-badge span { font-size: 12px; font-weight: 600; color: var(--blue-lt); letter-spacing: 0.3px; }
+    .badge-ping::before, .badge-ping::after {
+      content: ''; position: absolute; inset: 0; border-radius: 50%;
+      background: var(--z300);
+    }
+    .badge-ping::before { animation: ping 2s ease-in-out infinite; opacity: 0; }
+    .badge-ping::after { background: var(--z200); }
+    @keyframes ping { 0%{transform:scale(1);opacity:.7} 100%{transform:scale(2.5);opacity:0} }
+    .hero-badge span {
+      font-size: 12px; font-weight: 500; color: var(--z300); letter-spacing: .1px;
+    }
+    .badge-arrow { font-size: 10px; color: var(--z600); margin-left: 2px; }
 
-    .hero h1 {
-      font-size: clamp(40px, 7vw, 80px);
-      font-weight: 800;
-      line-height: 1.05;
-      letter-spacing: -3px;
+    /* Hero heading */
+    h1.hero-h1 {
+      font-size: clamp(42px, 7.5vw, 88px);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -4px;
       margin-bottom: 24px;
     }
-    .gradient-text {
-      background: linear-gradient(135deg, #fff 0%, #60A5FA 40%, #818CF8 70%, #C084FC 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .hero-h1 .line1 { display: block; color: var(--z50); }
+    .hero-h1 .line2 {
+      display: block;
+      background: linear-gradient(180deg, var(--z300) 0%, var(--z500, #71717A) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .hero p {
-      font-size: clamp(16px, 2vw, 19px);
-      color: var(--muted2);
-      max-width: 520px; margin: 0 auto 40px;
-      line-height: 1.7; font-weight: 400;
+
+    .hero-sub {
+      font-size: clamp(15px, 1.8vw, 18px);
+      color: var(--z400);
+      max-width: 460px; margin: 0 auto 36px;
+      line-height: 1.75; font-weight: 400;
+      letter-spacing: -0.1px;
     }
-    .hero-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* CTA buttons */
+    .hero-ctas { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
     .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 22px; border-radius: 10px;
-      font-size: 14px; font-weight: 600; text-decoration: none;
-      transition: all .15s; cursor: pointer; border: none;
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 20px; border-radius: 9px;
+      font-size: 13px; font-weight: 600;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: all .15s; letter-spacing: -0.1px;
     }
-    .btn-white { background: var(--text); color: var(--bg); }
-    .btn-white:hover { background: #E4E4E7; transform: translateY(-1px); }
-    .btn-outline {
-      background: transparent; color: var(--muted2);
-      border: 1px solid var(--border2);
+    .btn-primary {
+      background: var(--z50); color: var(--z950);
+      box-shadow: 0 0 0 1px var(--z200);
     }
-    .btn-outline:hover { background: rgba(255,255,255,0.05); color: var(--text); transform: translateY(-1px); }
+    .btn-primary:hover { background: var(--z200); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.4), 0 0 0 1px var(--z300); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.04); color: var(--z400);
+      border: 1px solid var(--b2);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.07); color: var(--z200); transform: translateY(-1px); }
 
-    .hero-scroll {
-      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
     }
-    .scroll-line {
-      width: 1px; height: 48px;
-      background: linear-gradient(to bottom, var(--muted), transparent);
-      animation: scrollAnim 2s ease-in-out infinite;
+    .scroll-cue-mouse {
+      width: 18px; height: 28px;
+      border: 1.5px solid var(--z700); border-radius: 9px;
+      display: flex; justify-content: center; padding-top: 4px;
     }
-    @keyframes scrollAnim { 0%,100%{opacity:0.3;transform:scaleY(0.5)} 50%{opacity:1;transform:scaleY(1)} }
+    .scroll-cue-wheel {
+      width: 2px; height: 5px; background: var(--z600); border-radius: 1px;
+      animation: scrollWheel 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollWheel { 0%,100%{opacity:0;transform:translateY(0)} 30%{opacity:1} 80%{opacity:0;transform:translateY(6px)} }
 
-    /* ── TICKER / STACK ── */
-    .stack-bar {
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 0;
-      overflow: hidden;
+    /* ── TICKER ────────────────────────────────────────── */
+    .ticker-wrap {
+      border-top: 1px solid var(--b1);
+      border-bottom: 1px solid var(--b1);
+      padding: 14px 0; overflow: hidden;
       position: relative;
     }
-    .stack-bar::before, .stack-bar::after {
-      content: ''; position: absolute; top: 0; bottom: 0; width: 100px; z-index: 10;
+    .ticker-wrap::before, .ticker-wrap::after {
+      content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 10;
     }
-    .stack-bar::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
-    .stack-bar::after { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
-    .stack-track {
-      display: flex; gap: 48px;
-      animation: ticker 20s linear infinite;
+    .ticker-wrap::before { left: 0; background: linear-gradient(to right, var(--z950), transparent); }
+    .ticker-wrap::after { right: 0; background: linear-gradient(to left, var(--z950), transparent); }
+    .ticker-track {
+      display: flex; gap: 0;
+      animation: ticker 28s linear infinite;
       width: max-content;
     }
-    @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-    .stack-item {
-      display: flex; align-items: center; gap: 8px; white-space: nowrap;
-      font-size: 13px; font-weight: 600; color: var(--muted);
+    @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    .ticker-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 28px; white-space: nowrap;
+      font-size: 12px; font-weight: 500;
+      color: var(--z600); letter-spacing: .3px;
+      text-transform: uppercase;
     }
-    .stack-item span { font-size: 16px; }
+    .ticker-item::before {
+      content: '·'; color: var(--z700); font-size: 16px;
+    }
 
-    /* ── SECTIONS ── */
-    .section { padding: 96px 24px; max-width: 1100px; margin: 0 auto; }
-    .section-divider { border: none; border-top: 1px solid var(--border); }
+    /* ── LAYOUT ────────────────────────────────────────── */
+    .max-w { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 88px 0; }
+    .divider { border: none; border-top: 1px solid var(--b1); }
+
     .eyebrow {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 12px; font-weight: 600; letter-spacing: 1px;
-      text-transform: uppercase; color: var(--blue-lt);
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--z600);
+      margin-bottom: 20px;
+    }
+    .eyebrow::before { content: ''; width: 14px; height: 1px; background: var(--z700); }
+
+    .s-title {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800; letter-spacing: -1.5px; line-height: 1.08;
+      color: var(--z50); margin-bottom: 14px;
+    }
+    .s-sub {
+      font-size: 15px; color: var(--z400); line-height: 1.75;
+      max-width: 440px; margin-bottom: 52px; font-weight: 400;
+    }
+
+    /* ── WORK CARDS ────────────────────────────────────── */
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 10px;
+    }
+
+    .work-card {
+      background: var(--z900);
+      border: 1px solid var(--b1);
+      border-radius: 16px; padding: 28px 28px 24px;
+      position: relative; overflow: hidden;
+      cursor: default;
+      transition: border-color .25s, box-shadow .25s, transform .25s;
+    }
+    .work-card::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      background: radial-gradient(500px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.025), transparent 60%);
+      opacity: 0; transition: opacity .35s;
+    }
+    .work-card:hover { border-color: var(--b2); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.35); }
+    .work-card:hover::before { opacity: 1; }
+
+    .wc-featured { grid-column: span 7; min-height: 320px; }
+    .wc-side     { grid-column: span 5; min-height: 320px; }
+    .wc-auto     { grid-column: span 7; min-height: 260px; }
+    .wc-early    { grid-column: span 5; min-height: 260px; }
+
+    /* Status pill */
+    .wc-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; padding: 3px 9px;
+      border-radius: 100px; margin-bottom: 18px;
+    }
+    .wc-status-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .s-live   { background: rgba(34,197,94,0.08); color: #4ADE80; border: 1px solid rgba(34,197,94,0.15); }
+    .s-live .wc-status-dot { background: #4ADE80; animation: ping 2s ease-in-out infinite; }
+    .s-build  { background: rgba(234,179,8,0.08); color: #FDE047; border: 1px solid rgba(234,179,8,0.12); }
+    .s-build .wc-status-dot { background: #FDE047; }
+    .s-early  { background: rgba(161,161,170,0.08); color: var(--z400); border: 1px solid var(--b2); }
+    .s-early .wc-status-dot { background: var(--z600); }
+
+    .wc-icon { font-size: 36px; margin-bottom: 14px; display: block; line-height: 1; }
+    .wc-title { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; color: var(--z50); }
+    .wc-desc { font-size: 13px; color: var(--z400); line-height: 1.7; margin-bottom: 16px; }
+
+    .wc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; }
+    .tag {
+      font-size: 10px; font-weight: 600; letter-spacing: .3px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--b2);
+      color: var(--z400); padding: 2px 8px; border-radius: 5px;
+    }
+
+    .wc-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 600; color: var(--z300);
+      text-decoration: none; letter-spacing: .1px;
+      transition: color .15s, gap .15s;
+    }
+    .wc-link:hover { color: var(--z50); gap: 8px; }
+    .wc-link-arrow { transition: transform .15s; }
+    .wc-link:hover .wc-link-arrow { transform: translateX(2px); }
+
+    /* Stat numbers in side card */
+    .wc-stats { display: flex; flex-direction: column; gap: 0; margin-top: auto; }
+    .wc-stat { padding: 16px 0; }
+    .wc-stat + .wc-stat { border-top: 1px solid var(--b1); }
+    .wc-stat-n { font-size: 42px; font-weight: 800; letter-spacing: -2px; line-height: 1; color: var(--z200); }
+    .wc-stat-l { font-size: 12px; color: var(--z600); margin-top: 2px; }
+
+    .wc-side-inner { display: flex; flex-direction: column; height: 100%; }
+
+    /* ── CAPABILITIES ──────────────────────────────────── */
+    .cap-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--b1);
+      border: 1px solid var(--b1);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .cap-cell {
+      background: var(--z950);
+      padding: 28px 24px;
+      transition: background .2s;
+    }
+    .cap-cell:hover { background: rgba(255,255,255,0.02); }
+    .cap-num {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      color: var(--z700); text-transform: uppercase; margin-bottom: 14px;
+    }
+    .cap-icon { font-size: 22px; margin-bottom: 12px; display: block; }
+    .cap-cell h4 { font-size: 14px; font-weight: 700; color: var(--z200); margin-bottom: 6px; }
+    .cap-cell p { font-size: 13px; color: var(--z600); line-height: 1.6; }
+
+    /* ── ABOUT ─────────────────────────────────────────── */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+      align-items: start;
+    }
+    .about-text p {
+      font-size: 15px; color: var(--z400); line-height: 1.8;
       margin-bottom: 16px;
     }
-    .eyebrow::before {
-      content: ''; width: 16px; height: 1px; background: var(--blue-lt); display: block;
+    .about-text p strong { color: var(--z200); font-weight: 600; }
+
+    .pull-quote {
+      border-left: 2px solid var(--z700);
+      padding: 2px 0 2px 20px;
+      margin: 28px 0;
     }
-    .section-title {
-      font-size: clamp(28px, 4vw, 44px);
-      font-weight: 800; letter-spacing: -1.5px;
-      line-height: 1.1; margin-bottom: 16px;
-    }
-    .section-sub { font-size: 16px; color: var(--muted2); max-width: 480px; line-height: 1.7; margin-bottom: 56px; }
-
-    /* ── BENTO ── */
-    .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
-
-    .bento-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px; padding: 28px;
-      position: relative; overflow: hidden;
-      transition: border-color .2s, transform .2s, box-shadow .2s;
-    }
-    .bento-card::before {
-      content: ''; position: absolute; inset: 0; border-radius: inherit;
-      background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(59,130,246,0.04), transparent 40%);
-      opacity: 0; transition: opacity .3s;
-    }
-    .bento-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-    .bento-card:hover::before { opacity: 1; }
-
-    .bento-full  { grid-column: span 12; }
-    .bento-8     { grid-column: span 8; }
-    .bento-4     { grid-column: span 4; }
-    .bento-6     { grid-column: span 6; }
-
-    .bento-card-label {
-      font-size: 11px; font-weight: 700; letter-spacing: 2px;
-      text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
-    }
-    .bento-card h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
-    .bento-card p { font-size: 14px; color: var(--muted2); line-height: 1.7; }
-
-    .work-tag {
-      display: inline-flex; align-items: center;
-      background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15);
-      color: var(--blue-lt); font-size: 11px; font-weight: 600;
-      padding: 3px 9px; border-radius: 6px; letter-spacing: .2px;
-    }
-    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
-
-    .work-link {
-      display: inline-flex; align-items: center; gap: 6px;
-      color: var(--blue-lt); font-size: 13px; font-weight: 600;
-      text-decoration: none; margin-top: 20px;
-      transition: gap .15s;
-    }
-    .work-link:hover { gap: 10px; }
-
-    /* Big number style for stats cards */
-    .stat-big { font-size: 52px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
-    .stat-big.blue { color: var(--blue-lt); }
-    .stat-big.indigo { color: var(--indigo); }
-
-    /* Cap grid */
-    .cap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-    .cap-item { background: var(--surface); padding: 28px 24px; transition: background .2s; }
-    .cap-item:hover { background: rgba(255,255,255,0.03); }
-    .cap-item-icon { font-size: 24px; margin-bottom: 12px; }
-    .cap-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-    .cap-item p { font-size: 13px; color: var(--muted2); line-height: 1.5; }
-
-    /* ── ABOUT QUOTE ── */
-    .quote-block {
-      border-left: 2px solid var(--blue);
-      padding: 4px 0 4px 24px;
-      margin: 32px 0;
-    }
-    .quote-block p {
-      font-size: 20px; font-weight: 500; color: var(--muted2);
-      letter-spacing: -0.3px; line-height: 1.6;
-      font-style: italic;
+    .pull-quote p {
+      font-size: 17px; color: var(--z300); font-style: italic;
+      line-height: 1.65; letter-spacing: -0.2px;
     }
 
-    /* ── CONTACT ── */
-    .contact-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 20px; padding: 48px;
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center; gap: 20px;
+    .about-aside {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .aside-card {
+      background: var(--z900); border: 1px solid var(--b1);
+      border-radius: 14px; padding: 20px 22px;
+      transition: border-color .2s;
+    }
+    .aside-card:hover { border-color: var(--b2); }
+    .aside-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--z600); margin-bottom: 6px; }
+    .aside-val { font-size: 22px; font-weight: 800; letter-spacing: -1px; color: var(--z200); }
+    .aside-sub { font-size: 12px; color: var(--z600); margin-top: 2px; }
+
+    /* ── CONTACT ───────────────────────────────────────── */
+    .contact-block {
+      background: var(--z900);
+      border: 1px solid var(--b1);
+      border-radius: 20px;
+      padding: 56px 48px;
+      text-align: center;
       position: relative; overflow: hidden;
     }
-    .contact-card::before {
+    .contact-block::before {
       content: '';
-      position: absolute; top: -1px; left: 10%; right: 10%;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--blue), var(--indigo), transparent);
+      position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+      background: linear-gradient(to right, transparent, var(--z700), transparent);
     }
-    .contact-email-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2);
-      color: var(--blue-lt); padding: 12px 24px; border-radius: 12px;
-      font-size: 15px; font-weight: 600; text-decoration: none;
-      transition: background .15s, transform .15s;
+    .contact-block .s-title { margin-bottom: 8px; }
+    .contact-block p { font-size: 15px; color: var(--z400); margin-bottom: 28px; }
+    .contact-email {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--b2);
+      color: var(--z200); font-size: 14px; font-weight: 600;
+      padding: 12px 22px; border-radius: 11px; text-decoration: none;
+      transition: background .15s, border-color .15s, transform .15s;
+      letter-spacing: -0.1px;
     }
-    .contact-email-btn:hover { background: rgba(59,130,246,0.15); transform: translateY(-2px); }
+    .contact-email:hover { background: rgba(255,255,255,0.07); border-color: var(--b3); transform: translateY(-2px); }
 
-    /* ── FOOTER ── */
+    /* ── FOOTER ─────────────────────────────────────────── */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 40px;
+      border-top: 1px solid var(--b1);
+      padding: 28px 32px;
       display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 16px;
+      flex-wrap: wrap; gap: 14px;
     }
-    footer p { font-size: 13px; color: var(--muted); }
+    footer p { font-size: 12px; color: var(--z600); }
     .footer-links { display: flex; gap: 20px; }
-    .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color .15s; }
-    .footer-links a:hover { color: var(--muted2); }
+    .footer-links a { color: var(--z600); text-decoration: none; font-size: 12px; transition: color .15s; }
+    .footer-links a:hover { color: var(--z400); }
 
-    /* ── REVEAL ANIMATION ── */
-    [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
-    [data-reveal].revealed { opacity: 1; transform: translateY(0); }
-    [data-reveal="delay-1"] { transition-delay: .1s; }
-    [data-reveal="delay-2"] { transition-delay: .2s; }
-    [data-reveal="delay-3"] { transition-delay: .3s; }
+    /* ── REVEAL ─────────────────────────────────────────── */
+    [data-r] {
+      opacity: 0; transform: translateY(18px);
+      transition: opacity .65s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1);
+    }
+    [data-r].on { opacity: 1; transform: translateY(0); }
+    [data-r][data-d="1"] { transition-delay: .08s; }
+    [data-r][data-d="2"] { transition-delay: .16s; }
+    [data-r][data-d="3"] { transition-delay: .24s; }
+    [data-r][data-d="4"] { transition-delay: .32s; }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      nav { padding: 0 20px; }
-      .bento-8, .bento-4, .bento-6 { grid-column: span 12; }
-      footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+    /* ── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 860px) {
+      nav { padding: 0 18px; }
+      .wc-featured, .wc-side, .wc-auto, .wc-early { grid-column: span 12; }
+      .cap-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-grid { grid-template-columns: 1fr; gap: 32px; }
+      .contact-block { padding: 36px 24px; }
+      footer { padding: 22px 18px; }
+    }
+    @media (max-width: 560px) {
+      .cap-grid { grid-template-columns: 1fr; }
+      .hero-badge { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
+  <!-- ── NAV ────────────────────────────────────────── -->
   <nav>
     <a href="/" class="nav-logo">
-      <div class="nav-logo-mark">
-        <svg viewBox="0 0 60 44" height="26" xmlns="http://www.w3.org/2000/svg">
+      <div class="nav-mark">
+        <svg viewBox="0 0 44 40" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="2,38 2,4 28,4 28,20 40,38" fill="#3F3F46"/>
+          <polygon points="28,4 36,4 36,20 28,20" fill="#52525B"/>
+          <line x1="2" y1="4" x2="28" y2="4" stroke="#A1A1AA" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="2,38 2,4 28,4 28,20 40,38" fill="url(#lg)" opacity="0.5"/>
           <defs>
-            <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#60A5FA"/><stop offset="100%" style="stop-color:#2563EB"/></linearGradient>
-            <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#1D4ED8"/><stop offset="100%" style="stop-color:#1E40AF"/></linearGradient>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#E4E4E7"/>
+              <stop offset="100%" stop-color="#52525B"/>
+            </linearGradient>
           </defs>
-          <polygon points="2,42 2,4 30,4 30,22 46,42" fill="url(#lg1)"/>
-          <polygon points="30,4 40,4 40,22 30,22" fill="url(#lg2)"/>
-          <line x1="2" y1="4" x2="30" y2="4" stroke="#93C5FD" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
-      <span class="nav-wordmark">Cliff <span>Industries</span></span>
+      <span class="nav-wordmark">Cliff <em>Industries</em></span>
     </a>
     <div class="nav-links">
       <a href="#work">Work</a>
       <a href="#capabilities">Capabilities</a>
       <a href="#about">About</a>
-      <a href="#contact" class="nav-cta btn">Contact</a>
+      <a href="#contact" class="nav-cta btn">Contact →</a>
     </div>
   </nav>
 
-  <!-- HERO -->
+  <!-- ── HERO ───────────────────────────────────────── -->
   <section class="hero">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-
     <div class="hero-content">
+
       <div class="hero-badge">
-        <div class="hero-badge-dot"></div>
-        <span>Building software for local business</span>
+        <div class="badge-ping"></div>
+        <span>3 products in production &amp; development</span>
+        <span class="badge-arrow">↗</span>
       </div>
 
-      <h1>
-        We build the systems<br/>
-        that <span class="gradient-text">run local business</span>
+      <h1 class="hero-h1">
+        <span class="line1">Systems that run</span>
+        <span class="line2">local business</span>
       </h1>
 
-      <p>
+      <p class="hero-sub">
         Mobile apps, web dashboards, and backend infrastructure — built for the businesses that serve your community.
       </p>
 
-      <div class="hero-buttons">
-        <a href="#work" class="btn btn-white">See our work →</a>
-        <a href="#contact" class="btn btn-outline">Get in touch</a>
+      <div class="hero-ctas">
+        <a href="#work" class="btn btn-primary">See our work →</a>
+        <a href="#contact" class="btn btn-ghost">Get in touch</a>
       </div>
+
     </div>
 
-    <div class="hero-scroll">
-      <div class="scroll-line"></div>
+    <div class="scroll-cue">
+      <div class="scroll-cue-mouse">
+        <div class="scroll-cue-wheel"></div>
+      </div>
     </div>
   </section>
 
-  <!-- STACK TICKER -->
-  <div class="stack-bar">
-    <div class="stack-track">
-      <div class="stack-item"><span>📱</span> React Native</div>
-      <div class="stack-item"><span>⚙️</span> Node.js</div>
-      <div class="stack-item"><span>🗄️</span> PostgreSQL</div>
-      <div class="stack-item"><span>🔥</span> Firebase</div>
-      <div class="stack-item"><span>☁️</span> Cloudinary</div>
-      <div class="stack-item"><span>🚀</span> Expo EAS</div>
-      <div class="stack-item"><span>🌐</span> React.js</div>
-      <div class="stack-item"><span>🔐</span> Prisma ORM</div>
-      <div class="stack-item"><span>📡</span> Render</div>
-      <div class="stack-item"><span>⚡</span> Vercel</div>
-      <!-- duplicate for infinite scroll -->
-      <div class="stack-item"><span>📱</span> React Native</div>
-      <div class="stack-item"><span>⚙️</span> Node.js</div>
-      <div class="stack-item"><span>🗄️</span> PostgreSQL</div>
-      <div class="stack-item"><span>🔥</span> Firebase</div>
-      <div class="stack-item"><span>☁️</span> Cloudinary</div>
-      <div class="stack-item"><span>🚀</span> Expo EAS</div>
-      <div class="stack-item"><span>🌐</span> React.js</div>
-      <div class="stack-item"><span>🔐</span> Prisma ORM</div>
-      <div class="stack-item"><span>📡</span> Render</div>
-      <div class="stack-item"><span>⚡</span> Vercel</div>
+  <!-- ── TICKER ─────────────────────────────────────── -->
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <div class="ticker-item">React Native</div>
+      <div class="ticker-item">Expo EAS</div>
+      <div class="ticker-item">Node.js</div>
+      <div class="ticker-item">PostgreSQL</div>
+      <div class="ticker-item">Prisma ORM</div>
+      <div class="ticker-item">Next.js</div>
+      <div class="ticker-item">Firebase</div>
+      <div class="ticker-item">Cloudinary</div>
+      <div class="ticker-item">Django</div>
+      <div class="ticker-item">Python</div>
+      <div class="ticker-item">Render</div>
+      <div class="ticker-item">Railway</div>
+      <div class="ticker-item">Vercel</div>
+      <div class="ticker-item">Cloudflare</div>
+      <!-- dup for seamless loop -->
+      <div class="ticker-item">React Native</div>
+      <div class="ticker-item">Expo EAS</div>
+      <div class="ticker-item">Node.js</div>
+      <div class="ticker-item">PostgreSQL</div>
+      <div class="ticker-item">Prisma ORM</div>
+      <div class="ticker-item">Next.js</div>
+      <div class="ticker-item">Firebase</div>
+      <div class="ticker-item">Cloudinary</div>
+      <div class="ticker-item">Django</div>
+      <div class="ticker-item">Python</div>
+      <div class="ticker-item">Render</div>
+      <div class="ticker-item">Railway</div>
+      <div class="ticker-item">Vercel</div>
+      <div class="ticker-item">Cloudflare</div>
     </div>
   </div>
 
-  <!-- WORK -->
-  <hr class="section-divider"/>
-  <section id="work" class="section">
-    <div class="eyebrow" data-reveal>Work</div>
-    <h2 class="section-title" data-reveal data-reveal="delay-1">Products we've built</h2>
-    <p class="section-sub" data-reveal data-reveal="delay-2">End-to-end platforms — from the mobile app your customers hold to the admin dashboard your team runs every day.</p>
+  <!-- ── WORK ───────────────────────────────────────── -->
+  <hr class="divider"/>
+  <div class="max-w">
+    <section id="work" class="section">
+      <div class="eyebrow" data-r>Work</div>
+      <h2 class="s-title" data-r data-d="1">Products we've built</h2>
+      <p class="s-sub" data-r data-d="2">Full-stack platforms — from the app your customers hold to the dashboard your team manages every day.</p>
 
-    <div class="bento">
+      <div class="work-grid">
 
-      <!-- Lucky Stop — big feature card -->
-      <div class="bento-card bento-8" data-reveal style="min-height: 280px;">
-        <div class="bento-card-label">Featured Product</div>
-        <div style="font-size:40px;margin-bottom:16px">⛽</div>
-        <h3>Lucky Stop Rewards</h3>
-        <p>Full-stack loyalty and operations platform for a regional gas station convenience store chain. Customers earn cashback, employees manage transactions, managers run the store — one unified app for every role.</p>
-        <div class="tags">
-          <span class="work-tag">React Native</span>
-          <span class="work-tag">Expo EAS</span>
-          <span class="work-tag">Node.js</span>
-          <span class="work-tag">PostgreSQL</span>
-          <span class="work-tag">Firebase</span>
-          <span class="work-tag">Cloudinary</span>
+        <!-- Lucky Stop — primary -->
+        <div class="work-card wc-featured" data-r>
+          <div class="wc-status s-live">
+            <div class="wc-status-dot"></div> Live on Google Play
+          </div>
+          <span class="wc-icon">⛽</span>
+          <div class="wc-title">Lucky Stop Rewards</div>
+          <p class="wc-desc">
+            Full-stack loyalty and operations platform for a regional gas station convenience store chain with 12+ locations. Customers earn 5% cashback, employees manage transactions, managers run the store — one unified app across all roles.
+          </p>
+          <div class="wc-tags">
+            <span class="tag">React Native</span>
+            <span class="tag">Expo EAS</span>
+            <span class="tag">Node.js</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Firebase</span>
+            <span class="tag">Cloudinary</span>
+            <span class="tag">Prisma</span>
+          </div>
+          <a href="https://luckystop.cliffindus.com" target="_blank" class="wc-link">
+            View product <span class="wc-link-arrow">→</span>
+          </a>
         </div>
-        <a href="https://luckystop.cliffindus.com" target="_blank" class="work-link">View product →</a>
-      </div>
 
-      <!-- Stats side -->
-      <div class="bento-card bento-4" data-reveal data-reveal="delay-1" style="display:flex;flex-direction:column;justify-content:space-between;gap:24px">
-        <div>
-          <div class="bento-card-label">Locations</div>
-          <div class="stat-big blue">12+</div>
-          <p style="margin-top:8px">Stores running Lucky Stop Rewards</p>
+        <!-- Stats -->
+        <div class="work-card wc-side" data-r data-d="1">
+          <div class="wc-side-inner">
+            <div class="wc-status s-live">
+              <div class="wc-status-dot"></div> iOS &amp; Android + Web
+            </div>
+            <div class="wc-stats">
+              <div class="wc-stat">
+                <div class="wc-stat-n">12+</div>
+                <div class="wc-stat-l">Store locations running Lucky Stop</div>
+              </div>
+              <div class="wc-stat">
+                <div class="wc-stat-n">5%</div>
+                <div class="wc-stat-l">Cashback on every customer purchase</div>
+              </div>
+              <div class="wc-stat">
+                <div class="wc-stat-n">3</div>
+                <div class="wc-stat-l">Platforms: iOS · Android · Web Admin</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div style="border-top:1px solid var(--border);padding-top:20px">
-          <div class="bento-card-label">Platforms</div>
-          <div class="stat-big indigo">3</div>
-          <p style="margin-top:8px">iOS · Android · Web Admin</p>
+
+        <!-- BMS Auto -->
+        <div class="work-card wc-auto" data-r>
+          <div class="wc-status s-build">
+            <div class="wc-status-dot"></div> In Development
+          </div>
+          <span class="wc-icon">🚗</span>
+          <div class="wc-title">BMS Auto Sales</div>
+          <p class="wc-desc">
+            End-to-end platform for a used car dealership — public inventory browsing with search and filtering, customer credit applications, financing portal, and a full dealer admin dashboard covering inventory, invoices, payments, leads, documents, and reporting.
+          </p>
+          <div class="wc-tags">
+            <span class="tag">Next.js</span>
+            <span class="tag">Node.js</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Prisma</span>
+            <span class="tag">Railway</span>
+          </div>
+        </div>
+
+        <!-- PROJECTCLIFFAPP -->
+        <div class="work-card wc-early" data-r data-d="1">
+          <div class="wc-status s-early">
+            <div class="wc-status-dot"></div> Early Stage
+          </div>
+          <span class="wc-icon">🏗️</span>
+          <div class="wc-title">Marketplace Platform</div>
+          <p class="wc-desc">
+            Multi-tenant marketplace infrastructure with authentication, credit systems, product catalogues, and analytics. Django backend prototype — architecture and data models in progress.
+          </p>
+          <div class="wc-tags">
+            <span class="tag">Django</span>
+            <span class="tag">Python</span>
+            <span class="tag">PostgreSQL</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- ── CAPABILITIES ───────────────────────────────── -->
+  <hr class="divider"/>
+  <div class="max-w">
+    <section id="capabilities" class="section">
+      <div class="eyebrow" data-r>Capabilities</div>
+      <h2 class="s-title" data-r data-d="1">What we build</h2>
+      <p class="s-sub" data-r data-d="2">Every layer of the stack — handled. No coordinating between teams. One builder, full ownership.</p>
+
+      <div class="cap-grid" data-r>
+        <div class="cap-cell">
+          <div class="cap-num">01</div>
+          <span class="cap-icon">📱</span>
+          <h4>Mobile Apps</h4>
+          <p>iOS and Android from one codebase. React Native + Expo EAS builds and submissions.</p>
+        </div>
+        <div class="cap-cell">
+          <div class="cap-num">02</div>
+          <span class="cap-icon">🖥️</span>
+          <h4>Web Dashboards</h4>
+          <p>Admin portals, management tools, and data dashboards built for every browser.</p>
+        </div>
+        <div class="cap-cell">
+          <div class="cap-num">03</div>
+          <span class="cap-icon">⚙️</span>
+          <h4>Backend Systems</h4>
+          <p>REST APIs, databases, authentication, and cloud infrastructure that scales.</p>
+        </div>
+        <div class="cap-cell">
+          <div class="cap-num">04</div>
+          <span class="cap-icon">🔔</span>
+          <h4>Push Notifications</h4>
+          <p>Firebase Cloud Messaging — real-time alerts for customers and staff across platforms.</p>
+        </div>
+        <div class="cap-cell">
+          <div class="cap-num">05</div>
+          <span class="cap-icon">🔐</span>
+          <h4>Auth &amp; Security</h4>
+          <p>Phone OTP, role-based access control, JWT, and secure API design at every layer.</p>
+        </div>
+        <div class="cap-cell">
+          <div class="cap-num">06</div>
+          <span class="cap-icon">📊</span>
+          <h4>Analytics &amp; Reporting</h4>
+          <p>Store dashboards, transaction history, inventory reports, and operational insights.</p>
         </div>
       </div>
+    </section>
+  </div>
 
-      <!-- New project placeholder -->
-      <div class="bento-card bento-6" data-reveal style="border-style:dashed;opacity:0.45;cursor:default;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:12px;min-height:160px">
-        <div style="font-size:28px">🏪</div>
-        <h3 style="font-size:17px">Your Business Here</h3>
-        <p style="font-size:13px">We're open to new partnerships with local businesses.</p>
-      </div>
+  <!-- ── ABOUT ──────────────────────────────────────── -->
+  <hr class="divider"/>
+  <div class="max-w">
+    <section id="about" class="section">
+      <div class="eyebrow" data-r>About</div>
+      <h2 class="s-title" data-r data-d="1">Built for the businesses<br/>that run your neighborhood</h2>
 
-      <div class="bento-card bento-6" data-reveal data-reveal="delay-1" style="border-style:dashed;opacity:0.45;cursor:default;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:12px;min-height:160px">
-        <div style="font-size:28px">🚧</div>
-        <h3 style="font-size:17px">More coming soon</h3>
-        <p style="font-size:13px">New products in development for 2026.</p>
+      <div class="about-grid">
+        <div class="about-text" data-r data-d="2">
+          <div class="pull-quote">
+            <p>"Local businesses deserve the same quality of technology that large chains have — not templates, but complete platforms."</p>
+          </div>
+          <p>
+            Cliff Industries builds software for <strong>local and regional businesses</strong>. We focus on retail, automotive, hospitality, and operations — the kinds of businesses that are the backbone of every community but rarely get enterprise-quality tools.
+          </p>
+          <p>
+            Every product is built end-to-end: the mobile app, the web dashboard, the backend API, the database, and the cloud infrastructure. No handoffs, no gaps.
+          </p>
+          <p>
+            Based in <strong>Texas, USA.</strong> Named for the cliff and the Indus — elevation and flow, structure and ambition.
+          </p>
+        </div>
+        <div class="about-aside" data-r data-d="3">
+          <div class="aside-card">
+            <div class="aside-label">Products</div>
+            <div class="aside-val">3</div>
+            <div class="aside-sub">In production or active development</div>
+          </div>
+          <div class="aside-card">
+            <div class="aside-label">Tech stack</div>
+            <div class="aside-val">Full</div>
+            <div class="aside-sub">Mobile · Web · Backend · Infra</div>
+          </div>
+          <div class="aside-card">
+            <div class="aside-label">Platforms shipped</div>
+            <div class="aside-val">iOS · Android · Web</div>
+            <div class="aside-sub">Google Play · App Store (coming) · Vercel</div>
+          </div>
+          <div class="aside-card">
+            <div class="aside-label">Based in</div>
+            <div class="aside-val">Texas</div>
+            <div class="aside-sub">United States</div>
+          </div>
+        </div>
       </div>
+    </section>
+  </div>
 
-    </div>
-  </section>
+  <!-- ── CONTACT ─────────────────────────────────────── -->
+  <hr class="divider"/>
+  <div class="max-w">
+    <section id="contact" class="section">
+      <div class="contact-block" data-r>
+        <div class="eyebrow">Contact</div>
+        <h2 class="s-title">Let's build something</h2>
+        <p>Have a local business that needs a mobile app, an operations tool, or a platform built from the ground up? Reach out.</p>
+        <a href="mailto:sksajidali1279@gmail.com" class="contact-email">
+          ✉ &nbsp;sksajidali1279@gmail.com
+        </a>
+      </div>
+    </section>
+  </div>
 
-  <!-- CAPABILITIES -->
-  <hr class="section-divider"/>
-  <section id="capabilities" class="section">
-    <div class="eyebrow" data-reveal>Capabilities</div>
-    <h2 class="section-title" data-reveal>What we build</h2>
-    <p class="section-sub" data-reveal>Full-stack from day one. Every layer handled — so you don't have to coordinate between multiple teams.</p>
-
-    <div class="cap-grid" data-reveal>
-      <div class="cap-item">
-        <div class="cap-item-icon">📱</div>
-        <h4>Mobile Apps</h4>
-        <p>iOS and Android from a single codebase. React Native + Expo EAS.</p>
-      </div>
-      <div class="cap-item">
-        <div class="cap-item-icon">🖥️</div>
-        <h4>Web Dashboards</h4>
-        <p>Admin portals and management tools for any browser.</p>
-      </div>
-      <div class="cap-item">
-        <div class="cap-item-icon">⚙️</div>
-        <h4>Backend Systems</h4>
-        <p>REST APIs, databases, and cloud infra built to scale.</p>
-      </div>
-      <div class="cap-item">
-        <div class="cap-item-icon">🔔</div>
-        <h4>Push Notifications</h4>
-        <p>Firebase Cloud Messaging — real-time alerts for customers and staff.</p>
-      </div>
-      <div class="cap-item">
-        <div class="cap-item-icon">🔐</div>
-        <h4>Auth & Security</h4>
-        <p>Phone OTP, role-based access control, and secure API design.</p>
-      </div>
-      <div class="cap-item">
-        <div class="cap-item-icon">📊</div>
-        <h4>Analytics</h4>
-        <p>Store dashboards, transaction history, and AI-assisted insights.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ABOUT -->
-  <hr class="section-divider"/>
-  <section id="about" class="section">
-    <div class="eyebrow" data-reveal>About</div>
-    <h2 class="section-title" data-reveal style="max-width:600px">Built for the businesses that run your neighborhood</h2>
-    <div class="quote-block" data-reveal>
-      <p>"Local businesses deserve the same quality of technology that large chains have — complete platforms, not templates."</p>
-    </div>
-    <p style="font-size:16px;color:var(--muted2);line-height:1.8;max-width:620px" data-reveal>
-      Cliff Industries builds software for local and regional businesses. We're focused on retail, hospitality, and operations management — the kinds of businesses that are the backbone of every community.
-      <br/><br/>
-      Based in <strong style="color:var(--text)">Texas, USA.</strong> Named after the cliff and the Indus — elevation and flow, structure and ambition.
-    </p>
-  </section>
-
-  <!-- CONTACT -->
-  <hr class="section-divider"/>
-  <section id="contact" class="section">
-    <div class="contact-card" data-reveal>
-      <div class="eyebrow">Contact</div>
-      <h2 class="section-title" style="margin-bottom:8px">Let's build something</h2>
-      <p style="color:var(--muted2);font-size:16px;max-width:440px;line-height:1.7">
-        Have a local business that needs a mobile app, an operations tool, or a loyalty platform? Get in touch.
-      </p>
-      <a class="contact-email-btn" href="mailto:sksajidali1279@gmail.com">
-        ✉ &nbsp;sksajidali1279@gmail.com
-      </a>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
+  <!-- ── FOOTER ─────────────────────────────────────── -->
   <footer>
-    <p>© 2026 Cliff Industries.</p>
+    <p>© 2026 Cliff Industries</p>
     <div class="footer-links">
       <a href="https://luckystop.cliffindus.com">Lucky Stop</a>
-      <a href="mailto:sksajidali1279@gmail.com">Contact</a>
+      <a href="#work">Work</a>
+      <a href="mailto:sksajidali1279@gmail.com">Email</a>
     </div>
   </footer>
 
   <script>
     // Scroll reveal
-    const reveals = document.querySelectorAll('[data-reveal]');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); } });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    reveals.forEach(el => observer.observe(el));
+    const items = document.querySelectorAll('[data-r]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+    }, { threshold: 0.07, rootMargin: '0px 0px -30px 0px' });
+    items.forEach(el => io.observe(el));
 
-    // Card mouse glow
-    document.querySelectorAll('.bento-card').forEach(card => {
+    // Card mouse-tracking glow
+    document.querySelectorAll('.work-card').forEach(card => {
       card.addEventListener('mousemove', e => {
         const r = card.getBoundingClientRect();
-        card.style.setProperty('--x', `${e.clientX - r.left}px`);
-        card.style.setProperty('--y', `${e.clientY - r.top}px`);
+        card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        card.style.setProperty('--my', `${e.clientY - r.top}px`);
       });
     });
   </script>
