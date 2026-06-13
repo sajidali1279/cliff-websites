@@ -3,352 +3,527 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lucky Stop Rewards — Earn cashback at Lucky Stop</title>
-  <meta name="description" content="Earn 5% cashback on every qualifying purchase at Lucky Stop gas stations. Order hot food, track your rewards, and redeem for free products."/>
+  <title>Lucky Stop Rewards — Earn cashback at every visit</title>
+  <meta name="description" content="Lucky Stop Rewards gives you 5% cashback on every purchase at Lucky Stop convenience stores. Free to download for iOS and Android."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --navy:    #1D3557;
-      --navy2:   #162A45;
-      --red:     #E63946;
-      --red2:    #C0313D;
-      --text:    #0F172A;
-      --muted:   #64748B;
-      --light:   #F8FAFC;
-      --white:   #FFFFFF;
-      --border:  #E2E8F0;
+      --navy:   #0F1C2E;
+      --navy2:  #1A2E45;
+      --red:    #E63946;
+      --red-lt: #FF6B74;
+      --text:   #F8FAFC;
+      --muted:  #94A3B8;
+      --muted2: #CBD5E1;
+      --border: rgba(255,255,255,0.07);
+      --border2:rgba(255,255,255,0.12);
+      --surface:rgba(255,255,255,0.04);
     }
 
     html { scroll-behavior: smooth; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--white); color: var(--text); line-height: 1.6; }
 
-    /* ── NAV ── */
-    nav {
-      position: sticky; top: 0; z-index: 100;
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
       background: var(--navy);
-      padding: 16px 48px;
-      display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
-    .nav-brand { color: #fff; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; text-decoration: none; }
-    .nav-brand span { color: #F97316; }
-    .nav-links { display: flex; align-items: center; gap: 28px; }
-    .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
-    .nav-links a:hover { color: #fff; }
-    .nav-admin {
-      background: var(--red); color: #fff;
-      padding: 9px 20px; border-radius: 10px;
-      font-size: 14px; font-weight: 700; text-decoration: none;
-      transition: background .2s;
-    }
-    .nav-admin:hover { background: var(--red2); color: #fff !important; }
 
-    /* ── HERO ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: #1E3A5F; border-radius: 3px; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      background: rgba(15,28,46,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .fuel-icon { font-size: 22px; line-height: 1; }
+    .nav-wordmark { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+    .nav-wordmark span { color: var(--red-lt); }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-link { color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; padding: 6px 12px; border-radius: 8px; transition: color .15s; }
+    .nav-link:hover { color: var(--text); }
+    .nav-btn-login { background: rgba(255,255,255,0.06); border: 1px solid var(--border2); color: var(--text); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 8px; text-decoration: none; transition: background .15s; }
+    .nav-btn-login:hover { background: rgba(255,255,255,0.1); }
+
+    /* HERO */
     .hero {
-      background: linear-gradient(135deg, var(--navy2) 0%, var(--navy) 100%);
-      padding: 100px 24px;
-      text-align: center;
-      position: relative; overflow: hidden;
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 120px 24px 80px; overflow: hidden;
     }
     .hero::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(230,57,70,0.12) 0%, transparent 70%);
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 60%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 60%, transparent 100%);
+      pointer-events: none;
     }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.4);
-      border-radius: 100px; padding: 6px 16px; margin-bottom: 28px;
-      font-size: 13px; font-weight: 700; color: #FDBA74; letter-spacing: .5px;
-    }
-    .hero h1 {
-      font-size: clamp(32px, 5.5vw, 64px);
-      font-weight: 800; line-height: 1.1;
-      letter-spacing: -1.5px; color: #fff;
-      max-width: 800px; margin: 0 auto 20px;
-    }
-    .hero h1 span { color: #F97316; }
-    .hero p {
-      font-size: clamp(16px, 2vw, 19px);
-      color: rgba(255,255,255,0.7);
-      max-width: 540px; margin: 0 auto 48px;
-    }
-    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: var(--red); color: #fff;
-      padding: 15px 28px; border-radius: 14px;
-      font-size: 15px; font-weight: 700; text-decoration: none;
-      transition: background .2s, transform .2s;
-    }
-    .btn-primary:hover { background: var(--red2); transform: translateY(-2px); }
-    .btn-secondary {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.85);
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 15px 28px; border-radius: 14px;
-      font-size: 15px; font-weight: 600; text-decoration: none;
-      transition: background .2s;
-    }
-    .btn-secondary:hover { background: rgba(255,255,255,0.18); }
-    .btn-soon { opacity: 0.5; cursor: not-allowed; }
+    .hero-orb-1 { position: absolute; width: 700px; height: 700px; background: radial-gradient(circle, rgba(230,57,70,0.18), transparent 70%); top: -200px; left: -100px; border-radius: 50%; animation: oa 14s ease-in-out infinite; pointer-events: none; }
+    .hero-orb-2 { position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, rgba(59,130,246,0.12), transparent 70%); bottom: -100px; right: -100px; border-radius: 50%; animation: ob 10s ease-in-out infinite; pointer-events: none; }
+    @keyframes oa { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,-30px)} }
+    @keyframes ob { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,20px)} }
 
-    /* ── STATS BAR ── */
-    .stats-bar {
-      background: var(--light); border-bottom: 1px solid var(--border);
-      padding: 32px 24px;
-      display: flex; justify-content: center; gap: 64px; flex-wrap: wrap;
-    }
-    .stat { text-align: center; }
-    .stat-num { font-size: 32px; font-weight: 800; color: var(--navy); line-height: 1; }
-    .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+    .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr auto; gap: 64px; align-items: center; max-width: 1100px; width: 100%; }
 
-    /* ── SECTIONS ── */
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(230,57,70,0.08); border: 1px solid rgba(230,57,70,0.2); border-radius: 100px; padding: 5px 14px 5px 8px; margin-bottom: 24px; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red-lt); box-shadow: 0 0 0 3px rgba(255,107,116,0.2); animation: bpulse 2s ease-in-out infinite; }
+    @keyframes bpulse { 0%,100%{box-shadow:0 0 0 3px rgba(255,107,116,0.2)} 50%{box-shadow:0 0 0 6px rgba(255,107,116,0)} }
+    .hero-badge span { font-size: 12px; font-weight: 600; color: var(--red-lt); letter-spacing: .3px; }
+
+    .hero-text h1 { font-size: clamp(38px, 6vw, 72px); font-weight: 900; line-height: 1.05; letter-spacing: -2.5px; margin-bottom: 20px; }
+    .red-gradient { background: linear-gradient(135deg, #FF6B74 0%, #E63946 50%, #FF8F59 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-text p { font-size: 17px; color: var(--muted2); line-height: 1.7; max-width: 440px; margin-bottom: 36px; }
+
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+    .cta-play { display: inline-flex; align-items: center; gap: 10px; background: var(--text); color: var(--navy); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 12px; text-decoration: none; transition: transform .15s, background .15s; letter-spacing: -0.2px; }
+    .cta-play:hover { background: #E2E8F0; transform: translateY(-2px); }
+    .cta-play-icon { font-size: 20px; }
+    .cta-ios { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border2); color: var(--muted2); font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 12px; text-decoration: none; cursor: default; opacity: 0.5; }
+
+    .hero-stats { display: flex; gap: 32px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .hero-stat-num { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+    .hero-stat-num .r { color: var(--red-lt); }
+    .hero-stat-lbl { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+
+    /* PHONE MOCKUP */
+    .phone-wrap { position: relative; flex-shrink: 0; }
+    .phone-glow { position: absolute; inset: -40px; background: radial-gradient(circle, rgba(230,57,70,0.12), transparent 70%); border-radius: 50%; pointer-events: none; }
+    .phone { position: relative; width: 230px; height: 460px; background: linear-gradient(145deg, #1A2E45, #0F1C2E); border-radius: 44px; border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08); overflow: hidden; animation: phoneFloat 6s ease-in-out infinite; }
+    @keyframes phoneFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 88px; height: 8px; background: rgba(0,0,0,0.6); border-radius: 4px; }
+    .phone-screen { position: absolute; inset: 0; display: flex; flex-direction: column; background: linear-gradient(180deg, #0F1C2E 0%, #1A2E45 100%); }
+    .phone-header { padding: 36px 16px 12px; background: linear-gradient(to bottom, rgba(230,57,70,0.15), transparent); }
+    .phone-header-lbl { font-size: 8px; font-weight: 600; color: var(--red-lt); letter-spacing: 1.5px; text-transform: uppercase; }
+    .phone-header-val { font-size: 26px; font-weight: 800; letter-spacing: -1px; color: #fff; margin-top: 2px; }
+    .phone-header-sub { font-size: 9px; color: var(--muted); margin-top: 1px; }
+    .phone-qr-zone { margin: 8px 16px 0; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: center; }
+    .phone-menu { margin: 10px 16px 0; display: flex; flex-direction: column; gap: 6px; }
+    .phone-row { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 7px 10px; }
+    .phone-row-icon { font-size: 14px; }
+    .phone-row-text { flex: 1; }
+    .phone-row-text .t { font-size: 8px; color: var(--muted2); font-weight: 600; }
+    .phone-row-text .s { font-size: 7px; color: var(--muted); margin-top: 1px; }
+    .phone-row-badge { font-size: 7px; font-weight: 700; background: var(--red); color: #fff; padding: 1px 5px; border-radius: 4px; }
+    .phone-bottom-bar { position: absolute; bottom: 16px; left: 16px; right: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 8px; display: flex; justify-content: space-around; }
+    .tab-icon { font-size: 16px; opacity: 0.4; }
+    .tab-icon.active { opacity: 1; }
+
+    /* STRIP */
+    .strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
+    .strip-item { padding: 28px 16px; }
+    .strip-item + .strip-item { border-left: 1px solid var(--border); }
+    .strip-item:hover { background: var(--surface); }
+    .strip-num { font-size: 32px; font-weight: 800; letter-spacing: -1.5px; }
+    .strip-num.r { color: var(--red-lt); }
+    .strip-lbl { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 4px; }
+
+    /* SECTION */
     .section { padding: 88px 24px; max-width: 1100px; margin: 0 auto; }
-    .section-center { text-align: center; }
-    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
-    .section-title { font-size: clamp(26px, 3.5vw, 42px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 14px; }
-    .section-sub { font-size: 17px; color: var(--muted); max-width: 520px; margin-bottom: 56px; }
-    .section-center .section-sub { margin-left: auto; margin-right: auto; }
+    .section-divider { border: none; border-top: 1px solid var(--border); }
+    .eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--red-lt); margin-bottom: 14px; }
+    .eyebrow::before { content:''; width:14px;height:1px;background:var(--red-lt);display:block; }
+    .section-title { font-size: clamp(26px,4vw,42px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 14px; }
+    .section-sub { font-size: 16px; color: var(--muted2); max-width: 480px; line-height: 1.7; margin-bottom: 52px; }
 
-    /* ── FEATURES ── */
-    #features { background: var(--white); }
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
-    .feature-card {
-      background: var(--light); border: 1px solid var(--border);
-      border-radius: 20px; padding: 28px;
-      transition: box-shadow .2s, transform .2s;
-    }
-    .feature-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); transform: translateY(-3px); }
-    .feature-icon { font-size: 32px; margin-bottom: 14px; }
-    .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-    .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    /* FEATURES */
+    .bento { display: grid; grid-template-columns: repeat(12,1fr); gap: 10px; }
+    .b12 { grid-column: span 12; }
+    .b8  { grid-column: span 8; }
+    .b4  { grid-column: span 4; }
+    .b6  { grid-column: span 6; }
 
-    /* ── HOW IT WORKS ── */
-    #how { background: var(--light); padding: 88px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    #how .section { max-width: 1100px; margin: 0 auto; }
-    .steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 32px; }
-    .step { text-align: center; }
-    .step-num {
-      width: 52px; height: 52px; border-radius: 50%;
-      background: var(--navy); color: #fff;
-      font-size: 20px; font-weight: 800;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-    }
+    .f-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; transition: border-color .2s, transform .2s, box-shadow .2s; position: relative; overflow: hidden; }
+    .f-card::after { content:''; position:absolute; inset:0; border-radius:inherit; background: radial-gradient(400px circle at var(--x,50%) var(--y,50%), rgba(230,57,70,0.05), transparent 60%); opacity:0; transition: opacity .3s; pointer-events:none; }
+    .f-card:hover { border-color: var(--border2); transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
+    .f-card:hover::after { opacity: 1; }
+    .f-card-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+    .f-card h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 8px; }
+    .f-card p { font-size: 14px; color: var(--muted2); line-height: 1.7; }
+    .highlight-num { font-size: 52px; font-weight: 800; letter-spacing: -2px; line-height: 1; color: var(--red-lt); }
+    .highlight-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+    /* HOW IT WORKS */
+    .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .step { background: var(--navy); padding: 32px 24px; transition: background .2s; }
+    .step:hover { background: rgba(255,255,255,0.03); }
+    .step-num { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--red-lt); text-transform: uppercase; margin-bottom: 14px; }
+    .step-icon { font-size: 28px; margin-bottom: 14px; display: block; }
     .step h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-    .step p { font-size: 13px; color: var(--muted); }
+    .step p { font-size: 13px; color: var(--muted2); line-height: 1.6; }
 
-    /* ── TIERS ── */
-    .tiers-grid { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
-    .tier-card {
-      flex-shrink: 0; width: 160px;
-      background: var(--light); border: 1px solid var(--border);
-      border-radius: 16px; padding: 20px 16px; text-align: center;
-    }
-    .tier-icon { font-size: 28px; margin-bottom: 8px; }
-    .tier-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
-    .tier-rate { font-size: 22px; font-weight: 800; color: var(--navy); }
-    .tier-rate span { font-size: 12px; font-weight: 500; color: var(--muted); }
+    /* TIERS */
+    .tiers { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
+    .tier-card { border: 1px solid var(--border); border-radius: 14px; padding: 20px 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; position: relative; overflow: hidden; transition: transform .2s, border-color .2s; }
+    .tier-card:hover { transform: translateY(-4px); }
+    .tier-badge { font-size: 20px; }
+    .tier-name { font-size: 13px; font-weight: 700; letter-spacing: .5px; }
+    .tier-req { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .tier-bar { width: 100%; height: 2px; border-radius: 1px; margin-top: auto; }
 
-    /* ── STORE OWNERS ── */
-    #stores {
-      background: var(--navy);
-      padding: 80px 24px;
-      text-align: center;
-    }
-    #stores h2 { font-size: clamp(24px, 3vw, 38px); font-weight: 800; color: #fff; margin-bottom: 14px; letter-spacing: -0.5px; }
-    #stores p { font-size: 16px; color: rgba(255,255,255,0.65); max-width: 500px; margin: 0 auto 36px; }
-    .btn-store {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: #fff; color: var(--navy);
-      padding: 14px 28px; border-radius: 12px;
-      font-size: 15px; font-weight: 700; text-decoration: none;
-      transition: background .2s, transform .2s;
-    }
-    .btn-store:hover { background: #F1F5F9; transform: translateY(-2px); }
+    .t-bronze  { background: rgba(180,120,60,0.08);  border-color: rgba(180,120,60,0.2);  }
+    .t-silver  { background: rgba(160,160,160,0.08); border-color: rgba(160,160,160,0.2); }
+    .t-gold    { background: rgba(245,158,11,0.08);  border-color: rgba(245,158,11,0.2);  }
+    .t-plat    { background: rgba(99,179,237,0.08);  border-color: rgba(99,179,237,0.2);  }
+    .t-diamond { background: rgba(168,85,247,0.08);  border-color: rgba(168,85,247,0.2);  }
+    .b-bronze  { background: #B47C3C; }
+    .b-silver  { background: #A0A0A0; }
+    .b-gold    { background: #F59E0B; }
+    .b-plat    { background: #63B3ED; }
+    .b-diamond { background: #A855F7; }
 
-    /* ── FOOTER ── */
-    footer {
-      background: var(--navy2);
-      padding: 32px 48px;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 16px;
-    }
-    footer p { font-size: 13px; color: rgba(255,255,255,0.45); }
-    .footer-links { display: flex; gap: 24px; }
-    .footer-links a { color: rgba(255,255,255,0.45); text-decoration: none; font-size: 13px; transition: color .2s; }
-    .footer-links a:hover { color: rgba(255,255,255,0.8); }
+    /* STORE CTA */
+    .store-cta { border-radius: 20px; overflow: hidden; position: relative; background: linear-gradient(135deg, #0F1C2E, #1A2E45); border: 1px solid var(--border); padding: 56px 48px; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+    .store-cta::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--red), transparent); }
+    .store-cta-text h2 { font-size: clamp(24px,3vw,36px); font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+    .store-cta-text p { font-size: 15px; color: var(--muted2); max-width: 400px; line-height: 1.7; }
+    .store-cta-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; background: var(--red); color: #fff; font-size: 14px; font-weight: 700; padding: 12px 24px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s; white-space: nowrap; }
+    .store-cta-btn:hover { background: #D62F3C; transform: translateY(-2px); }
 
-    @media (max-width: 768px) {
-      nav { padding: 14px 20px; }
-      .stats-bar { gap: 32px; }
-      footer { flex-direction: column; padding: 28px 20px; }
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    footer p { font-size: 13px; color: var(--muted); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color .15s; }
+    .footer-links a:hover { color: var(--muted2); }
+
+    /* REVEAL */
+    [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+    [data-reveal].revealed { opacity: 1; transform: translateY(0); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero-text p { max-width: none; }
+      .hero-ctas { justify-content: center; }
+      .hero-stats { justify-content: center; }
+      .phone-wrap { display: none; }
+      .strip { grid-template-columns: repeat(2,1fr); }
+      .strip-item:nth-child(3) { border-left: none; }
+      .strip-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .b8, .b4, .b6 { grid-column: span 12; }
+      .steps { grid-template-columns: repeat(2,1fr); }
+      .tiers { grid-template-columns: repeat(2,1fr); }
+      .tiers .tier-card:last-child { grid-column: span 2; }
+      .store-cta { flex-direction: column; padding: 32px 24px; }
+      footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
   <nav>
-    <a href="/" class="nav-brand">Lucky Stop <span>Rewards</span></a>
-    <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#how">How it works</a>
-      <a href="#stores">For Stores</a>
-      <a href="https://admin.luckystop.cliffindus.com" class="nav-admin">Store Login →</a>
+    <a href="/" class="nav-brand">
+      <span class="fuel-icon">⛽</span>
+      <span class="nav-wordmark">Lucky Stop <span>Rewards</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="#how-it-works" class="nav-link">How it works</a>
+      <a href="#tiers" class="nav-link">Tiers</a>
+      <a href="https://admin.luckystop.cliffindus.com" target="_blank" class="nav-btn-login">Store Login →</a>
     </div>
   </nav>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-badge">⛽ Available at Lucky Stop locations</div>
-    <h1>Earn cashback every time you shop at <span>Lucky Stop</span></h1>
-    <p>Get 5% back on qualifying purchases as in-app credits. Redeem for free products in-store. No punch card needed.</p>
-    <div class="hero-buttons">
-      <a href="https://play.google.com/store/apps/details?id=com.luckystop.app" class="btn-primary">
-        ▶ &nbsp;Get it on Google Play
-      </a>
-      <span class="btn-secondary btn-soon">
-        🍎 &nbsp;App Store — Coming Soon
-      </span>
-    </div>
-  </div>
+  <section class="hero">
+    <div class="hero-orb-1"></div>
+    <div class="hero-orb-2"></div>
 
-  <!-- STATS -->
-  <div class="stats-bar">
-    <div class="stat"><div class="stat-num">5%</div><div class="stat-label">Cashback on purchases</div></div>
-    <div class="stat"><div class="stat-num">12+</div><div class="stat-label">Lucky Stop locations</div></div>
-    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Loyalty tiers</div></div>
-    <div class="stat"><div class="stat-num">Free</div><div class="stat-label">Download & use</div></div>
-  </div>
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <div class="badge-dot"></div>
+          <span>Now available on Google Play</span>
+        </div>
 
-  <!-- FEATURES -->
-  <div id="features">
-    <div class="section section-center">
-      <div class="section-label">Features</div>
-      <h2 class="section-title">Everything in one app</h2>
-      <p class="section-sub">From earning your first credit to ordering lunch before you pull up — Lucky Stop Rewards has you covered.</p>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">💰</div>
-          <h3>5% Cashback</h3>
-          <p>Earn on groceries, gas, hot foods, and more. Credits land in your account the moment your cashier scans your QR code.</p>
+        <h1>
+          Every stop<br/>
+          <span class="red-gradient">earns you more</span>
+        </h1>
+
+        <p>
+          Earn 5% cashback on every purchase at Lucky Stop. Redeem credits for free products — gas, snacks, drinks — right at the register.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="https://play.google.com/store/apps/details?id=com.luckystop.app" target="_blank" class="cta-play">
+            <span class="cta-play-icon">▶</span>
+            <div>
+              <div style="font-size:10px;font-weight:500;opacity:0.7;margin-bottom:1px">GET IT ON</div>
+              <div>Google Play</div>
+            </div>
+          </a>
+          <div class="cta-ios">
+            <div>
+              <div style="font-size:10px;font-weight:500;opacity:0.6;margin-bottom:1px">COMING SOON</div>
+              <div>App Store</div>
+            </div>
+          </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔥</div>
-          <h3>Hot Food Orders</h3>
-          <p>Browse the hot food menu, place your order through the app, and get a notification when it's ready at the counter.</p>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num"><span class="r">5%</span></div>
+            <div class="hero-stat-lbl">Cashback every purchase</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">12+</div>
+            <div class="hero-stat-lbl">Store locations</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num"><span class="r">Free</span></div>
+            <div class="hero-stat-lbl">No cost to customers</div>
+          </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">⭐</div>
-          <h3>Loyalty Tiers</h3>
-          <p>Climb from Bronze to Platinum. Higher tiers unlock better cashback rates and exclusive benefits.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🎁</div>
-          <h3>Free Products</h3>
-          <p>Redeem your credits for items from the in-store catalog — drinks, snacks, and more. No cash needed.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">📱</div>
-          <h3>Your QR Code</h3>
-          <p>One QR code in the app. Show it at the register on any purchase. That's it — no card, no key fob.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🏆</div>
-          <h3>Leaderboard</h3>
-          <p>See where you rank among Lucky Stop regulars. Top shoppers get bonus credits and recognition.</p>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone-glow"></div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-header">
+              <div class="phone-header-lbl">Your balance</div>
+              <div class="phone-header-val">$12.40</div>
+              <div class="phone-header-sub">credits available</div>
+            </div>
+
+            <div class="phone-qr-zone">
+              <div style="text-align:center">
+                <div style="font-size:8px;color:var(--muted);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase">Scan at register</div>
+                <div style="width:80px;height:80px;border:1.5px solid rgba(255,255,255,0.15);border-radius:8px;margin:0 auto;display:flex;align-items:center;justify-content:center">
+                  <div style="font-size:36px">◼</div>
+                </div>
+                <div style="font-size:7px;color:var(--muted);margin-top:8px;letter-spacing:2px">LS-0047-3821</div>
+              </div>
+            </div>
+
+            <div class="phone-menu">
+              <div class="phone-row">
+                <div class="phone-row-icon">⛽</div>
+                <div class="phone-row-text">
+                  <div class="t">Gas &amp; Diesel</div>
+                  <div class="s">Pump 4 · Today 10:22am</div>
+                </div>
+                <div class="phone-row-badge">+$1.20</div>
+              </div>
+              <div class="phone-row">
+                <div class="phone-row-icon">🧃</div>
+                <div class="phone-row-text">
+                  <div class="t">Groceries</div>
+                  <div class="s">Yesterday · 3 items</div>
+                </div>
+                <div class="phone-row-badge">+$0.65</div>
+              </div>
+              <div class="phone-row">
+                <div class="phone-row-icon">🍕</div>
+                <div class="phone-row-text">
+                  <div class="t">Hot Foods</div>
+                  <div class="s">Jun 8 · Pizza slice</div>
+                </div>
+                <div class="phone-row-badge">+$0.18</div>
+              </div>
+            </div>
+
+            <div class="phone-bottom-bar">
+              <div class="tab-icon active">🏠</div>
+              <div class="tab-icon">🔥</div>
+              <div class="tab-icon">🎁</div>
+              <div class="tab-icon">👤</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- HOW IT WORKS -->
-  <div id="how">
-    <div class="section section-center">
-      <div class="section-label">How it works</div>
-      <h2 class="section-title">Start earning in minutes</h2>
-      <p class="section-sub" style="margin-bottom:48px">Download the app, register with your phone number, and you're ready to earn on your very next purchase.</p>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <h4>Download the app</h4>
-          <p>Free on Google Play. Register with your phone number — no password needed.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <h4>Shop at Lucky Stop</h4>
-          <p>Buy anything that qualifies — groceries, gas, hot food, frozen foods, and more.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <h4>Scan your QR code</h4>
-          <p>Show the cashier your QR code from the app. They scan it and enter your total.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">4</div>
-          <h4>Earn and redeem</h4>
-          <p>Credits appear instantly. Redeem them for free products on any future visit.</p>
-        </div>
-      </div>
+  <div class="strip">
+    <div class="strip-item">
+      <div class="strip-num r">5%</div>
+      <div class="strip-lbl">Cashback rate</div>
+    </div>
+    <div class="strip-item">
+      <div class="strip-num">12+</div>
+      <div class="strip-lbl">Store locations</div>
+    </div>
+    <div class="strip-item">
+      <div class="strip-num">7</div>
+      <div class="strip-lbl">Product categories</div>
+    </div>
+    <div class="strip-item">
+      <div class="strip-num r">Free</div>
+      <div class="strip-lbl">Always free for customers</div>
     </div>
   </div>
 
-  <!-- TIERS -->
-  <div>
-    <div class="section section-center">
-      <div class="section-label">Loyalty Tiers</div>
-      <h2 class="section-title">The more you shop, the more you earn</h2>
-      <p class="section-sub">Your tier is based on your total spend. Better tiers mean better cashback rates — automatically applied on every purchase.</p>
-      <div class="tiers-grid">
-        <div class="tier-card">
-          <div class="tier-icon">🥉</div>
-          <div class="tier-name">Bronze</div>
-          <div class="tier-rate">5%<span> back</span></div>
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>Features</div>
+    <h2 class="section-title" data-reveal>Built for the way you shop</h2>
+    <p class="section-sub" data-reveal>No punch cards, no memberships. Just scan, earn, and redeem — all from your phone.</p>
+
+    <div class="bento">
+      <div class="f-card b8" data-reveal style="min-height:200px">
+        <span class="f-card-icon">📲</span>
+        <h3>Scan &amp; earn instantly</h3>
+        <p>Show your QR code at checkout. The cashier scans it, enters your purchase, and your credits appear immediately — no waiting, no approval required.</p>
+      </div>
+
+      <div class="f-card b4" data-reveal style="display:flex;flex-direction:column;justify-content:space-between;gap:20px;min-height:200px">
+        <div>
+          <div class="highlight-num">5%</div>
+          <div class="highlight-sub">back on every purchase, every time</div>
         </div>
-        <div class="tier-card">
-          <div class="tier-icon">🥈</div>
-          <div class="tier-name">Silver</div>
-          <div class="tier-rate">6%<span> back</span></div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-icon">🥇</div>
-          <div class="tier-name">Gold</div>
-          <div class="tier-rate">7%<span> back</span></div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-icon">💎</div>
-          <div class="tier-name">Diamond</div>
-          <div class="tier-rate">8%<span> back</span></div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-icon">👑</div>
-          <div class="tier-name">Platinum</div>
-          <div class="tier-rate">9%<span> back</span></div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="highlight-num" style="font-size:32px">$0</div>
+          <div class="highlight-sub">cost to join — always free</div>
         </div>
       </div>
+
+      <div class="f-card b4" data-reveal>
+        <span class="f-card-icon">🎁</span>
+        <h3>Redeem for real products</h3>
+        <p>Credits go toward free gas, snacks, drinks, and more at any participating Lucky Stop location.</p>
+      </div>
+
+      <div class="f-card b4" data-reveal>
+        <span class="f-card-icon">🔔</span>
+        <h3>Offer alerts</h3>
+        <p>Push notifications for bonus cashback events, new hot food items, and deals specific to your store.</p>
+      </div>
+
+      <div class="f-card b4" data-reveal>
+        <span class="f-card-icon">📜</span>
+        <h3>Full transaction history</h3>
+        <p>Every credit earned and redeemed is logged. See exactly where your points came from and how they were used.</p>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- STORE OWNERS -->
-  <div id="stores">
-    <h2>Are you a Lucky Stop store owner or manager?</h2>
-    <p>Sign in to the management portal to track transactions, manage offers, view analytics, and run your store operations.</p>
-    <a href="https://admin.luckystop.cliffindus.com" class="btn-store">
-      Go to Admin Portal →
-    </a>
-  </div>
+  <hr class="section-divider"/>
+  <section id="how-it-works" class="section">
+    <div class="eyebrow" data-reveal>Process</div>
+    <h2 class="section-title" data-reveal>How it works</h2>
+    <p class="section-sub" data-reveal>Four simple steps from download to free products.</p>
 
-  <!-- FOOTER -->
+    <div class="steps" data-reveal>
+      <div class="step">
+        <div class="step-num">Step 01</div>
+        <span class="step-icon">📥</span>
+        <h4>Download the app</h4>
+        <p>Free on Google Play. App Store coming soon.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">Step 02</div>
+        <span class="step-icon">📱</span>
+        <h4>Create your account</h4>
+        <p>Sign up with your phone number — verified instantly via one-time code.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">Step 03</div>
+        <span class="step-icon">⛽</span>
+        <h4>Shop at Lucky Stop</h4>
+        <p>Show your QR code at checkout. Cashier enters the amount and you earn credits.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">Step 04</div>
+        <span class="step-icon">🎉</span>
+        <h4>Redeem your credits</h4>
+        <p>Tell the cashier you want to redeem. They apply your credits right at the register.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section id="tiers" class="section">
+    <div class="eyebrow" data-reveal>Rewards Tiers</div>
+    <h2 class="section-title" data-reveal>Spend more, earn more</h2>
+    <p class="section-sub" data-reveal>Your tier level unlocks bonus cashback and exclusive perks. Tiers are based on your last 12 months of spending.</p>
+
+    <div class="tiers" data-reveal>
+      <div class="tier-card t-bronze">
+        <div class="tier-badge">🥉</div>
+        <div class="tier-name">Bronze</div>
+        <div class="tier-req">Starting tier · All members begin here</div>
+        <div class="tier-bar b-bronze"></div>
+      </div>
+      <div class="tier-card t-silver">
+        <div class="tier-badge">🥈</div>
+        <div class="tier-name">Silver</div>
+        <div class="tier-req">$250+ spending</div>
+        <div class="tier-bar b-silver"></div>
+      </div>
+      <div class="tier-card t-gold">
+        <div class="tier-badge">🥇</div>
+        <div class="tier-name">Gold</div>
+        <div class="tier-req">$500+ spending + bonus events</div>
+        <div class="tier-bar b-gold"></div>
+      </div>
+      <div class="tier-card t-plat">
+        <div class="tier-badge">💎</div>
+        <div class="tier-name">Platinum</div>
+        <div class="tier-req">$1,000+ · Priority offers</div>
+        <div class="tier-bar b-plat"></div>
+      </div>
+      <div class="tier-card t-diamond">
+        <div class="tier-badge">👑</div>
+        <div class="tier-name">Diamond</div>
+        <div class="tier-req">$2,500+ · Top-tier perks</div>
+        <div class="tier-bar b-diamond"></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="store-cta" data-reveal>
+      <div class="store-cta-text">
+        <h2>Are you a Lucky Stop store owner?</h2>
+        <p>Manage your rewards program, push offers to customers, track sales, and run your team — all from the web admin portal. Contact us to get your store set up.</p>
+      </div>
+      <a href="mailto:sksajidali1279@gmail.com" class="store-cta-btn">Get your store set up →</a>
+    </div>
+  </section>
+
   <footer>
-    <p>© 2026 Lucky Stop Rewards. Powered by <a href="https://cliffindus.com" style="color:rgba(255,255,255,0.6)">Cliff Industries</a>.</p>
+    <p>© 2026 Lucky Stop Rewards · Built by <a href="https://cliffindus.com" style="color:var(--muted2);text-decoration:none">Cliff Industries</a></p>
     <div class="footer-links">
       <a href="/privacy">Privacy Policy</a>
-      <a href="https://cliffindus.com">Cliff Industries</a>
-      <a href="mailto:sksajidali1279@gmail.com">Contact</a>
+      <a href="https://admin.luckystop.cliffindus.com" target="_blank">Store Admin</a>
+      <a href="https://cliffindus.com" target="_blank">Cliff Industries</a>
     </div>
   </footer>
+
+  <script>
+    const reveals = document.querySelectorAll('[data-reveal]');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    document.querySelectorAll('.f-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--x', `${e.clientX - r.left}px`);
+        card.style.setProperty('--y', `${e.clientY - r.top}px`);
+      });
+    });
+  </script>
 
 </body>
 </html>
