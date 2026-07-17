@@ -178,6 +178,22 @@
     .footer-links { display: flex; gap: 20px; }
     .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color .15s; }
     .footer-links a:hover { color: var(--muted2); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero-text p { max-width: none; margin-left: auto; margin-right: auto; }
+      .hero-ctas { justify-content: center; }
+      .hero-tags { justify-content: center; }
+      .hero-visual-wrap { display: none; }
+      .categories { grid-template-columns: repeat(2,1fr); }
+      .bento { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      .store-cta { flex-direction: column; padding: 32px 24px; }
+      .contact-links { align-items: flex-start; }
+      footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+    }
   </style>
 </head>
 <body>
