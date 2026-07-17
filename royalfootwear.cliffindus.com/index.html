@@ -134,6 +134,23 @@
     [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
     [data-reveal].revealed { opacity: 1; transform: translateY(0); }
 
+    /* CATEGORIES */
+    .categories { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
+    .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px 16px; text-align: center; transition: transform .2s, border-color .2s; }
+    .cat-card:hover { transform: translateY(-4px); border-color: var(--border2); }
+    .cat-icon { font-size: 32px; margin-bottom: 12px; display: block; }
+    .cat-name { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+
+    /* FEATURES */
+    .bento { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+    .f-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; transition: border-color .2s, transform .2s, box-shadow .2s; position: relative; overflow: hidden; }
+    .f-card::after { content:''; position:absolute; inset:0; border-radius:inherit; background: radial-gradient(400px circle at var(--x,50%) var(--y,50%), rgba(200,133,58,0.06), transparent 60%); opacity:0; transition: opacity .3s; pointer-events:none; }
+    .f-card:hover { border-color: var(--border2); transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
+    .f-card:hover::after { opacity: 1; }
+    .f-card-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+    .f-card h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 8px; }
+    .f-card p { font-size: 14px; color: var(--muted2); line-height: 1.7; }
+
     /* FOOTER */
     footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
     footer p { font-size: 13px; color: var(--muted); }
@@ -212,6 +229,66 @@
           <span>👢</span>
           <span>🥿</span>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section id="categories" class="section">
+    <div class="eyebrow" data-reveal>What We Stock</div>
+    <h2 class="section-title" data-reveal>Every kind of footwear, one supplier</h2>
+    <p class="section-sub" data-reveal>From daily wear to specialized needs, we carry across every category retailers ask for.</p>
+
+    <div class="categories" data-reveal>
+      <div class="cat-card">
+        <span class="cat-icon">👞</span>
+        <div class="cat-name">General</div>
+      </div>
+      <div class="cat-card">
+        <span class="cat-icon">👟</span>
+        <div class="cat-name">Sports</div>
+      </div>
+      <div class="cat-card">
+        <span class="cat-icon">🎒</span>
+        <div class="cat-name">School</div>
+      </div>
+      <div class="cat-card">
+        <span class="cat-icon">🩺</span>
+        <div class="cat-name">Health</div>
+      </div>
+      <div class="cat-card">
+        <span class="cat-icon">🩴</span>
+        <div class="cat-name">Indoor</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section id="why-partner" class="section">
+    <div class="eyebrow" data-reveal>Why Partner With Us</div>
+    <h2 class="section-title" data-reveal>Built for how retailers actually order</h2>
+    <p class="section-sub" data-reveal>Real wholesale infrastructure behind every order, not just a price list.</p>
+
+    <div class="bento" data-reveal>
+      <div class="f-card">
+        <span class="f-card-icon">🧾</span>
+        <h3>GST-compliant invoicing</h3>
+        <p>Every order comes with a proper GST tax invoice, CGST/SGST or IGST calculated correctly for your state, ready for your books.</p>
+      </div>
+      <div class="f-card">
+        <span class="f-card-icon">📦</span>
+        <h3>Case-based bulk ordering</h3>
+        <p>Order by the case, not one pair at a time. Built around how retailers actually buy, in bulk, by style and size run.</p>
+      </div>
+      <div class="f-card">
+        <span class="f-card-icon">💰</span>
+        <h3>Tiered wholesale pricing</h3>
+        <p>Pricing scales with your order volume, so larger retailers get better rates automatically.</p>
+      </div>
+      <div class="f-card">
+        <span class="f-card-icon">🗂️</span>
+        <h3>Simple catalog structure</h3>
+        <p>Every product organized by style, color, and size, so finding and ordering exactly what you need takes seconds.</p>
       </div>
     </div>
   </section>
