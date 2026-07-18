@@ -290,8 +290,8 @@
 
     .wc-featured { grid-column: span 7; min-height: 320px; }
     .wc-side     { grid-column: span 5; min-height: 320px; }
-    .wc-auto     { grid-column: span 7; min-height: 260px; }
-    .wc-early    { grid-column: span 5; min-height: 260px; }
+    .wc-half     { grid-column: span 6; min-height: 260px; }
+    .wc-early    { grid-column: span 12; min-height: 200px; }
 
     /* Status pill */
     .wc-status {
@@ -490,7 +490,7 @@
     /* ── RESPONSIVE ─────────────────────────────────────── */
     @media (max-width: 860px) {
       nav { padding: 0 18px; }
-      .wc-featured, .wc-side, .wc-auto, .wc-early { grid-column: span 12; }
+      .wc-featured, .wc-side, .wc-half, .wc-early { grid-column: span 12; }
       .cap-grid { grid-template-columns: repeat(2, 1fr); }
       .about-grid { grid-template-columns: 1fr; gap: 32px; }
       .contact-block { padding: 36px 24px; }
@@ -537,7 +537,7 @@
 
       <div class="hero-badge">
         <div class="badge-ping"></div>
-        <span>3 products in production &amp; development</span>
+        <span>4 products in production &amp; development</span>
         <span class="badge-arrow">↗</span>
       </div>
 
@@ -569,6 +569,9 @@
     <div class="ticker-track">
       <div class="ticker-item">React Native</div>
       <div class="ticker-item">Expo EAS</div>
+      <div class="ticker-item">React</div>
+      <div class="ticker-item">Vite</div>
+      <div class="ticker-item">TypeScript</div>
       <div class="ticker-item">Node.js</div>
       <div class="ticker-item">PostgreSQL</div>
       <div class="ticker-item">Prisma ORM</div>
@@ -584,6 +587,9 @@
       <!-- dup for seamless loop -->
       <div class="ticker-item">React Native</div>
       <div class="ticker-item">Expo EAS</div>
+      <div class="ticker-item">React</div>
+      <div class="ticker-item">Vite</div>
+      <div class="ticker-item">TypeScript</div>
       <div class="ticker-item">Node.js</div>
       <div class="ticker-item">PostgreSQL</div>
       <div class="ticker-item">Prisma ORM</div>
@@ -612,7 +618,7 @@
         <!-- Lucky Stop · primary -->
         <div class="work-card wc-featured" data-r>
           <div class="wc-status s-live">
-            <div class="wc-status-dot"></div> Live on Google Play
+            <div class="wc-status-dot"></div> Live · iOS &amp; Android
           </div>
           <span class="wc-icon">⛽</span>
           <div class="wc-title">Lucky Stop Rewards</div>
@@ -657,7 +663,7 @@
         </div>
 
         <!-- BMS Auto -->
-        <div class="work-card wc-auto" data-r>
+        <div class="work-card wc-half" data-r>
           <div class="wc-status s-live">
             <div class="wc-status-dot"></div> Live · Testing Phase
           </div>
@@ -678,8 +684,30 @@
           </a>
         </div>
 
+        <!-- Royal Footwear -->
+        <div class="work-card wc-half" data-r data-d="1">
+          <div class="wc-status s-live">
+            <div class="wc-status-dot"></div> Live · B2B Platform
+          </div>
+          <span class="wc-icon">👞</span>
+          <div class="wc-title">Royal Footwear</div>
+          <p class="wc-desc">
+            Wholesale and retail footwear supply platform for a regional distributor. Full admin dashboard covering catalog management, tiered wholesale pricing, GST-compliant invoicing, retailer credit ledgers, restock workflows, and sales analytics.
+          </p>
+          <div class="wc-tags">
+            <span class="tag">React</span>
+            <span class="tag">Vite</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">Node.js</span>
+            <span class="tag">Prisma</span>
+          </div>
+          <a href="https://royalfootwear.cliffindus.com" target="_blank" class="wc-link">
+            View product <span class="wc-link-arrow">→</span>
+          </a>
+        </div>
+
         <!-- PROJECTCLIFFAPP -->
-        <div class="work-card wc-early" data-r data-d="1">
+        <div class="work-card wc-early" data-r data-d="2">
           <div class="wc-status s-early">
             <div class="wc-status-dot"></div> Early Stage
           </div>
@@ -773,7 +801,7 @@
         <div class="about-aside" data-r data-d="3">
           <div class="aside-card">
             <div class="aside-label">Products</div>
-            <div class="aside-val">3</div>
+            <div class="aside-val">4</div>
             <div class="aside-sub">In production or active development</div>
           </div>
           <div class="aside-card">
@@ -784,7 +812,7 @@
           <div class="aside-card">
             <div class="aside-label">Platforms shipped</div>
             <div class="aside-val">iOS · Android · Web</div>
-            <div class="aside-sub">Google Play · App Store (coming) · Vercel</div>
+            <div class="aside-sub">Google Play · App Store · Vercel</div>
           </div>
           <div class="aside-card">
             <div class="aside-label">Based in</div>

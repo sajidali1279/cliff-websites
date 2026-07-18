@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lucky Stop Rewards · Earn cashback at every visit</title>
-  <meta name="description" content="Lucky Stop Rewards gives you 5% cashback on every purchase at Lucky Stop convenience stores. Free on Google Play, iOS coming soon."/>
+  <meta name="description" content="Lucky Stop Rewards gives you 5% cashback on every purchase at Lucky Stop convenience stores. Free on Google Play and the App Store."/>
   <link rel="canonical" href="https://luckystop.cliffindus.com/"/>
   <meta name="theme-color" content="#0F1C2E"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230F1C2E'/%3E%3Ccircle cx='50' cy='50' r='24' fill='%23E63946'/%3E%3C/svg%3E"/>
@@ -12,14 +12,14 @@
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="Lucky Stop"/>
   <meta property="og:title" content="Lucky Stop · 5% back on every stop"/>
-  <meta property="og:description" content="Earn 5% cashback on gas, groceries, and coffee. Redeem credits for real products in-store. Now on Google Play."/>
+  <meta property="og:description" content="Earn 5% cashback on gas, groceries, and coffee. Redeem credits for real products in-store. Now on Google Play and the App Store."/>
   <meta property="og:url" content="https://luckystop.cliffindus.com/"/>
   <meta property="og:image" content="https://luckystop.cliffindus.com/og.png"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="Lucky Stop · 5% back on every stop"/>
-  <meta name="twitter:description" content="Earn 5% cashback, redeem for real products in-store. Now on Google Play."/>
+  <meta name="twitter:description" content="Earn 5% cashback, redeem for real products in-store. Now on Google Play and the App Store."/>
   <meta name="twitter:image" content="https://luckystop.cliffindus.com/og.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -110,7 +110,8 @@
     .cta-play { display: inline-flex; align-items: center; gap: 10px; background: var(--text); color: var(--navy); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 12px; text-decoration: none; transition: transform .15s, background .15s; letter-spacing: -0.2px; }
     .cta-play:hover { background: #E2E8F0; transform: translateY(-2px); }
     .cta-play-icon { font-size: 20px; }
-    .cta-ios { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border2); color: var(--muted2); font-size: 14px; font-weight: 600; padding: 12px 22px; border-radius: 12px; text-decoration: none; cursor: default; opacity: 0.5; }
+    .cta-ios { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border2); color: var(--text); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s; }
+    .cta-ios:hover { background: rgba(255,255,255,0.09); transform: translateY(-2px); }
 
     .hero-stats { display: flex; gap: 32px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
     .hero-stat-num { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
@@ -264,7 +265,7 @@
       <div class="hero-text">
         <div class="hero-badge">
           <div class="badge-dot"></div>
-          <span>Now available on Google Play</span>
+          <span>Now available on Google Play &amp; the App Store</span>
         </div>
 
         <h1>
@@ -284,12 +285,13 @@
               <div>Google Play</div>
             </div>
           </a>
-          <div class="cta-ios">
+          <a href="https://apps.apple.com/app/id6787270736" target="_blank" class="cta-ios">
+            <span class="cta-play-icon"></span>
             <div>
-              <div style="font-size:10px;font-weight:500;opacity:0.6;margin-bottom:1px">COMING SOON</div>
+              <div style="font-size:10px;font-weight:500;opacity:0.7;margin-bottom:1px">DOWNLOAD ON THE</div>
               <div>App Store</div>
             </div>
-          </div>
+          </a>
         </div>
 
         <div class="hero-stats">
@@ -414,22 +416,28 @@
         </div>
       </div>
 
-      <div class="f-card b4" data-reveal>
+      <div class="f-card b6" data-reveal>
         <span class="f-card-icon">🎁</span>
         <h3>Redeem for real products</h3>
         <p>Credits go toward free gas, snacks, drinks, and more at any participating Lucky Stop location.</p>
       </div>
 
-      <div class="f-card b4" data-reveal>
+      <div class="f-card b6" data-reveal>
         <span class="f-card-icon">🔔</span>
         <h3>Offer alerts</h3>
         <p>Push notifications for bonus cashback events, new hot food items, and deals specific to your store.</p>
       </div>
 
-      <div class="f-card b4" data-reveal>
+      <div class="f-card b6" data-reveal>
         <span class="f-card-icon">📜</span>
         <h3>Full transaction history</h3>
         <p>Every credit earned and redeemed is logged. See exactly where your points came from and how they were used.</p>
+      </div>
+
+      <div class="f-card b6" data-reveal>
+        <span class="f-card-icon">🛟</span>
+        <h3>Something missing? We'll fix it</h3>
+        <p>Spot a transaction that looks wrong? Dispute it directly from your history, receipt photo included, and a store admin resolves it.</p>
       </div>
     </div>
   </section>
@@ -445,7 +453,7 @@
         <div class="step-num">Step 01</div>
         <span class="step-icon">📥</span>
         <h4>Download the app</h4>
-        <p>Free on Google Play. App Store coming soon.</p>
+        <p>Free on Google Play and the App Store.</p>
       </div>
       <div class="step">
         <div class="step-num">Step 02</div>
