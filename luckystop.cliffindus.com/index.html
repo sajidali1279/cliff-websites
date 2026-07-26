@@ -218,6 +218,7 @@
       box-shadow: 0 20px 50px rgba(0,0,0,0.45); z-index: 30;
     }
     .biz-card-icon { width: 28px; height: 28px; color: var(--red-lt); margin-bottom: 12px; display: block; transition: color .25s; }
+    .biz-card:hover .biz-card-icon, .biz-card.is-open .biz-card-icon { color: #FF8A92; }
     .biz-card-title { font-size: 14.5px; font-weight: 700; color: var(--text); margin-bottom: 5px; letter-spacing: -0.2px; }
     .biz-card-tag { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
 
@@ -295,6 +296,10 @@
       .biz-grid { grid-template-columns: repeat(2,1fr); }
       .biz-proof { gap: 24px; }
       footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+    }
+
+    @media (max-width: 560px) {
+      .biz-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
