@@ -338,29 +338,105 @@
 
     .wc-side-inner { display: flex; flex-direction: column; height: 100%; }
 
-    /* ── CAPABILITIES ──────────────────────────────────── */
-    .cap-grid {
+    /* ── ADMIN SHOWCASE ────────────────────────────────── */
+    .admin-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--b1);
+      gap: 10px;
+      position: relative;
+    }
+    .admin-card {
+      background: var(--z900);
       border: 1px solid var(--b1);
       border-radius: 16px;
-      overflow: hidden;
+      padding: 24px 22px;
+      position: relative;
+      cursor: default;
+      transition: border-color .25s, box-shadow .25s, transform .25s, opacity .25s;
+      z-index: 1;
     }
-    .cap-cell {
-      background: var(--z950);
-      padding: 28px 24px;
-      transition: background .2s;
+    .admin-grid:has(.admin-card:hover) .admin-card:not(:hover) { opacity: .82; }
+    .admin-card:hover, .admin-card.is-open {
+      border-color: var(--b3);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+      z-index: 30;
     }
-    .cap-cell:hover { background: rgba(255,255,255,0.02); }
-    .cap-num {
-      font-size: 11px; font-weight: 700; letter-spacing: 2px;
-      color: var(--z700); text-transform: uppercase; margin-bottom: 14px;
+    .admin-card-icon { width: 30px; height: 30px; color: var(--z300); margin-bottom: 14px; display: block; transition: color .25s; }
+    .admin-card:hover .admin-card-icon, .admin-card.is-open .admin-card-icon { color: var(--z50); }
+    .admin-card-title { font-size: 15px; font-weight: 700; color: var(--z100); margin-bottom: 6px; letter-spacing: -0.2px; }
+    .admin-card-tag { font-size: 13px; color: var(--z600); line-height: 1.6; }
+
+    .admin-detail {
+      position: absolute;
+      top: calc(100% - 8px); left: 0; right: 0;
+      background: var(--z800);
+      border: 1px solid var(--b3);
+      border-radius: 14px;
+      padding: 16px 18px 18px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+      opacity: 0;
+      transform: translateY(-6px);
+      pointer-events: none;
+      transition: opacity .28s cubic-bezier(.16,1,.3,1), transform .28s cubic-bezier(.16,1,.3,1);
+      z-index: 40;
     }
-    .cap-icon { font-size: 22px; margin-bottom: 12px; display: block; }
-    .cap-cell h4 { font-size: 14px; font-weight: 700; color: var(--z200); margin-bottom: 6px; }
-    .cap-cell p { font-size: 13px; color: var(--z600); line-height: 1.6; }
+    .admin-card:hover .admin-detail, .admin-card.is-open .admin-detail {
+      opacity: 1; transform: translateY(0); pointer-events: auto;
+    }
+    /* Bottom row (cards 4-6 of 6): flip the panel to open upward so it doesn't
+       spill into the next section down. */
+    .admin-grid > .admin-card:nth-child(n+4) .admin-detail {
+      top: auto; bottom: calc(100% - 8px);
+      transform: translateY(6px);
+    }
+    .admin-grid > .admin-card:nth-child(n+4):hover .admin-detail,
+    .admin-grid > .admin-card:nth-child(n+4).is-open .admin-detail {
+      transform: translateY(0);
+    }
+    .admin-detail ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .admin-detail li { font-size: 12.5px; color: var(--z300); line-height: 1.55; padding-left: 14px; position: relative; }
+    .admin-detail li::before {
+      content: ''; position: absolute; left: 0; top: 7px;
+      width: 4px; height: 4px; border-radius: 50%; background: var(--z600);
+    }
+
+    /* Icon: box (Inventory) */
+    .icon-box .flap-l, .icon-box .flap-r { transform-box: fill-box; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+    .icon-box .flap-l { transform-origin: 0% 100%; }
+    .icon-box .flap-r { transform-origin: 100% 100%; }
+    .admin-card:hover .icon-box .flap-l, .admin-card.is-open .icon-box .flap-l { transform: rotate(-22deg); }
+    .admin-card:hover .icon-box .flap-r, .admin-card.is-open .icon-box .flap-r { transform: rotate(22deg); }
+
+    /* Icon: badge (Employee & Access) */
+    .icon-badge .check { stroke-dasharray: 22; stroke-dashoffset: 22; transition: stroke-dashoffset .4s ease .05s; }
+    .admin-card:hover .icon-badge .check, .admin-card.is-open .icon-badge .check { stroke-dashoffset: 0; }
+
+    /* Icon: trophy (Rates & Cashback) */
+    .icon-trophy .cup { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .4s cubic-bezier(.34,1.56,.64,1); }
+    .admin-card:hover .icon-trophy .cup, .admin-card.is-open .icon-trophy .cup { transform: rotate(-5deg); }
+    .icon-trophy .shine { opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(.3); transition: opacity .3s ease .12s, transform .3s ease .12s; }
+    .admin-card:hover .icon-trophy .shine, .admin-card.is-open .icon-trophy .shine { opacity: 1; transform: scale(1); }
+
+    /* Icon: bar chart (Analytics & Reporting) */
+    .icon-chart .bar { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .3s ease; }
+    .icon-chart .bar-1 { transition-delay: 0s; }
+    .icon-chart .bar-2 { transition-delay: .06s; }
+    .icon-chart .bar-3 { transition-delay: .12s; }
+    .admin-card:hover .icon-chart .bar, .admin-card.is-open .icon-chart .bar { transform: scaleY(1.18); }
+
+    /* Icon: shield (Fraud Protection & Audit Trail) */
+    .icon-shield .outline { transform-box: fill-box; transform-origin: 50% 50%; transition: transform .3s ease; }
+    .admin-card:hover .icon-shield .outline, .admin-card.is-open .icon-shield .outline { transform: scale(1.06); }
+    .icon-shield .check { stroke-dasharray: 16; stroke-dashoffset: 16; transition: stroke-dashoffset .35s ease .1s; }
+    .admin-card:hover .icon-shield .check, .admin-card.is-open .icon-shield .check { stroke-dashoffset: 0; }
+
+    /* Icon: bell (Notices & Alerts) */
+    .icon-bell .body { transform-box: fill-box; transform-origin: 50% 0%; }
+    .admin-card:hover .icon-bell .body, .admin-card.is-open .icon-bell .body { animation: bellRing .4s ease; }
+    @keyframes bellRing { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-12deg)} 50%{transform:rotate(10deg)} 75%{transform:rotate(-6deg)} }
+    .icon-bell .ping { opacity: 0; transition: opacity .2s ease .1s; }
+    .admin-card:hover .icon-bell .ping, .admin-card.is-open .icon-bell .ping { opacity: 1; }
 
     /* ── ABOUT ─────────────────────────────────────────── */
     .about-grid {
@@ -491,13 +567,13 @@
     @media (max-width: 860px) {
       nav { padding: 0 18px; }
       .wc-featured, .wc-side, .wc-half, .wc-early { grid-column: span 12; }
-      .cap-grid { grid-template-columns: repeat(2, 1fr); }
+      .admin-grid { grid-template-columns: repeat(2, 1fr); }
       .about-grid { grid-template-columns: 1fr; gap: 32px; }
       .contact-block { padding: 36px 24px; }
       footer { padding: 22px 18px; }
     }
     @media (max-width: 560px) {
-      .cap-grid { grid-template-columns: 1fr; }
+      .admin-grid { grid-template-columns: 1fr; }
       .hero-badge { display: none; }
     }
   </style>
@@ -727,51 +803,123 @@
     </section>
   </div>
 
-  <!-- ── CAPABILITIES ───────────────────────────────── -->
+  <!-- ── ADMIN SHOWCASE ─────────────────────────────── -->
   <hr class="divider"/>
   <div class="max-w">
     <section id="capabilities" class="section">
-      <div class="eyebrow" data-r>Capabilities</div>
-      <h2 class="s-title" data-r data-d="1">What we build</h2>
-      <p class="s-sub" data-r data-d="2">Every layer of the stack handled. No coordinating between teams. One builder, full ownership.</p>
+      <div class="eyebrow" data-r>Admin Platform</div>
+      <h2 class="s-title" data-r data-d="1">What the people running the store actually see</h2>
+      <p class="s-sub" data-r data-d="2">Lucky Stop's admin isn't a settings page bolted onto an app. It's the operational core for 12+ stores. Hover to look inside.</p>
 
-      <div class="cap-grid" data-r>
-        <div class="cap-cell">
-          <div class="cap-num">01</div>
-          <span class="cap-icon">📱</span>
-          <h4>Mobile Apps</h4>
-          <p>iOS and Android from one codebase. React Native + Expo EAS builds and submissions.</p>
+      <div class="admin-grid" data-r>
+
+        <div class="admin-card">
+          <svg class="admin-card-icon icon-box" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="11" width="16" height="9" rx="1.2" stroke="currentColor" stroke-width="1.6"/>
+            <path class="flap-l" d="M4 11L11.5 11L8 5.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path class="flap-r" d="M20 11L12.5 11L16 5.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          <div class="admin-card-title">Inventory Management</div>
+          <p class="admin-card-tag">Every SKU tracked from request to restock.</p>
+          <div class="admin-detail">
+            <ul>
+              <li>Scanned-product catalog with a manual "Add Product" fallback for anything without a barcode</li>
+              <li>Per-store Order Lists with a Quick Add panel for fast reordering</li>
+              <li>Auto-reopens on close, plus a standing per-store instructions field so nothing falls through the cracks</li>
+            </ul>
+          </div>
         </div>
-        <div class="cap-cell">
-          <div class="cap-num">02</div>
-          <span class="cap-icon">🖥️</span>
-          <h4>Web Dashboards</h4>
-          <p>Admin portals, management tools, and data dashboards built for every browser.</p>
+
+        <div class="admin-card">
+          <svg class="admin-card-icon icon-badge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.5L19 6V12C19 16.5 15.9 19.8 12 21C8.1 19.8 5 16.5 5 12V6L12 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path class="check" d="M8.3 12L10.8 14.5L15.7 9.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <div class="admin-card-title">Employee &amp; Access Management</div>
+          <p class="admin-card-tag">Role-based access, enforced at the API. Not just hidden UI.</p>
+          <div class="admin-detail">
+            <ul>
+              <li>5-level role hierarchy: DevAdmin, SuperAdmin, Store Manager, Employee, Customer</li>
+              <li>Every permission checked server-side, not just hidden in the interface</li>
+              <li>Weekly shift scheduling with employee-submitted shift-change requests</li>
+            </ul>
+          </div>
         </div>
-        <div class="cap-cell">
-          <div class="cap-num">03</div>
-          <span class="cap-icon">⚙️</span>
-          <h4>Backend Systems</h4>
-          <p>REST APIs, databases, authentication, and cloud infrastructure that scales.</p>
+
+        <div class="admin-card">
+          <svg class="admin-card-icon icon-trophy" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="cup" d="M6.5 4h11v6a5.5 5.5 0 0 1-11 0V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M6.5 5H3.5v2a3.8 3.8 0 0 0 3 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M17.5 5h3v2a3.8 3.8 0 0 1-3 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M12 15.5v3" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M8.5 21h7M9.3 19h5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <circle class="shine" cx="9.5" cy="7" r="1" fill="currentColor"/>
+          </svg>
+          <div class="admin-card-title">Rates &amp; Cashback Engine</div>
+          <p class="admin-card-tag">5 loyalty tiers, per-category bonuses, live-configurable.</p>
+          <div class="admin-detail">
+            <ul>
+              <li>Bronze through Diamond tiers, each with its own base cashback rate</li>
+              <li>Category bonus rates stack on top: groceries, hot foods, tobacco, and more</li>
+              <li>Optional flat cents-per-gallon mode for gas and diesel instead of a percentage</li>
+            </ul>
+          </div>
         </div>
-        <div class="cap-cell">
-          <div class="cap-num">04</div>
-          <span class="cap-icon">🔔</span>
-          <h4>Push Notifications</h4>
-          <p>Firebase Cloud Messaging real-time alerts for customers and staff across platforms.</p>
+
+        <div class="admin-card">
+          <svg class="admin-card-icon icon-chart" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 20V4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M4 20H20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <rect class="bar bar-1" x="7" y="14" width="3" height="6" rx="0.6" fill="currentColor"/>
+            <rect class="bar bar-2" x="12" y="10" width="3" height="10" rx="0.6" fill="currentColor"/>
+            <rect class="bar bar-3" x="17" y="7" width="3" height="13" rx="0.6" fill="currentColor"/>
+          </svg>
+          <div class="admin-card-title">Analytics &amp; Reporting</div>
+          <p class="admin-card-tag">Daily numbers, broken down by store.</p>
+          <div class="admin-detail">
+            <ul>
+              <li>Daily transaction and revenue charts, including platform-fee breakdown</li>
+              <li>Inventory Intelligence: most-ordered items, by category, by store</li>
+              <li>Auto-generated monthly invoices per store</li>
+            </ul>
+          </div>
         </div>
-        <div class="cap-cell">
-          <div class="cap-num">05</div>
-          <span class="cap-icon">🔐</span>
-          <h4>Auth &amp; Security</h4>
-          <p>Phone OTP, role-based access control, JWT, and secure API design at every layer.</p>
+
+        <div class="admin-card">
+          <svg class="admin-card-icon icon-shield" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="outline" d="M12 2.5L19.5 5.5V11C19.5 16 16.3 19.8 12 21.5C7.7 19.8 4.5 16 4.5 11V5.5L12 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path class="check" d="M8.3 11.8L10.8 14.3L15.7 9.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <div class="admin-card-title">Fraud Protection &amp; Audit Trail</div>
+          <p class="admin-card-tag">Every grant, edit, and override is logged.</p>
+          <div class="admin-detail">
+            <ul>
+              <li>Receipt photo mandatory before any points grant</li>
+              <li>Full activity log across point grants, offer edits, staff and schedule changes</li>
+              <li>Customer-initiated disputes resolved against the receipt on file</li>
+            </ul>
+          </div>
         </div>
-        <div class="cap-cell">
-          <div class="cap-num">06</div>
-          <span class="cap-icon">📊</span>
-          <h4>Analytics &amp; Reporting</h4>
-          <p>Store dashboards, transaction history, inventory reports, and operational insights.</p>
+
+        <div class="admin-card">
+          <svg class="admin-card-icon icon-bell" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g class="body">
+              <path d="M6 11C6 7.5 8.5 5 12 5C15.5 5 18 7.5 18 11V14.5L19.5 17H4.5L6 14.5V11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M9.5 19.5C10 20.5 11 21 12 21C13 21 14 20.5 14.5 19.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </g>
+            <circle class="ping" cx="18" cy="6" r="2.6" fill="#EF4444"/>
+          </svg>
+          <div class="admin-card-title">Notices &amp; Alerts</div>
+          <p class="admin-card-tag">One pinned message, seen by every store instantly.</p>
+          <div class="admin-detail">
+            <ul>
+              <li>Admin-authored notices pinned to every employee's chat</li>
+              <li>Push notifications (Firebase Cloud Messaging) across iOS, Android, and web</li>
+              <li>Built-in support chat between store staff and HQ</li>
+            </ul>
+          </div>
         </div>
+
       </div>
     </section>
   </div>
@@ -927,6 +1075,17 @@
         card.style.setProperty('--my', `${e.clientY - r.top}px`);
       });
     });
+
+    // Admin cards: tap-to-toggle on touch devices (no hover available)
+    if (window.matchMedia('(hover: none)').matches) {
+      document.querySelectorAll('.admin-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const wasOpen = card.classList.contains('is-open');
+          document.querySelectorAll('.admin-card.is-open').forEach(c => c.classList.remove('is-open'));
+          if (!wasOpen) card.classList.add('is-open');
+        });
+      });
+    }
   </script>
 
 </body>
