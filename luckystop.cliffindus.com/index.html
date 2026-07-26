@@ -204,11 +204,65 @@
     .b-plat    { background: #63B3ED; }
     .b-diamond { background: #A855F7; }
 
-    /* STORE CTA */
-    .store-cta { border-radius: 20px; overflow: hidden; position: relative; background: linear-gradient(135deg, #0F1C2E, #1A2E45); border: 1px solid var(--border); padding: 56px 48px; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
-    .store-cta::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--red), transparent); }
-    .store-cta-text h2 { font-size: clamp(24px,3vw,36px); font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
-    .store-cta-text p { font-size: 15px; color: var(--muted2); max-width: 400px; line-height: 1.7; }
+    /* BUSINESS PITCH */
+    .biz-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; position: relative; }
+    .biz-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 22px 20px; position: relative; cursor: default;
+      transition: border-color .25s, box-shadow .25s, transform .25s, opacity .25s;
+      z-index: 1;
+    }
+    .biz-grid:has(.biz-card:hover) .biz-card:not(:hover) { opacity: .82; }
+    .biz-card:hover, .biz-card.is-open {
+      border-color: var(--border2); transform: translateY(-3px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.45); z-index: 30;
+    }
+    .biz-card-icon { width: 28px; height: 28px; color: var(--red-lt); margin-bottom: 12px; display: block; transition: color .25s; }
+    .biz-card-title { font-size: 14.5px; font-weight: 700; color: var(--text); margin-bottom: 5px; letter-spacing: -0.2px; }
+    .biz-card-tag { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+
+    .biz-detail {
+      position: absolute; top: calc(100% - 8px); left: 0; right: 0;
+      background: var(--navy2); border: 1px solid var(--border2); border-radius: 14px;
+      padding: 14px 16px 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+      opacity: 0; transform: translateY(-6px); pointer-events: none;
+      transition: opacity .28s ease, transform .28s ease; z-index: 40;
+    }
+    .biz-card:hover .biz-detail, .biz-card.is-open .biz-detail { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .biz-detail ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .biz-detail li { font-size: 12px; color: var(--muted2); line-height: 1.5; padding-left: 13px; position: relative; }
+    .biz-detail li::before { content: ''; position: absolute; left: 0; top: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--red-lt); }
+
+    .biz-proof { display: flex; gap: 40px; margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+    .biz-proof-num { font-size: 24px; font-weight: 800; color: var(--red-lt); letter-spacing: -0.5px; }
+    .biz-proof-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .biz-cta-row { margin-top: 36px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .biz-cta-link { font-size: 13px; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border2); padding-bottom: 1px; transition: color .15s; }
+    .biz-cta-link:hover { color: var(--muted2); }
+
+    /* Icon: box (Inventory) */
+    .icon-box .flap-l, .icon-box .flap-r { transform-box: fill-box; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+    .icon-box .flap-l { transform-origin: 0% 100%; }
+    .icon-box .flap-r { transform-origin: 100% 100%; }
+    .biz-card:hover .icon-box .flap-l, .biz-card.is-open .icon-box .flap-l { transform: rotate(-22deg); }
+    .biz-card:hover .icon-box .flap-r, .biz-card.is-open .icon-box .flap-r { transform: rotate(22deg); }
+
+    /* Icon: badge (Team) */
+    .icon-badge .check { stroke-dasharray: 22; stroke-dashoffset: 22; transition: stroke-dashoffset .4s ease .05s; }
+    .biz-card:hover .icon-badge .check, .biz-card.is-open .icon-badge .check { stroke-dashoffset: 0; }
+
+    /* Icon: trophy (Loyalty rules) */
+    .icon-trophy .cup { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .4s cubic-bezier(.34,1.56,.64,1); }
+    .biz-card:hover .icon-trophy .cup, .biz-card.is-open .icon-trophy .cup { transform: rotate(-5deg); }
+    .icon-trophy .shine { opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(.3); transition: opacity .3s ease .12s, transform .3s ease .12s; }
+    .biz-card:hover .icon-trophy .shine, .biz-card.is-open .icon-trophy .shine { opacity: 1; transform: scale(1); }
+
+    /* Icon: shield (Fraud protection) */
+    .icon-shield .outline { transform-box: fill-box; transform-origin: 50% 50%; transition: transform .3s ease; }
+    .biz-card:hover .icon-shield .outline, .biz-card.is-open .icon-shield .outline { transform: scale(1.06); }
+    .icon-shield .check { stroke-dasharray: 16; stroke-dashoffset: 16; transition: stroke-dashoffset .35s ease .1s; }
+    .biz-card:hover .icon-shield .check, .biz-card.is-open .icon-shield .check { stroke-dashoffset: 0; }
     .store-cta-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; background: var(--red); color: #fff; font-size: 14px; font-weight: 700; padding: 12px 24px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s; white-space: nowrap; }
     .store-cta-btn:hover { background: #D62F3C; transform: translateY(-2px); }
 
@@ -238,7 +292,8 @@
       .steps { grid-template-columns: repeat(2,1fr); }
       .tiers { grid-template-columns: repeat(2,1fr); }
       .tiers .tier-card:last-child { grid-column: span 2; }
-      .store-cta { flex-direction: column; padding: 32px 24px; }
+      .biz-grid { grid-template-columns: repeat(2,1fr); }
+      .biz-proof { gap: 24px; }
       footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
     }
   </style>
@@ -518,12 +573,97 @@
 
   <hr class="section-divider"/>
   <section class="section">
-    <div class="store-cta" data-reveal>
-      <div class="store-cta-text">
-        <h2>Are you a Lucky Stop store owner?</h2>
-        <p>Manage your rewards program, push offers to customers, track sales, and run your team, all from the web admin portal. Contact us to get your store set up.</p>
+    <div class="eyebrow" data-reveal>For Business Owners</div>
+    <h2 class="section-title" data-reveal>Your store. Your brand. This system.</h2>
+    <p class="section-sub" data-reveal>Lucky Stop Rewards is a full operations platform running live across 12+ locations, built and maintained by Cliff Industries. We can build the same caliber of system for your business, under your own name.</p>
+
+    <div class="biz-grid" data-reveal>
+
+      <div class="biz-card">
+        <svg class="biz-card-icon icon-box" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="11" width="16" height="9" rx="1.2" stroke="currentColor" stroke-width="1.6"/>
+          <path class="flap-l" d="M4 11L11.5 11L8 5.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path class="flap-r" d="M20 11L12.5 11L16 5.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+        <div class="biz-card-title">Inventory, handled.</div>
+        <p class="biz-card-tag">Track stock requests and restocks per store.</p>
+        <div class="biz-detail">
+          <ul>
+            <li>Your staff always know what to reorder, no guessing</li>
+            <li>Per-store restock lists, updated in real time</li>
+          </ul>
+        </div>
       </div>
-      <a href="mailto:sksajidali1279@gmail.com" class="store-cta-btn">Get your store set up →</a>
+
+      <div class="biz-card">
+        <svg class="biz-card-icon icon-badge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.5L19 6V12C19 16.5 15.9 19.8 12 21C8.1 19.8 5 16.5 5 12V6L12 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path class="check" d="M8.3 12L10.8 14.5L15.7 9.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <div class="biz-card-title">Your team, organized.</div>
+        <p class="biz-card-tag">Role-based logins for managers and cashiers.</p>
+        <div class="biz-detail">
+          <ul>
+            <li>Shift scheduling built in, no spreadsheets</li>
+            <li>Each role sees only what it needs to</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="biz-card">
+        <svg class="biz-card-icon icon-trophy" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="cup" d="M6.5 4h11v6a5.5 5.5 0 0 1-11 0V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M6.5 5H3.5v2a3.8 3.8 0 0 0 3 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M17.5 5h3v2a3.8 3.8 0 0 1-3 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M12 15.5v3" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M8.5 21h7M9.3 19h5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle class="shine" cx="9.5" cy="7" r="1" fill="currentColor"/>
+        </svg>
+        <div class="biz-card-title">Loyalty rules you control.</div>
+        <p class="biz-card-tag">Set your own tiers and cashback rates.</p>
+        <div class="biz-detail">
+          <ul>
+            <li>Configure rates by product category, change them anytime</li>
+            <li>Run bonus events whenever you want, no code required</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="biz-card">
+        <svg class="biz-card-icon icon-shield" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="outline" d="M12 2.5L19.5 5.5V11C19.5 16 16.3 19.8 12 21.5C7.7 19.8 4.5 16 4.5 11V5.5L12 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path class="check" d="M8.3 11.8L10.8 14.3L15.7 9.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <div class="biz-card-title">Fraud protection built in.</div>
+        <p class="biz-card-tag">Every point grant requires a receipt photo.</p>
+        <div class="biz-detail">
+          <ul>
+            <li>Every action logged and tied to the employee who did it</li>
+            <li>Customer disputes resolved against the receipt on file</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="biz-proof" data-reveal>
+      <div class="biz-proof-item">
+        <div class="biz-proof-num">12+</div>
+        <div class="biz-proof-lbl">Locations live today</div>
+      </div>
+      <div class="biz-proof-item">
+        <div class="biz-proof-num">iOS · Android · Web</div>
+        <div class="biz-proof-lbl">Every platform covered</div>
+      </div>
+      <div class="biz-proof-item">
+        <div class="biz-proof-num">100%</div>
+        <div class="biz-proof-lbl">Of point grants receipt-verified</div>
+      </div>
+    </div>
+
+    <div class="biz-cta-row" data-reveal>
+      <a href="mailto:sksajidali1279@gmail.com" class="store-cta-btn">Get a system built for your business →</a>
+      <a href="https://cliffindus.com/#capabilities" target="_blank" class="biz-cta-link">Want the full technical breakdown? See what's inside the dashboard on cliffindus.com</a>
     </div>
   </section>
 
@@ -550,6 +690,17 @@
         card.style.setProperty('--y', `${e.clientY - r.top}px`);
       });
     });
+
+    // Business pitch cards: tap-to-toggle on touch devices (no hover available)
+    if (window.matchMedia('(hover: none)').matches) {
+      document.querySelectorAll('.biz-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const wasOpen = card.classList.contains('is-open');
+          document.querySelectorAll('.biz-card.is-open').forEach(c => c.classList.remove('is-open'));
+          if (!wasOpen) card.classList.add('is-open');
+        });
+      });
+    }
   </script>
 
 </body>
