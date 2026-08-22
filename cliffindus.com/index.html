@@ -438,6 +438,26 @@
     .icon-bell .ping { opacity: 0; transition: opacity .2s ease .1s; }
     .admin-card:hover .icon-bell .ping, .admin-card.is-open .icon-bell .ping { opacity: 1; }
 
+    /* ── SERVICES ──────────────────────────────────────── */
+    .proc-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+      background: var(--b1); border: 1px solid var(--b1); border-radius: 16px;
+      overflow: hidden; margin-bottom: 56px;
+    }
+    .proc-step { background: var(--z950); padding: 28px 24px; transition: background .2s; }
+    .proc-step:hover { background: var(--z900); }
+    .proc-num { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--z600); text-transform: uppercase; margin-bottom: 14px; }
+    .proc-title { font-size: 16px; font-weight: 700; color: var(--z50); letter-spacing: -0.3px; margin-bottom: 8px; }
+    .proc-desc { font-size: 13px; color: var(--z400); line-height: 1.65; }
+
+    .svc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 44px; }
+    .svc-card { background: var(--z900); border: 1px solid var(--b1); border-radius: 14px; padding: 22px 20px; transition: border-color .2s; }
+    .svc-card:hover { border-color: var(--b2); }
+    .svc-card-title { font-size: 14px; font-weight: 700; color: var(--z100); margin-bottom: 8px; letter-spacing: -0.2px; }
+    .svc-card-desc { font-size: 12.5px; color: var(--z400); line-height: 1.65; }
+
+    .svc-cta-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+
     /* ── ABOUT ─────────────────────────────────────────── */
     .about-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
@@ -568,12 +588,16 @@
       nav { padding: 0 18px; }
       .wc-featured, .wc-side, .wc-half, .wc-early { grid-column: span 12; }
       .admin-grid { grid-template-columns: repeat(2, 1fr); }
+      .proc-grid { grid-template-columns: repeat(2, 1fr); }
+      .svc-grid { grid-template-columns: repeat(2, 1fr); }
       .about-grid { grid-template-columns: 1fr; gap: 32px; }
       .contact-block { padding: 36px 24px; }
       footer { padding: 22px 18px; }
     }
     @media (max-width: 560px) {
       .admin-grid { grid-template-columns: 1fr; }
+      .proc-grid { grid-template-columns: 1fr; }
+      .svc-grid { grid-template-columns: 1fr; }
       .hero-badge { display: none; }
     }
   </style>
@@ -602,6 +626,7 @@
     <div class="nav-links">
       <a href="#work">Work</a>
       <a href="#capabilities">Capabilities</a>
+      <a href="#services">Services</a>
       <a href="#about">About</a>
       <a href="#contact" class="nav-cta btn">Contact →</a>
     </div>
@@ -920,6 +945,63 @@
           </div>
         </div>
 
+      </div>
+    </section>
+  </div>
+
+  <!-- ── SERVICES ───────────────────────────────────── -->
+  <hr class="divider"/>
+  <div class="max-w">
+    <section id="services" class="section">
+      <div class="eyebrow" data-r>Services</div>
+      <h2 class="s-title" data-r data-d="1">Want this built for your business?</h2>
+      <p class="s-sub" data-r data-d="2">Lucky Stop is proof, not a pitch deck. 12+ real store locations run their entire operation on a system we designed, built, and still maintain. We build the same for other local businesses.</p>
+
+      <div class="proc-grid" data-r>
+        <div class="proc-step">
+          <div class="proc-num">Step 01</div>
+          <div class="proc-title">Discovery</div>
+          <div class="proc-desc">We learn how your business actually operates before writing any code. Every feature solves a real problem, not a guess.</div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-num">Step 02</div>
+          <div class="proc-title">Build</div>
+          <div class="proc-desc">One team builds the mobile app, the web dashboard, and the backend together, in sync, so nothing gets lost between the pieces.</div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-num">Step 03</div>
+          <div class="proc-title">Launch</div>
+          <div class="proc-desc">Real deployment. Your app goes live on the App Store and Google Play, your dashboard goes live on the web. Not a prototype.</div>
+        </div>
+        <div class="proc-step">
+          <div class="proc-num">Step 04</div>
+          <div class="proc-title">Support</div>
+          <div class="proc-desc">A growing business needs its software to keep growing too. We stay on as things change, the way we have with Lucky Stop since day one.</div>
+        </div>
+      </div>
+
+      <div class="svc-grid" data-r data-d="1">
+        <div class="svc-card">
+          <div class="svc-card-title">Mobile App</div>
+          <div class="svc-card-desc">iOS and Android, built with React Native and shipped through the App Store and Google Play. Not a wrapped webpage.</div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-card-title">Web Dashboard</div>
+          <div class="svc-card-desc">A real admin console your team logs into every day, built for the way your operation actually runs.</div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-card-title">Backend &amp; Database</div>
+          <div class="svc-card-desc">Node.js and PostgreSQL, built to hold up under real transaction volume, not a demo dataset.</div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-card-title">Ongoing Support</div>
+          <div class="svc-card-desc">Bugs fixed, features added, systems monitored after launch. Launch day is the start, not the finish.</div>
+        </div>
+      </div>
+
+      <div class="svc-cta-row" data-r data-d="2">
+        <a href="#contact" class="btn btn-primary">Start a conversation →</a>
+        <a href="#capabilities" class="wc-link">See what's inside the dashboard <span class="wc-link-arrow">↑</span></a>
       </div>
     </section>
   </div>
