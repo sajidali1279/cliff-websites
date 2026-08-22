@@ -66,42 +66,40 @@
     ::-webkit-scrollbar-thumb:hover { background: var(--z700); }
 
     /* ── LIQUID METAL BACKGROUND ───────────────────────── */
+    /* A single glossy, mouse-lit sphere that swirls continuously and grows
+       as the page scrolls — not a static gradient, an actual living orb. */
     .liquid-bg {
       position: fixed; inset: 0; z-index: -1;
       background: var(--z950);
       overflow: hidden;
       pointer-events: none;
     }
-    .liquid-blob {
-      position: absolute;
+    .orb-wrap {
+      position: absolute; top: 50%; left: 50%;
+      width: 58vw; height: 58vw; max-width: 780px; max-height: 780px;
       border-radius: 50%;
-      filter: url(#liquidMetal) blur(6px);
+      overflow: hidden;
+      -webkit-mask-image: radial-gradient(circle, black 48%, transparent 76%);
+      mask-image: radial-gradient(circle, black 48%, transparent 76%);
+      filter: url(#liquidMetal) blur(14px);
       mix-blend-mode: screen;
+      opacity: 0.65;
       will-change: transform;
     }
-    .lb-1 {
-      width: 62vw; height: 62vw; max-width: 840px; max-height: 840px;
-      top: -14%; left: -12%;
-      background: radial-gradient(circle at 35% 35%, rgba(251,239,221,0.28), rgba(147,129,108,0.10) 45%, transparent 72%);
-      animation: liquidDrift1 32s ease-in-out infinite;
+    .orb-spin {
+      position: absolute; inset: -25%;
+      background: conic-gradient(from 0deg,
+        var(--z50) 0%, var(--accent) 22%, var(--z800) 45%,
+        var(--z600) 62%, var(--z50) 78%, var(--accent) 92%, var(--z50) 100%);
+      animation: orbSpin 50s linear infinite;
     }
-    .lb-2 {
-      width: 50vw; height: 50vw; max-width: 700px; max-height: 700px;
-      top: 38%; right: -14%;
-      background: radial-gradient(circle at 60% 40%, rgba(224,138,60,0.16), rgba(147,129,108,0.08) 45%, transparent 70%);
-      animation: liquidDrift2 40s ease-in-out infinite;
+    @keyframes orbSpin { to { transform: rotate(360deg); } }
+    .orb-highlight {
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 32%), rgba(255,239,215,0.95), transparent 40%);
     }
-    .lb-3 {
-      width: 44vw; height: 44vw; max-width: 580px; max-height: 580px;
-      bottom: -14%; left: 22%;
-      background: radial-gradient(circle at 45% 55%, rgba(237,225,205,0.18), rgba(74,59,39,0.10) 45%, transparent 70%);
-      animation: liquidDrift3 36s ease-in-out infinite;
-    }
-    @keyframes liquidDrift1 { 0%, 100% { translate: 0 0; } 50% { translate: 6vw -4vh; } }
-    @keyframes liquidDrift2 { 0%, 100% { translate: 0 0; } 50% { translate: -5vw 5vh; } }
-    @keyframes liquidDrift3 { 0%, 100% { translate: 0 0; } 50% { translate: 4vw -3vh; } }
     @media (prefers-reduced-motion: reduce) {
-      .liquid-blob { animation: none !important; }
+      .orb-spin { animation: none !important; }
     }
 
     /* ── NAV ─────────────────────────────────────────────── */
@@ -671,14 +669,15 @@
       <feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="noise">
         <animate attributeName="baseFrequency" dur="34s" values="0.010 0.016;0.016 0.010;0.010 0.016" repeatCount="indefinite"/>
       </feTurbulence>
-      <feDisplacementMap in="SourceGraphic" in2="noise" scale="70" xChannelSelector="R" yChannelSelector="G"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="22" xChannelSelector="R" yChannelSelector="G"/>
     </filter>
   </svg>
 
   <div class="liquid-bg" aria-hidden="true">
-    <div class="liquid-blob lb-1" data-parallax="0.04"></div>
-    <div class="liquid-blob lb-2" data-parallax="-0.03"></div>
-    <div class="liquid-blob lb-3" data-parallax="0.02"></div>
+    <div class="orb-wrap" id="orbWrap">
+      <div class="orb-spin"></div>
+      <div class="orb-highlight"></div>
+    </div>
   </div>
 
   <!-- ── NAV ────────────────────────────────────────── -->
@@ -1273,23 +1272,40 @@
   </footer>
 
   <script>
-    // Liquid metal background: scroll parallax (rAF-throttled)
+    // Liquid metal orb: mouse-tracked highlight (light source) + scroll-driven scale/drift
     (function () {
-      const blobs = document.querySelectorAll('.liquid-blob');
-      if (!blobs.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      let ticking = false;
-      function apply() {
+      const wrap = document.getElementById('orbWrap');
+      if (!wrap) return;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let scrollTicking = false;
+      function applyScroll() {
         const y = window.scrollY || window.pageYOffset;
-        blobs.forEach(b => {
-          const f = parseFloat(b.dataset.parallax) || 0;
-          b.style.transform = `translateY(${y * f}px)`;
-        });
-        ticking = false;
+        const scale = Math.min(1 + y / 2000, 1.7);
+        const drift = y * -0.05;
+        wrap.style.transform = `translate(-50%, calc(-50% + ${drift}px)) scale(${scale})`;
+        scrollTicking = false;
       }
       window.addEventListener('scroll', () => {
-        if (!ticking) { requestAnimationFrame(apply); ticking = true; }
+        if (!scrollTicking) { requestAnimationFrame(applyScroll); scrollTicking = true; }
       }, { passive: true });
-      apply();
+      applyScroll();
+
+      if (!reduceMotion) {
+        let mouseTicking = false;
+        let lastX = 50, lastY = 32;
+        function applyMouse() {
+          wrap.style.setProperty('--mx', `${lastX}%`);
+          wrap.style.setProperty('--my', `${lastY}%`);
+          mouseTicking = false;
+        }
+        window.addEventListener('mousemove', (e) => {
+          const r = wrap.getBoundingClientRect();
+          lastX = ((e.clientX - r.left) / r.width) * 100;
+          lastY = ((e.clientY - r.top) / r.height) * 100;
+          if (!mouseTicking) { requestAnimationFrame(applyMouse); mouseTicking = true; }
+        }, { passive: true });
+      }
     })();
 
     // Scroll reveal
