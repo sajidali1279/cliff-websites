@@ -442,19 +442,32 @@
     .proc-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
       background: var(--b1); border: 1px solid var(--b1); border-radius: 16px;
-      overflow: hidden; margin-bottom: 56px;
+      overflow: hidden; margin-bottom: 56px; position: relative;
     }
-    .proc-step { background: var(--z950); padding: 28px 24px; transition: background .2s; }
-    .proc-step:hover { background: var(--z900); }
-    .proc-num { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--z600); text-transform: uppercase; margin-bottom: 14px; }
+    .proc-step { background: var(--z950); padding: 28px 24px; transition: background .25s, transform .25s; position: relative; }
+    .proc-step:hover { background: var(--z900); transform: translateY(-2px); z-index: 2; }
+    .proc-icon { width: 26px; height: 26px; color: var(--z500, #71717A); margin-bottom: 16px; display: block; transition: color .25s, transform .25s; }
+    .proc-step:hover .proc-icon { color: var(--z50); transform: scale(1.08); }
+    .proc-num { display: flex; align-items: center; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--z600); text-transform: uppercase; margin-bottom: 14px; }
+    .proc-dot { position: relative; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--z400); margin-right: 9px; flex-shrink: 0; }
+    .proc-dot::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--z300); animation: ping 2.4s ease-in-out infinite; }
+    .proc-step:nth-child(2) .proc-dot::before { animation-delay: .3s; }
+    .proc-step:nth-child(3) .proc-dot::before { animation-delay: .6s; }
+    .proc-step:nth-child(4) .proc-dot::before { animation-delay: .9s; }
     .proc-title { font-size: 16px; font-weight: 700; color: var(--z50); letter-spacing: -0.3px; margin-bottom: 8px; }
     .proc-desc { font-size: 13px; color: var(--z400); line-height: 1.65; }
 
-    .svc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 44px; }
-    .svc-card { background: var(--z900); border: 1px solid var(--b1); border-radius: 14px; padding: 22px 20px; transition: border-color .2s; }
-    .svc-card:hover { border-color: var(--b2); }
+    .svc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 36px; }
+    .svc-card { background: var(--z900); border: 1px solid var(--b1); border-radius: 14px; padding: 22px 20px; transition: border-color .2s, transform .2s, box-shadow .2s; }
+    .svc-card:hover { border-color: var(--b2); transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0,0,0,0.35); }
+    .svc-card-icon { width: 24px; height: 24px; color: var(--z500, #71717A); margin-bottom: 12px; display: block; transition: color .25s; }
+    .svc-card:hover .svc-card-icon { color: var(--z50); }
     .svc-card-title { font-size: 14px; font-weight: 700; color: var(--z100); margin-bottom: 8px; letter-spacing: -0.2px; }
     .svc-card-desc { font-size: 12.5px; color: var(--z400); line-height: 1.65; }
+
+    .svc-proof { display: flex; gap: 40px; margin-bottom: 32px; padding-top: 26px; border-top: 1px solid var(--b1); flex-wrap: wrap; }
+    .svc-proof-num { font-size: 24px; font-weight: 800; color: var(--z200); letter-spacing: -0.5px; }
+    .svc-proof-lbl { font-size: 12px; color: var(--z600); margin-top: 2px; }
 
     .svc-cta-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 
@@ -590,6 +603,7 @@
       .admin-grid { grid-template-columns: repeat(2, 1fr); }
       .proc-grid { grid-template-columns: repeat(2, 1fr); }
       .svc-grid { grid-template-columns: repeat(2, 1fr); }
+      .svc-proof { gap: 24px; }
       .about-grid { grid-template-columns: 1fr; gap: 32px; }
       .contact-block { padding: 36px 24px; }
       footer { padding: 22px 18px; }
@@ -940,6 +954,7 @@
             <ul>
               <li>Admin-authored notices pinned to every employee's chat</li>
               <li>Push notifications (Firebase Cloud Messaging) across iOS, Android, and web</li>
+              <li>Deep linking: tap a notification about a dispute, a request, or a schedule change and land on that exact item, not just the home screen</li>
               <li>Built-in support chat between store staff and HQ</li>
             </ul>
           </div>
@@ -959,47 +974,100 @@
 
       <div class="proc-grid" data-r>
         <div class="proc-step">
-          <div class="proc-num">Step 01</div>
+          <svg class="proc-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10.2" cy="10.2" r="6.2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M15 15L20 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <div class="proc-num"><span class="proc-dot"></span>Step 01</div>
           <div class="proc-title">Discovery</div>
-          <div class="proc-desc">We learn how your business actually operates before writing any code. Every feature solves a real problem, not a guess.</div>
+          <div class="proc-desc">We learn how your business actually operates before writing any code: who does what, on what device, and where the current process breaks. Every feature solves a real problem, not a guess.</div>
         </div>
         <div class="proc-step">
-          <div class="proc-num">Step 02</div>
+          <svg class="proc-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 8L5 12L9 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 8L19 12L15 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="proc-num"><span class="proc-dot"></span>Step 02</div>
           <div class="proc-title">Build</div>
-          <div class="proc-desc">One team builds the mobile app, the web dashboard, and the backend together, in sync, so nothing gets lost between the pieces.</div>
+          <div class="proc-desc">One team builds the mobile app, the web dashboard, and the backend together, in sync, so a decision made on Monday shows up everywhere by Friday, nothing gets lost between the pieces.</div>
         </div>
         <div class="proc-step">
-          <div class="proc-num">Step 03</div>
+          <svg class="proc-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.5c2.4 2 3.8 5.3 3.8 8.6c0 1.9-.5 3.3-1 4.3l-2.8 2.8l-2.8-2.8c-.5-1-1-2.4-1-4.3c0-3.3 1.4-6.6 3.8-8.6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <circle cx="12" cy="9.5" r="1.5" fill="currentColor"/>
+            <path d="M9 15.5L6.7 17l.5-2.8M15 15.5l2.3 1.5l-.5-2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="proc-num"><span class="proc-dot"></span>Step 03</div>
           <div class="proc-title">Launch</div>
-          <div class="proc-desc">Real deployment. Your app goes live on the App Store and Google Play, your dashboard goes live on the web. Not a prototype.</div>
+          <div class="proc-desc">Real deployment. Your app goes live on the App Store and Google Play, your dashboard goes live on the web, under a real domain. Not a prototype, a link you can hand a customer.</div>
         </div>
         <div class="proc-step">
-          <div class="proc-num">Step 04</div>
+          <svg class="proc-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 13v-1.5a8 8 0 0 1 16 0V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <rect x="3" y="13" width="4" height="6" rx="1.4" stroke="currentColor" stroke-width="1.6"/>
+            <rect x="17" y="13" width="4" height="6" rx="1.4" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M19 19v1a2 2 0 0 1-2 2h-1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <div class="proc-num"><span class="proc-dot"></span>Step 04</div>
           <div class="proc-title">Support</div>
-          <div class="proc-desc">A growing business needs its software to keep growing too. We stay on as things change, the way we have with Lucky Stop since day one.</div>
+          <div class="proc-desc">A growing business needs its software to keep growing too. We stay on as things change: new features, new stores, new edge cases, the way we have with Lucky Stop since day one.</div>
         </div>
       </div>
 
       <div class="svc-grid" data-r data-d="1">
         <div class="svc-card">
+          <svg class="svc-card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <line x1="11" y1="18" x2="13" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
           <div class="svc-card-title">Mobile App</div>
-          <div class="svc-card-desc">iOS and Android, built with React Native and shipped through the App Store and Google Play. Not a wrapped webpage.</div>
+          <div class="svc-card-desc">iOS and Android, built with React Native and shipped through the App Store and Google Play. Not a wrapped webpage, a real native app your customers keep on their phone.</div>
         </div>
         <div class="svc-card">
+          <svg class="svc-card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
           <div class="svc-card-title">Web Dashboard</div>
-          <div class="svc-card-desc">A real admin console your team logs into every day, built for the way your operation actually runs.</div>
+          <div class="svc-card-desc">A real admin console your team logs into every day, built around the way your operation actually runs, not a generic template with your logo swapped in.</div>
         </div>
         <div class="svc-card">
+          <svg class="svc-card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="12" cy="6" rx="7" ry="3" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M5 6v12c0 1.66 3.13 3 7 3s7-1.34 7-3V6" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M5 12c0 1.66 3.13 3 7 3s7-1.34 7-3" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
           <div class="svc-card-title">Backend &amp; Database</div>
-          <div class="svc-card-desc">Node.js and PostgreSQL, built to hold up under real transaction volume, not a demo dataset.</div>
+          <div class="svc-card-desc">Node.js and PostgreSQL, built to hold up under real transaction volume, the same infrastructure processing cashback for 12+ live stores today.</div>
         </div>
         <div class="svc-card">
+          <svg class="svc-card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 12a8 8 0 0 1 14.5-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M20 12a8 8 0 0 1-14.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M18 4v4h-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 20v-4h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
           <div class="svc-card-title">Ongoing Support</div>
-          <div class="svc-card-desc">Bugs fixed, features added, systems monitored after launch. Launch day is the start, not the finish.</div>
+          <div class="svc-card-desc">Bugs fixed, features added, systems monitored after launch. Launch day is the start of the relationship, not the finish line.</div>
         </div>
       </div>
 
-      <div class="svc-cta-row" data-r data-d="2">
+      <div class="svc-proof" data-r data-d="2">
+        <div class="svc-proof-item">
+          <div class="svc-proof-num">2</div>
+          <div class="svc-proof-lbl">Developers, every layer of the stack</div>
+        </div>
+        <div class="svc-proof-item">
+          <div class="svc-proof-num">4</div>
+          <div class="svc-proof-lbl">Products shipped this exact way</div>
+        </div>
+        <div class="svc-proof-item">
+          <div class="svc-proof-num">12+</div>
+          <div class="svc-proof-lbl">Store locations running on it today</div>
+        </div>
+      </div>
+
+      <div class="svc-cta-row" data-r data-d="3">
         <a href="#contact" class="btn btn-primary">Start a conversation →</a>
         <a href="#capabilities" class="wc-link">See what's inside the dashboard <span class="wc-link-arrow">↑</span></a>
       </div>

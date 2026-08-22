@@ -277,6 +277,24 @@
     /* REVEAL */
     [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
     [data-reveal].revealed { opacity: 1; transform: translateY(0); }
+    [data-reveal][data-d="1"] { transition-delay: .08s; }
+    [data-reveal][data-d="2"] { transition-delay: .16s; }
+    [data-reveal][data-d="3"] { transition-delay: .24s; }
+
+    /* ROLES connecting flow (desktop only) */
+    #roles .biz-grid { position: relative; }
+    #roles .biz-card:not(:last-child)::after {
+      content: '→';
+      position: absolute; top: 50%; right: -13px; transform: translateY(-50%);
+      color: var(--muted); font-size: 13px; z-index: 5; pointer-events: none;
+      transition: color .2s;
+    }
+    #roles .biz-grid:has(.biz-card:hover) .biz-card:not(:last-child)::after { color: var(--red-lt); }
+    @media (max-width: 900px) { #roles .biz-card:not(:last-child)::after { display: none; } }
+
+    .role-proof { display: flex; gap: 40px; margin-bottom: 44px; padding-bottom: 24px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .role-proof-num { font-size: 22px; font-weight: 800; color: var(--red-lt); letter-spacing: -0.5px; }
+    .role-proof-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
     /* RESPONSIVE */
     @media (max-width: 900px) {
@@ -542,9 +560,24 @@
     <h2 class="section-title" data-reveal>One app. Every person behind the counter.</h2>
     <p class="section-sub" data-reveal>Lucky Stop isn't only a rewards app for customers. Cashiers, managers, and owners all run their day inside the same system, just a different view for each.</p>
 
-    <div class="biz-grid" data-reveal>
+    <div class="role-proof" data-reveal>
+      <div class="role-proof-item">
+        <div class="role-proof-num">4</div>
+        <div class="role-proof-lbl">Roles, one login system</div>
+      </div>
+      <div class="role-proof-item">
+        <div class="role-proof-num">iOS · Android · Web</div>
+        <div class="role-proof-lbl">Every platform, kept in sync</div>
+      </div>
+      <div class="role-proof-item">
+        <div class="role-proof-num">1 tap</div>
+        <div class="role-proof-lbl">From any alert to the exact item behind it</div>
+      </div>
+    </div>
 
-      <div class="biz-card">
+    <div class="biz-grid">
+
+      <div class="biz-card" data-reveal>
         <svg class="biz-card-icon icon-trophy" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path class="cup" d="M6.5 4h11v6a5.5 5.5 0 0 1-11 0V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
           <path d="M6.5 5H3.5v2a3.8 3.8 0 0 0 3 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -559,12 +592,12 @@
           <ul>
             <li>Scan and earn cashback at checkout, instantly</li>
             <li>Redeem credits for real products right at the register</li>
-            <li>See tier progress, offers, and your full history in one place</li>
+            <li>See tier progress and full history, then tap a notification about a dispute or new offer to land exactly there, not just the home screen</li>
           </ul>
         </div>
       </div>
 
-      <div class="biz-card">
+      <div class="biz-card" data-reveal data-d="1">
         <svg class="biz-card-icon icon-badge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2.5L19 6V12C19 16.5 15.9 19.8 12 21C8.1 19.8 5 16.5 5 12V6L12 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
           <path class="check" d="M8.3 12L10.8 14.5L15.7 9.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -573,14 +606,14 @@
         <p class="biz-card-tag">Everything a cashier needs, nothing they don't.</p>
         <div class="biz-detail">
           <ul>
-            <li>Scan a QR and grant cashback in seconds, receipt photo required</li>
-            <li>Check today's tasks, order hot food, message the manager</li>
-            <li>Same login as everyone else, just a different view</li>
+            <li>Scan a QR and grant cashback in seconds, receipt photo required every time</li>
+            <li>Check today's tasks, order hot food, message the manager, all from one screen</li>
+            <li>Submit a shift-change or time-off request straight to the manager who can act on it</li>
           </ul>
         </div>
       </div>
 
-      <div class="biz-card">
+      <div class="biz-card" data-reveal data-d="2">
         <svg class="biz-card-icon icon-box" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="4" y="11" width="16" height="9" rx="1.2" stroke="currentColor" stroke-width="1.6"/>
           <path class="flap-l" d="M4 11L11.5 11L8 5.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
@@ -592,12 +625,12 @@
           <ul>
             <li>Approve time-off and schedule requests</li>
             <li>Post store notices and daily opening or closing tasks</li>
-            <li>Track hot food orders and daily reports as they happen</li>
+            <li>Track hot food orders and daily reports as they happen, scoped to their own store, never mixed up with another</li>
           </ul>
         </div>
       </div>
 
-      <div class="biz-card">
+      <div class="biz-card" data-reveal data-d="3">
         <svg class="biz-card-icon icon-shield" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path class="outline" d="M12 2.5L19.5 5.5V11C19.5 16 16.3 19.8 12 21.5C7.7 19.8 4.5 16 4.5 11V5.5L12 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
           <path class="check" d="M8.3 11.8L10.8 14.3L15.7 9.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -608,12 +641,13 @@
           <ul>
             <li>Set cashback tiers and category bonus rates live, no code required</li>
             <li>Full activity log across every grant, edit, and override</li>
-            <li>Chain-wide analytics, billing, and inventory in one place</li>
+            <li>Chain-wide analytics, billing, and inventory, every alert deep-linked straight to the exact item, no hunting for what changed</li>
           </ul>
         </div>
       </div>
 
     </div>
+
   </section>
 
   <hr class="section-divider"/>
