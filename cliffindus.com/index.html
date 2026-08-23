@@ -62,54 +62,54 @@
     ::-webkit-scrollbar-thumb { background: var(--z800); border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--z700); }
 
-    /* ── NEURAL CORE ─────────────────────────────────────── */
-    /* A fixed glassy "core" that stays anchored on screen while a wire
-       extends down to whichever section is currently in view, plugging
-       in the first time each section appears and staying connected
-       as you keep scrolling. */
-    .neuro-bg {
-      position: fixed; inset: 0; z-index: -1;
-      pointer-events: none; overflow: hidden;
+    /* ── HERO BRAIN (real 3D) ─────────────────────────────── */
+    /* One procedurally-generated wrinkled brain mesh (Three.js), rendered
+       as a glowing wireframe, with the camera genuinely orbiting from a
+       side-on view up to directly overhead as you scroll -- real rotation
+       of one consistent object, not two illustrations swapping. Anchored
+       to the hero itself (scrolls together with the text it sits behind),
+       not the viewport -- it only rotates in place, it doesn't travel. */
+    .hero-brain {
+      position: absolute; inset: 0; z-index: 0;
+      pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
     }
-    .neuro-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .brain-shape { fill: url(#brainGlass); stroke: rgba(228,228,231,0.75); stroke-width: 1.2; }
-    .brain-fold { stroke: rgba(212,212,216,0.45); stroke-width: 1; fill: none; }
-    .brain-seam { stroke: rgba(244,244,245,0.65); stroke-width: 1.4; fill: none; }
-    .brain-glow { fill: url(#brainGlow); }
-    #brainFlip { transform-box: fill-box; }
+    #brainCanvas {
+      width: min(56vw, 640px); height: min(56vw, 640px);
+      max-height: 70vh;
+      filter: drop-shadow(0 0 10px rgba(228,228,231,0.25));
+    }
+    @media (max-width: 700px) {
+      #brainCanvas { width: min(78vw, 480px); height: min(78vw, 480px); }
+    }
 
-    .spine-line {
-      fill: none; stroke: rgba(228,228,231,0.35); stroke-width: 1.2;
-      stroke-linecap: round;
+    /* ── BUS (twin trunks down both margins) ──────────────── */
+    /* Two lines leave the brain's tip after its rotation, jog out to the
+       left and right edges of the page, then run straight down as bus
+       trunks -- drawn once in page coordinates (not re-tracked to the
+       viewport), but revealed progressively as you scroll, like a
+       reading-progress line. Each section taps into both trunks the
+       first time it comes into view. */
+    #busSvg { position: absolute; top: 0; left: 0; z-index: -1; pointer-events: none; }
+    .bus-trunk {
+      fill: none; stroke: rgba(228,228,231,0.38); stroke-width: 1.4;
+      filter: drop-shadow(0 0 3px rgba(228,228,231,0.2));
     }
-
-    .wire-path {
-      fill: none; stroke: rgba(228,228,231,0.5); stroke-width: 1.5;
-      stroke-linecap: round; stroke-linejoin: round; opacity: 0;
-      filter: drop-shadow(0 0 4px rgba(228,228,231,0.3));
-      transition: stroke-dashoffset 1s cubic-bezier(.16,1,.3,1), opacity .4s ease;
+    .bus-branch {
+      fill: none; stroke: rgba(228,228,231,0.5); stroke-width: 1.4;
+      stroke-linecap: round; opacity: 0;
+      filter: drop-shadow(0 0 3px rgba(228,228,231,0.25));
     }
-    .wire-path.on { opacity: 1; }
-    .wire-plug {
+    .bus-branch.on { opacity: 1; }
+    .bus-plug {
       fill: var(--z50); opacity: 0;
-      filter: drop-shadow(0 0 6px rgba(250,250,250,0.55));
-      transition: opacity .5s ease;
+      filter: drop-shadow(0 0 5px rgba(250,250,250,0.5));
     }
-    .wire-plug.on { opacity: 1; animation: plugPulse 2.6s ease-in-out infinite; }
+    .bus-plug.on { opacity: 1; animation: plugPulse 2.6s ease-in-out infinite; }
     @keyframes plugPulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-
-    .wire-flow {
-      offset-rotate: 0deg;
-      opacity: 0;
-      animation: flowAlong 2.2s linear infinite;
-    }
-    .wire-flow.on { opacity: 1; }
-    @keyframes flowAlong { from { offset-distance: 0%; } to { offset-distance: 100%; } }
-
-    @media (max-width: 900px) { .neuro-bg { display: none; } }
+    @media (max-width: 900px) { #busSvg { display: none; } }
     @media (prefers-reduced-motion: reduce) {
-      .wire-path { transition: none; }
-      .wire-plug.on, .wire-flow { animation: none; }
+      .bus-plug.on { animation: none; }
     }
 
     /* ── NAV ─────────────────────────────────────────────── */
@@ -668,63 +668,11 @@
 </head>
 <body>
 
-  <div class="neuro-bg" aria-hidden="true">
-    <svg class="neuro-svg" id="neuroSvg">
-      <defs>
-        <linearGradient id="brainGlass" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#F4F4F5" stop-opacity="0.85"/>
-          <stop offset="45%" stop-color="#A1A1AA" stop-opacity="0.5"/>
-          <stop offset="100%" stop-color="#3F3F46" stop-opacity="0.3"/>
-        </linearGradient>
-        <radialGradient id="brainGlow" cx="35%" cy="30%" r="70%">
-          <stop offset="0%" stop-color="#FAFAFA" stop-opacity="0.5"/>
-          <stop offset="100%" stop-color="#FAFAFA" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="pulseDot" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
-          <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-
-      <g id="spineGroup"></g>
-      <g id="neuroWires"></g>
-
-      <g id="brainCore" transform="translate(30,90) scale(0.5)">
-        <g id="brainFlip">
-          <ellipse class="brain-glow" cx="100" cy="90" rx="115" ry="105"/>
-
-          <!-- Side-profile face: shown on load -->
-          <g id="brainSideFace">
-            <path class="brain-shape" d="M128,22 C92,10 55,20 38,45 C24,64 22,88 32,105
-              C24,112 22,124 30,132 C28,144 36,154 50,155 C52,165 62,172 74,169
-              C84,178 100,178 108,168 C122,170 134,160 133,147
-              C148,144 158,132 154,118 C165,110 168,94 158,82
-              C162,64 152,42 128,22 Z"/>
-            <path class="brain-fold" d="M55,45 C68,40 78,48 74,60"/>
-            <path class="brain-fold" d="M48,72 C62,68 74,76 70,88"/>
-            <path class="brain-fold" d="M45,100 C58,97 68,104 63,114"/>
-            <path class="brain-fold" d="M90,35 C104,32 112,42 105,52"/>
-            <path class="brain-fold" d="M118,58 C130,56 137,66 130,74"/>
-            <path class="brain-seam" d="M50,155 C55,140 55,110 45,85"/>
-          </g>
-
-          <!-- Top-view face: settles in after the scroll-driven flip -->
-          <g id="brainTopFace" style="display:none">
-            <path class="brain-shape" d="M100,20 C60,15 25,35 20,70 C15,100 30,130 55,145 C70,153 90,150 100,140 Z"/>
-            <path class="brain-shape" d="M100,20 C140,15 175,35 180,70 C185,100 170,130 145,145 C130,153 110,150 100,140 Z"/>
-            <path class="brain-shape" d="M85,140 C85,155 90,168 100,170 C110,168 115,155 115,140 Z"/>
-            <path class="brain-seam" d="M100,22 C98,60 98,100 100,140"/>
-            <path class="brain-fold" d="M40,50 C55,45 65,55 60,68"/>
-            <path class="brain-fold" d="M35,85 C50,80 65,88 62,100"/>
-            <path class="brain-fold" d="M45,115 C58,112 68,118 65,128"/>
-            <path class="brain-fold" d="M160,50 C145,45 135,55 140,68"/>
-            <path class="brain-fold" d="M165,85 C150,80 135,88 138,100"/>
-            <path class="brain-fold" d="M155,115 C142,112 132,118 135,128"/>
-          </g>
-        </g>
-      </g>
-    </svg>
-  </div>
+  <svg id="busSvg" aria-hidden="true">
+    <path id="trunkLeft" class="bus-trunk"/>
+    <path id="trunkRight" class="bus-trunk"/>
+    <g id="busBranches"></g>
+  </svg>
 
   <!-- ── NAV ────────────────────────────────────────── -->
   <nav>
@@ -756,6 +704,9 @@
 
   <!-- ── HERO ───────────────────────────────────────── -->
   <section class="hero">
+    <div class="hero-brain" aria-hidden="true">
+      <canvas id="brainCanvas"></canvas>
+    </div>
     <div class="hero-content">
 
       <div class="hero-badge">
@@ -1233,7 +1184,7 @@
   <!-- ── TEAM ──────────────────────────────────────────── -->
   <hr class="divider"/>
   <div class="max-w">
-    <section class="section">
+    <section id="team" class="section">
       <div class="eyebrow" data-r>Team</div>
       <h2 class="s-title" data-r data-d="1">The people behind it</h2>
       <p class="s-sub" data-r data-d="2">Two developers. Every layer of the stack covered.</p>
@@ -1317,132 +1268,113 @@
     </div>
   </footer>
 
-  <script>
-    // Neural core: the brain turns from a side profile into a top view
-    // and settles into grayscale over the first ~700px of scroll, a
-    // spine of nerve-bundle lines runs down the left edge below it, and
-    // a wire branches off the spine toward whichever section's label is
-    // currently on screen -- drawing itself in with straight segments
-    // and turns (not a smooth curve) the first time each one appears,
-    // with a small light that keeps flowing along it afterward.
+  <script type="module">
+    // Hero brain: one procedurally-generated wrinkled brain mesh, rendered
+    // as a glowing wireframe. The camera genuinely orbits it -- starting
+    // side-on, ending nearly straight overhead -- tied to scroll position,
+    // so it's real continuous rotation of one consistent 3D object rather
+    // than two illustrations swapping. A few small lights orbit the
+    // surface continuously for the shimmer effect.
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
     (function () {
-      if (window.matchMedia('(max-width: 900px)').matches) return;
-      const wiresGroup = document.getElementById('neuroWires');
-      const spineGroup = document.getElementById('spineGroup');
-      const brainFlip = document.getElementById('brainFlip');
-      const brainSideFace = document.getElementById('brainSideFace');
-      const brainTopFace = document.getElementById('brainTopFace');
-      if (!wiresGroup || !spineGroup || !brainFlip) return;
-
+      const canvas = document.getElementById('brainCanvas');
+      if (!canvas) return;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const SVG_NS = 'http://www.w3.org/2000/svg';
-      const spineX = 80, spineTop = 172, spineBottom = 660;
 
-      // ── Spine: a small bundle of vertical lines below the brain ──
-      [-6, 0, 6].forEach((offset, i) => {
-        const line = document.createElementNS(SVG_NS, 'path');
-        line.setAttribute('class', 'spine-line');
-        line.setAttribute('d', `M ${spineX + offset} ${spineTop} L ${spineX + offset} ${spineBottom}`);
-        spineGroup.appendChild(line);
-        if (!reduceMotion && i !== 1) {
-          const dot = document.createElementNS(SVG_NS, 'circle');
-          dot.setAttribute('class', 'wire-flow on');
-          dot.setAttribute('r', 2.5);
-          dot.setAttribute('fill', 'url(#pulseDot)');
-          dot.style.offsetPath = `path("M ${spineX + offset} ${spineTop} L ${spineX + offset} ${spineBottom}")`;
-          dot.style.animationDuration = i === 0 ? '3.4s' : '4.1s';
-          spineGroup.appendChild(dot);
-        }
-      });
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
-      // ── Branch wires: spine -> each section's label ──
-      function elbowPath(sx, sy, tx, ty) {
-        const stub = 18, leadIn = 14;
-        const x1 = sx + stub;
-        const x2 = tx - leadIn;
-        return `M ${sx} ${sy} L ${x1} ${sy} L ${x2} ${ty} L ${tx} ${ty}`;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+
+      // Stretched, noise-wrinkled icosphere with a carved central groove --
+      // a stylized brain, not an anatomical model, but genuinely one 3D
+      // object viewable from any angle.
+      const geo = new THREE.IcosahedronGeometry(1, 4);
+      const pos = geo.attributes.position;
+      const v = new THREE.Vector3();
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i);
+        v.y *= 0.82; v.z *= 1.28;
+        const nx = v.x, ny = v.y, nz = v.z;
+        let n = 0;
+        n += 0.16 * Math.sin(3.1 * nx + 1.7 * ny) * Math.cos(2.3 * nz + 0.8 * nx);
+        n += 0.10 * Math.sin(6.5 * ny + 2.1 * nz) * Math.cos(5.2 * nx - 1.3 * ny);
+        n += 0.06 * Math.sin(11 * nx - 4 * nz) * Math.cos(9 * ny + 3 * nx);
+        n += 0.035 * Math.sin(19 * nz + 7 * nx) * Math.cos(17 * ny - 5 * nz);
+        const groove = Math.exp(-Math.pow(nx * 6, 2)) * 0.14;
+        v.multiplyScalar(1 + n - groove);
+        pos.setXYZ(i, v.x, v.y, v.z);
       }
+      geo.computeVertexNormals();
 
-      const targets = Array.from(document.querySelectorAll('.eyebrow'));
-      const wires = targets.map(el => {
-        const path = document.createElementNS(SVG_NS, 'path');
-        path.setAttribute('class', 'wire-path');
-        const plug = document.createElementNS(SVG_NS, 'circle');
-        plug.setAttribute('class', 'wire-plug');
-        plug.setAttribute('r', 4);
-        const flow = document.createElementNS(SVG_NS, 'circle');
-        flow.setAttribute('class', 'wire-flow');
-        flow.setAttribute('r', 3);
-        flow.setAttribute('fill', 'url(#pulseDot)');
-        wiresGroup.appendChild(path);
-        wiresGroup.appendChild(plug);
-        wiresGroup.appendChild(flow);
-        return { el, path, plug, flow, connected: false };
-      });
+      const wire = new THREE.WireframeGeometry(geo);
+      const material = new THREE.LineBasicMaterial({ color: 0xE4E4E7, transparent: true, opacity: 0.5 });
+      scene.add(new THREE.LineSegments(wire, material));
 
-      function updateWires() {
-        wires.forEach(w => {
-          const r = w.el.getBoundingClientRect();
-          const tx = r.left - 16;
-          const ty = r.top + r.height / 2;
-          const sy = Math.min(Math.max(ty, spineTop), spineBottom);
-          const d = elbowPath(spineX, sy, tx, ty);
-          w.path.setAttribute('d', d);
-          w.plug.setAttribute('cx', tx);
-          w.plug.setAttribute('cy', ty);
-          if (w.connected) w.flow.style.offsetPath = `path("${d}")`;
-        });
-      }
-      updateWires();
-
-      const neuroIO = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          const w = wires.find(w => w.el === e.target);
-          if (w && e.isIntersecting && !w.connected) {
-            w.connected = true;
-            const len = w.path.getTotalLength();
-            w.path.style.strokeDasharray = len;
-            w.path.style.strokeDashoffset = len;
-            w.path.classList.add('on');
-            requestAnimationFrame(() => { w.path.style.strokeDashoffset = 0; });
-            w.plug.classList.add('on');
-            if (!reduceMotion) {
-              w.flow.style.offsetPath = `path("${w.path.getAttribute('d')}")`;
-              w.flow.classList.add('on');
-            }
-          }
-        });
-      }, { threshold: 0.3 });
-      wires.forEach(w => neuroIO.observe(w.el));
-
-      // ── Brain: side profile -> top view, graying out, over the
-      // first ~700px of scroll only. A pure scaleX pivot (no perspective
-      // needed) so the shape appears to turn; faces swap at the midpoint. ──
-      const FLIP_RANGE = 700;
-      function updateBrain() {
-        const p = Math.min((window.scrollY || window.pageYOffset) / FLIP_RANGE, 1);
-        const scale = reduceMotion ? 1 : Math.max(Math.abs(Math.cos(p * Math.PI)), 0.06);
-        brainFlip.setAttribute('transform', `translate(100,90) scale(${scale},1) translate(-100,-90)`);
-        brainFlip.style.filter = `grayscale(${p}) brightness(${1 - p * 0.12})`;
-        const showTop = p >= 0.5;
-        if (brainSideFace && brainTopFace) {
-          brainSideFace.style.display = showTop ? 'none' : '';
-          brainTopFace.style.display = showTop ? '' : 'none';
+      const riders = [];
+      if (!reduceMotion) {
+        const riderGeo = new THREE.SphereGeometry(0.022, 8, 8);
+        const riderMat = new THREE.MeshBasicMaterial({ color: 0xFAFAFA });
+        for (let i = 0; i < 4; i++) {
+          const m = new THREE.Mesh(riderGeo, riderMat);
+          scene.add(m);
+          riders.push({ mesh: m, tilt: (i / 4) * Math.PI, speed: 0.4 + i * 0.11, phase: i * 1.7 });
         }
       }
-      updateBrain();
+
+      function resize() {
+        const w = canvas.clientWidth, h = canvas.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      const RANGE = 260;
+      const startElev = 0.08, endElev = 1.45, azimuth = 0.5, radius = 4.2;
+
+      function updateCamera() {
+        const y = window.scrollY || window.pageYOffset;
+        const p = Math.min(y / RANGE, 1);
+        const elev = reduceMotion ? startElev : startElev + (endElev - startElev) * p;
+        camera.position.set(
+          radius * Math.cos(elev) * Math.sin(azimuth),
+          radius * Math.sin(elev),
+          radius * Math.cos(elev) * Math.cos(azimuth)
+        );
+        camera.lookAt(0, 0, 0);
+      }
+      updateCamera();
 
       let ticking = false;
-      function onScroll() {
-        if (!ticking) {
-          requestAnimationFrame(() => { updateWires(); updateBrain(); ticking = false; });
-          ticking = true;
-        }
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll);
-    })();
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(() => { updateCamera(); ticking = false; }); ticking = true; }
+      }, { passive: true });
 
+      let t = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        if (!reduceMotion) {
+          t += 0.012;
+          riders.forEach(r => {
+            const a = t * r.speed + r.phase;
+            const x = Math.cos(a) * 1.05;
+            const y = Math.sin(r.tilt) * Math.sin(a) * 0.6;
+            const z = Math.sin(a) * Math.cos(r.tilt) * 1.3;
+            r.mesh.position.set(x * 0.9, y, z * 0.9);
+          });
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
+    })();
+  </script>
+
+  <script>
     // Scroll reveal
     const items = document.querySelectorAll('[data-r]');
     const io = new IntersectionObserver((entries) => {
@@ -1469,6 +1401,149 @@
         });
       });
     }
+  </script>
+
+  <script>
+    // Bus: two lines leave the brain's tip, jog out to the left/right page
+    // margins, then run straight down as trunks past every section to
+    // Contact. Drawn once in page coordinates (not re-tracked to the
+    // viewport like the hero brain), but revealed progressively as you
+    // scroll -- a stroke-dashoffset "progress line" rather than a single
+    // trigger. Each section taps into both trunks the first time it's
+    // scrolled into view.
+    (function () {
+      if (window.matchMedia('(max-width: 900px)').matches) return;
+      const svg = document.getElementById('busSvg');
+      const trunkLeft = document.getElementById('trunkLeft');
+      const trunkRight = document.getElementById('trunkRight');
+      const branchesGroup = document.getElementById('busBranches');
+      const hero = document.querySelector('.hero');
+      if (!svg || !trunkLeft || !trunkRight || !branchesGroup || !hero) return;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const SVG_NS = 'http://www.w3.org/2000/svg';
+      const MARGIN = 32;
+
+      const targetIds = ['#work', '#capabilities', '#services', '#about', '#team', '#contact'];
+      const targets = targetIds
+        .map(sel => document.querySelector(sel))
+        .filter(Boolean);
+
+      function pageTop(el) {
+        return el.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
+      }
+
+      let coords = { leftX: MARGIN, rightX: 0, tipX: 0, heroBottom: 0, bottomY: 0 };
+
+      function layout() {
+        const pageWidth = document.documentElement.scrollWidth;
+        const pageHeight = document.documentElement.scrollHeight;
+        svg.setAttribute('width', pageWidth);
+        svg.setAttribute('height', pageHeight);
+        svg.style.width = pageWidth + 'px';
+        svg.style.height = pageHeight + 'px';
+
+        const contactBlock = document.querySelector('.contact-block') || document.getElementById('contact');
+        coords.leftX = MARGIN;
+        coords.rightX = pageWidth - MARGIN;
+        coords.tipX = pageWidth / 2;
+        coords.heroBottom = pageTop(hero) + hero.offsetHeight - 4;
+        coords.bottomY = pageTop(contactBlock) + contactBlock.offsetHeight - 30;
+
+        trunkLeft.setAttribute('d', `M ${coords.tipX} ${coords.heroBottom} L ${coords.leftX} ${coords.heroBottom} L ${coords.leftX} ${coords.bottomY}`);
+        trunkRight.setAttribute('d', `M ${coords.tipX} ${coords.heroBottom} L ${coords.rightX} ${coords.heroBottom} L ${coords.rightX} ${coords.bottomY}`);
+        trunkLeft.dataset.len = trunkLeft.getTotalLength();
+        trunkRight.dataset.len = trunkRight.getTotalLength();
+        if (reduceMotion) {
+          trunkLeft.style.strokeDasharray = 'none';
+          trunkRight.style.strokeDasharray = 'none';
+        } else {
+          trunkLeft.style.strokeDasharray = trunkLeft.dataset.len;
+          trunkRight.style.strokeDasharray = trunkRight.dataset.len;
+        }
+      }
+
+      const branches = targets.map(el => {
+        const leftPath = document.createElementNS(SVG_NS, 'path');
+        leftPath.setAttribute('class', 'bus-branch');
+        const rightPath = document.createElementNS(SVG_NS, 'path');
+        rightPath.setAttribute('class', 'bus-branch');
+        const leftPlug = document.createElementNS(SVG_NS, 'circle');
+        leftPlug.setAttribute('class', 'bus-plug');
+        leftPlug.setAttribute('r', 4);
+        const rightPlug = document.createElementNS(SVG_NS, 'circle');
+        rightPlug.setAttribute('class', 'bus-plug');
+        rightPlug.setAttribute('r', 4);
+        branchesGroup.appendChild(leftPath);
+        branchesGroup.appendChild(rightPath);
+        branchesGroup.appendChild(leftPlug);
+        branchesGroup.appendChild(rightPlug);
+        return { el, leftPath, rightPath, leftPlug, rightPlug, y: 0, leftLen: 0, rightLen: 0 };
+      });
+
+      function positionBranches() {
+        branches.forEach(b => {
+          const r = b.el.getBoundingClientRect();
+          const scrollY = window.scrollY || window.pageYOffset;
+          const scrollX = window.scrollX || window.pageXOffset;
+          const y = r.top + scrollY + Math.min(r.height / 2, 60);
+          const boxLeftX = r.left + scrollX;
+          const boxRightX = r.right + scrollX;
+          const stub = 18;
+          b.y = y;
+          b.leftPath.setAttribute('d', `M ${coords.leftX} ${y} L ${coords.leftX + stub} ${y} L ${boxLeftX - 14} ${y}`);
+          b.rightPath.setAttribute('d', `M ${coords.rightX} ${y} L ${coords.rightX - stub} ${y} L ${boxRightX + 14} ${y}`);
+          b.leftLen = b.leftPath.getTotalLength();
+          b.rightLen = b.rightPath.getTotalLength();
+          b.leftPath.style.strokeDasharray = b.leftLen;
+          b.rightPath.style.strokeDasharray = b.rightLen;
+          b.leftPlug.setAttribute('cx', boxLeftX - 14);
+          b.leftPlug.setAttribute('cy', y);
+          b.rightPlug.setAttribute('cx', boxRightX + 14);
+          b.rightPlug.setAttribute('cy', y);
+        });
+      }
+
+      layout();
+      positionBranches();
+
+      // Everything below is driven by one continuous "flow position" (a
+      // single page-Y the wire has reached), derived straight from scroll
+      // distance -- not a percentage of the whole page, and not a timed
+      // pop-in. The trunks grow to that position; each branch grows in
+      // lockstep once the flow front reaches its section, and stops
+      // growing once it's fully connected. Nothing is revealed past
+      // Contact, since the flow position itself is capped there.
+      const GROWTH_RATE = 1.15;
+      const BRANCH_SPAN = 90; // px of flow travel over which a branch draws in
+
+      function update() {
+        const scrollY = window.scrollY || window.pageYOffset;
+        const trunkLen = Math.max(parseFloat(trunkLeft.dataset.len), parseFloat(trunkRight.dataset.len));
+        const revealed = reduceMotion ? trunkLen : Math.min(Math.max(scrollY, 0) * GROWTH_RATE, trunkLen);
+        const flowY = coords.heroBottom + revealed;
+
+        trunkLeft.style.strokeDashoffset = Math.max(parseFloat(trunkLeft.dataset.len) - revealed, 0);
+        trunkRight.style.strokeDashoffset = Math.max(parseFloat(trunkRight.dataset.len) - revealed, 0);
+
+        branches.forEach(b => {
+          const p = reduceMotion ? 1 : Math.min(Math.max((flowY - b.y) / BRANCH_SPAN, 0), 1);
+          b.leftPath.style.strokeDashoffset = b.leftLen * (1 - p);
+          b.rightPath.style.strokeDashoffset = b.rightLen * (1 - p);
+          const on = p > 0.02;
+          b.leftPath.classList.toggle('on', on);
+          b.rightPath.classList.toggle('on', on);
+          b.leftPlug.classList.toggle('on', p >= 1);
+          b.rightPlug.classList.toggle('on', p >= 1);
+        });
+      }
+      update();
+
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(() => { update(); ticking = false; }); ticking = true; }
+      }, { passive: true });
+      window.addEventListener('resize', () => { layout(); positionBranches(); update(); });
+    })();
   </script>
 
 </body>
