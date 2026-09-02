@@ -673,6 +673,17 @@
     [data-r][data-d="4"] { transition-delay: .32s; }
 
     /* ── RESPONSIVE ─────────────────────────────────────── */
+    /* Nav overflow fix: 5 links plus the wordmark wrapped to 2 lines on
+       narrow screens and spilled into the hero below (same fixed-height
+       nav failure mode already fixed on the Lucky Stop pages). The 4
+       section links just scroll the same page, so they're safe to hide;
+       Contact is the one thing worth keeping reachable from the nav. */
+    @media (max-width: 640px) {
+      nav { padding: 0 16px; }
+      .nav-links a:not(.nav-cta) { display: none; }
+      .nav-wordmark { font-size: 13px; white-space: nowrap; }
+    }
+
     @media (max-width: 860px) {
       nav { padding: 0 18px; }
       .wc-featured, .wc-side, .wc-half, .wc-early { grid-column: span 12; }
