@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lucky Stop · RBAC &amp; Security Architecture</title>
+  <meta name="description" content="How Lucky Stop's role-based access control, fraud engine, and security architecture actually work under the hood — a technical deep-dive for investors, partners, and engineers."/>
+  <link rel="canonical" href="https://luckystop.cliffindus.com/rbac/"/>
+  <meta name="theme-color" content="#0F1C2E"/>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230F1C2E'/%3E%3Ccircle cx='50' cy='50' r='24' fill='%23E63946'/%3E%3C/svg%3E"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Lucky Stop"/>
+  <meta property="og:title" content="Lucky Stop · RBAC &amp; Security Architecture"/>
+  <meta property="og:description" content="Five roles, one hierarchy, enforced at the API on every request. A real production platform, examined role by role, security layer by security layer."/>
+  <meta property="og:url" content="https://luckystop.cliffindus.com/rbac/"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0F1C2E;
+      --navy2:  #1A2E45;
+      --red:    #E63946;
+      --red-lt: #FF6B74;
+      --text:   #F8FAFC;
+      --muted:  #94A3B8;
+      --muted2: #CBD5E1;
+      --border: rgba(255,255,255,0.07);
+      --border2:rgba(255,255,255,0.12);
+      --surface:rgba(255,255,255,0.04);
+      --green:  #2DC653;
+      --amber:  #F4A261;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: #1E3A5F; border-radius: 3px; }
+
+    code, pre, .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+    /* LIQUID METAL BACKGROUND (same technique as the main site) */
+    .liquid-bg { position: fixed; inset: 0; z-index: -1; background: var(--navy); overflow: hidden; pointer-events: none; }
+    .liquid-blob { position: absolute; border-radius: 50%; filter: url(#liquidMetal) blur(6px); mix-blend-mode: screen; will-change: transform; }
+    .lb-1 { width: 62vw; height: 62vw; max-width: 840px; max-height: 840px; top: -14%; left: -12%; background: radial-gradient(circle at 35% 35%, rgba(203,213,225,0.28), rgba(148,163,184,0.10) 45%, transparent 72%); animation: liquidDrift1 32s ease-in-out infinite; }
+    .lb-2 { width: 50vw; height: 50vw; max-width: 700px; max-height: 700px; top: 38%; right: -14%; background: radial-gradient(circle at 60% 40%, rgba(230,57,70,0.14), rgba(148,163,184,0.08) 45%, transparent 70%); animation: liquidDrift2 40s ease-in-out infinite; }
+    .lb-3 { width: 44vw; height: 44vw; max-width: 580px; max-height: 580px; bottom: -14%; left: 22%; background: radial-gradient(circle at 45% 55%, rgba(248,250,252,0.18), rgba(94,120,150,0.08) 45%, transparent 70%); animation: liquidDrift3 36s ease-in-out infinite; }
+    @keyframes liquidDrift1 { 0%, 100% { translate: 0 0; } 50% { translate: 6vw -4vh; } }
+    @keyframes liquidDrift2 { 0%, 100% { translate: 0 0; } 50% { translate: -5vw 5vh; } }
+    @keyframes liquidDrift3 { 0%, 100% { translate: 0 0; } 50% { translate: 4vw -3vh; } }
+    @media (prefers-reduced-motion: reduce) { .liquid-blob { animation: none !important; } }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(15,28,46,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .fuel-icon { font-size: 22px; line-height: 1; }
+    .nav-wordmark { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+    .nav-wordmark span { color: var(--red-lt); }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-link { color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; padding: 6px 12px; border-radius: 8px; transition: color .15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--text); }
+    .nav-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border2); color: var(--text); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 8px; text-decoration: none; transition: background .15s; white-space: nowrap; }
+    .nav-btn:hover { background: rgba(255,255,255,0.1); }
+
+    /* HERO */
+    .hero { position: relative; min-height: 78vh; display: flex; align-items: center; padding: 130px 24px 60px; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 32px 32px; mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 60%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 60%, transparent 100%); pointer-events: none; }
+    .hero-orb-1 { position: absolute; width: 700px; height: 700px; background: radial-gradient(circle, rgba(230,57,70,0.16), transparent 70%); top: -220px; left: -120px; border-radius: 50%; animation: oa 14s ease-in-out infinite; pointer-events: none; }
+    .hero-orb-2 { position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, rgba(59,130,246,0.10), transparent 70%); bottom: -140px; right: -100px; border-radius: 50%; animation: ob 10s ease-in-out infinite; pointer-events: none; }
+    @keyframes oa { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,-30px)} }
+    @keyframes ob { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,20px)} }
+    .hero-inner { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; text-align: center; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(230,57,70,0.08); border: 1px solid rgba(230,57,70,0.2); border-radius: 100px; padding: 5px 14px 5px 8px; margin-bottom: 22px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--red-lt); }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red-lt); box-shadow: 0 0 0 3px rgba(255,107,116,0.2); animation: bpulse 2s ease-in-out infinite; }
+    @keyframes bpulse { 0%,100%{box-shadow:0 0 0 3px rgba(255,107,116,0.2)} 50%{box-shadow:0 0 0 6px rgba(255,107,116,0)} }
+    .hero h1 { font-size: clamp(34px, 5.4vw, 60px); font-weight: 900; line-height: 1.08; letter-spacing: -2px; margin-bottom: 18px; }
+    .hero h1 .sub { display: block; font-size: 0.52em; font-weight: 700; color: var(--muted2); letter-spacing: -0.5px; margin-top: 8px; }
+    .hero p.lead { font-size: 17px; color: var(--muted2); line-height: 1.75; max-width: 640px; margin: 0 auto 32px; }
+    .hero-byline { display: inline-flex; align-items: center; gap: 12px; padding: 10px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 13px; color: var(--muted2); }
+    .hero-byline strong { color: var(--text); font-weight: 700; }
+
+    /* STRIP */
+    .strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
+    .strip-item { padding: 26px 16px; }
+    .strip-item + .strip-item { border-left: 1px solid var(--border); }
+    .strip-item:hover { background: var(--surface); }
+    .strip-num { font-size: 30px; font-weight: 800; letter-spacing: -1.5px; }
+    .strip-num.r { color: var(--red-lt); }
+    .strip-lbl { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 4px; }
+
+    /* SECTION */
+    .section { padding: 84px 24px; max-width: 1100px; margin: 0 auto; }
+    .section-narrow { max-width: 820px; }
+    .section-divider { border: none; border-top: 1px solid var(--border); }
+    .eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--red-lt); margin-bottom: 14px; }
+    .eyebrow::before { content:''; width:14px;height:1px;background:var(--red-lt);display:block; }
+    .section-title { font-size: clamp(24px,3.6vw,38px); font-weight: 800; letter-spacing: -1.3px; line-height: 1.15; margin-bottom: 14px; }
+    .section-sub { font-size: 15.5px; color: var(--muted2); max-width: 560px; line-height: 1.75; margin-bottom: 48px; }
+
+    /* PARAGRAPH BLOCKS */
+    .prose p { font-size: 15px; color: var(--muted2); line-height: 1.8; max-width: 680px; margin-bottom: 16px; }
+    .prose p:last-child { margin-bottom: 0; }
+
+    /* STACK GRID (tech stack spec sheet) */
+    .stack-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .stack-row { background: var(--navy); padding: 18px 22px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; transition: background .2s; }
+    .stack-row:hover { background: rgba(255,255,255,0.03); }
+    .stack-k { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); flex-shrink: 0; }
+    .stack-v { font-size: 14px; color: var(--muted2); text-align: right; }
+
+    /* ARCHITECTURE DIAGRAM */
+    .arch { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .arch-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 640px; }
+    .arch-box { background: var(--surface); border: 1px solid var(--border2); border-radius: 14px; padding: 18px 20px; text-align: center; }
+    .arch-box.wide { max-width: 640px; width: 100%; }
+    .arch-box-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .arch-box-sub { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+    .arch-connector { width: 1px; height: 30px; background: linear-gradient(var(--border2), var(--red-lt)); position: relative; }
+    .arch-connector::after { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; border-radius: 50%; background: var(--red-lt); }
+    .arch-core { background: linear-gradient(135deg, rgba(230,57,70,0.12), rgba(230,57,70,0.04)); border: 1px solid rgba(230,57,70,0.3); }
+    .arch-core .arch-box-title { color: var(--red-lt); }
+    .arch-note { margin-top: 28px; font-size: 14px; color: var(--muted2); line-height: 1.75; max-width: 560px; text-align: center; }
+
+    /* CODE BLOCK */
+    .code-block { background: #0A1420; border: 1px solid var(--border2); border-radius: 14px; padding: 22px 24px; overflow-x: auto; font-size: 13px; line-height: 1.7; color: #C5D6E8; white-space: pre; }
+    .code-block .kw { color: #FF8A92; }
+    .code-block .fn { color: #7DD3FC; }
+    .code-block .str { color: #86EFAC; }
+    .code-block .cm { color: #64748B; font-style: italic; }
+
+    /* RANK LADDER */
+    .ladder-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+    .ladder { display: flex; flex-direction: column; gap: 8px; max-width: 480px; }
+    .rung { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; transition: border-color .2s, transform .2s; }
+    .rung:hover { border-color: var(--border2); transform: translateX(4px); }
+    .rung-rank { font-size: 11px; font-weight: 800; color: var(--red-lt); width: 56px; flex-shrink: 0; letter-spacing: .5px; }
+    .rung-name { font-size: 14.5px; font-weight: 700; color: var(--text); }
+
+    /* PERMISSION MATRIX */
+    .matrix-hint { display: none; font-size: 12.5px; color: var(--muted); margin: 0 0 16px; }
+    .matrix-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 16px; }
+    table.matrix { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 13px; }
+    table.matrix th, table.matrix td { padding: 12px 16px; text-align: center; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    table.matrix th { background: rgba(255,255,255,0.03); font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+    table.matrix td:first-child, table.matrix th:first-child { text-align: left; white-space: normal; color: var(--muted2); font-weight: 500; }
+    table.matrix tr:last-child td { border-bottom: none; }
+    table.matrix tr:hover td { background: rgba(255,255,255,0.02); }
+    .yes-dot { display: inline-flex; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+
+    /* CALLOUT */
+    .callout { background: var(--surface); border: 1px solid var(--border2); border-left: 3px solid var(--red-lt); border-radius: 12px; padding: 20px 24px; margin-top: 28px; }
+    .callout-label { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--red-lt); margin-bottom: 8px; }
+    .callout p { font-size: 14px; color: var(--muted2); line-height: 1.75; }
+    .callout.amber { border-left-color: var(--amber); }
+    .callout.amber .callout-label { color: var(--amber); }
+
+    /* STORE CHIPS */
+    .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+    .chip { background: rgba(255,255,255,0.05); border: 1px solid var(--border2); border-radius: 100px; padding: 6px 14px; font-size: 12.5px; color: var(--muted2); }
+    .chip.mgr { background: rgba(230,57,70,0.1); border-color: rgba(230,57,70,0.25); color: var(--red-lt); font-weight: 600; }
+
+    /* ROLE CARDS */
+    .role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+    .role-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: border-color .2s, transform .2s; }
+    .role-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+    .role-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .role-rank-badge { font-size: 10.5px; font-weight: 800; letter-spacing: .5px; color: var(--red-lt); background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.25); border-radius: 100px; padding: 3px 10px; }
+    .role-platform { font-size: 11px; color: var(--muted); font-weight: 500; }
+    .role-card-title { font-size: 18px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 4px; }
+    .role-card-tag { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+    .role-card ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .role-card li { font-size: 13.5px; color: var(--muted2); line-height: 1.55; padding-left: 15px; position: relative; }
+    .role-card li::before { content: ''; position: absolute; left: 0; top: 7px; width: 4px; height: 4px; border-radius: 50%; background: var(--red-lt); }
+
+    /* SECURITY CARDS */
+    .sec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .sec-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    .sec-card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .sec-card-title::before { content: '✓'; color: var(--green); font-size: 13px; font-weight: 900; }
+    .sec-card p { font-size: 13.5px; color: var(--muted2); line-height: 1.7; }
+
+    .hardening-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .hardening-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--muted2); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+    .hardening-item::before { content: '🔒'; font-size: 13px; flex-shrink: 0; }
+
+    /* SCREENSHOT FRAMES */
+    .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .shot-frame { background: #060B12; border: 1px solid var(--border2); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+    .shot-chrome { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); }
+    .shot-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+    .shot-frame img { display: block; width: 100%; height: 260px; object-fit: cover; object-position: top; }
+    .shot-label { padding: 12px 16px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--border); }
+
+    /* TIERS (reused from main site) */
+    .tiers { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
+    .tier-card { border: 1px solid var(--border); border-radius: 14px; padding: 20px 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; position: relative; overflow: hidden; transition: transform .2s, border-color .2s; }
+    .tier-card:hover { transform: translateY(-4px); }
+    .tier-badge { font-size: 20px; }
+    .tier-name { font-size: 13px; font-weight: 700; letter-spacing: .5px; }
+    .tier-pct { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .tier-req { font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .tier-bar { width: 100%; height: 2px; border-radius: 1px; margin-top: auto; }
+    .t-bronze  { background: rgba(180,120,60,0.08);  border-color: rgba(180,120,60,0.2);  }
+    .t-silver  { background: rgba(160,160,160,0.08); border-color: rgba(160,160,160,0.2); }
+    .t-gold    { background: rgba(245,158,11,0.08);  border-color: rgba(245,158,11,0.2);  }
+    .t-diamond { background: rgba(99,179,237,0.08);  border-color: rgba(99,179,237,0.2);  }
+    .t-plat    { background: rgba(168,85,247,0.08);  border-color: rgba(168,85,247,0.2);  }
+    .b-bronze  { background: #B47C3C; } .b-silver { background: #A0A0A0; } .b-gold { background: #F59E0B; }
+    .b-diamond { background: #63B3ED; } .b-plat { background: #A855F7; }
+
+    /* GENERIC FEATURE CARDS (business model / engineering / role) */
+    .f-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .f-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: border-color .2s, transform .2s; }
+    .f-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+    .f-card-icon { font-size: 26px; margin-bottom: 12px; display: block; }
+    .f-card h3 { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 8px; }
+    .f-card p { font-size: 13.5px; color: var(--muted2); line-height: 1.7; }
+
+    /* PROOF LIST (where it stands) */
+    .proof-list { display: flex; flex-direction: column; gap: 10px; max-width: 680px; }
+    .proof-item { display: flex; align-items: flex-start; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; }
+    .proof-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-top: 7px; flex-shrink: 0; }
+    .proof-item p { font-size: 14px; color: var(--muted2); line-height: 1.6; }
+
+    /* CLOSING */
+    .closing { text-align: center; padding: 100px 24px; }
+    .closing h2 { font-size: clamp(28px,4.5vw,44px); font-weight: 900; letter-spacing: -1.5px; margin-bottom: 14px; }
+    .closing p { font-size: 15px; color: var(--muted2); margin-bottom: 8px; }
+    .closing .who { font-size: 13px; color: var(--muted); margin-bottom: 36px; }
+    .closing-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .cta-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--red); color: #fff; font-size: 14px; font-weight: 700; padding: 13px 26px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s; }
+    .cta-primary:hover { background: #D62F3C; transform: translateY(-2px); }
+    .cta-secondary { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border2); color: var(--text); font-size: 14px; font-weight: 700; padding: 13px 26px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s; }
+    .cta-secondary:hover { background: rgba(255,255,255,0.09); transform: translateY(-2px); }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    footer p { font-size: 13px; color: var(--muted); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color .15s; }
+    .footer-links a:hover { color: var(--muted2); }
+
+    /* REVEAL */
+    [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+    [data-reveal].revealed { opacity: 1; transform: translateY(0); }
+    [data-reveal][data-d="1"] { transition-delay: .08s; }
+    [data-reveal][data-d="2"] { transition-delay: .16s; }
+    [data-reveal][data-d="3"] { transition-delay: .24s; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .strip { grid-template-columns: repeat(2,1fr); }
+      .strip-item:nth-child(3) { border-left: none; }
+      .strip-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .stack-grid { grid-template-columns: 1fr; }
+      .arch-row { grid-template-columns: 1fr; }
+      .ladder-row { grid-template-columns: 1fr; gap: 20px; }
+      .matrix-hint { display: block; }
+      .tiers { grid-template-columns: repeat(2,1fr); }
+      .tiers .tier-card:last-child { grid-column: span 2; }
+      .shots { grid-template-columns: 1fr; }
+      .hardening-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+    }
+
+    /* Same fix used on the main site's nav overflow bug: hide secondary
+       nav items on narrow screens instead of letting them wrap and blow
+       out the fixed-height bar. */
+    @media (max-width: 640px) {
+      nav { padding: 0 16px; }
+      .nav-btn { display: none; }
+      .nav-link { font-size: 13px; padding: 6px 8px; }
+    }
+    @media (max-width: 420px) {
+      .nav-wordmark .rewards-word { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="liquidMetal" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="noise">
+        <animate attributeName="baseFrequency" dur="34s" values="0.010 0.016;0.016 0.010;0.010 0.016" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="70" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
+  <div class="liquid-bg" aria-hidden="true">
+    <div class="liquid-blob lb-1" data-parallax="0.04"></div>
+    <div class="liquid-blob lb-2" data-parallax="-0.03"></div>
+    <div class="liquid-blob lb-3" data-parallax="0.02"></div>
+  </div>
+
+  <nav>
+    <a href="/" class="nav-brand">
+      <span class="fuel-icon">⛽</span>
+      <span class="nav-wordmark">Lucky Stop <span class="rewards-word">Rewards</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="/" class="nav-link">← Back to Lucky Stop</a>
+      <a href="https://cliffindus.com" target="_blank" class="nav-btn">Cliff Industries →</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-orb-1"></div>
+    <div class="hero-orb-2"></div>
+    <div class="hero-inner">
+      <div class="hero-badge"><div class="badge-dot"></div><span>RBAC · Inventory · Advertising · DBA</span></div>
+      <h1 data-reveal>Role-Based Access Control<span class="sub">and the security architecture behind it</span></h1>
+      <p class="lead" data-reveal data-d="1">A production loyalty and store-operations platform built for a real 12-store gas station chain, examined role by role, security layer by security layer.</p>
+      <div class="hero-byline" data-reveal data-d="2">
+        <span><strong>Sajid Ali</strong> · Full-Stack &amp; Mobile Engineer</span>
+        <span style="color:var(--border2)">|</span>
+        <span>Mobile app, admin web, RBAC UI, CI/CD, and hardware integration</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip">
+    <div class="strip-item"><div class="strip-num r">12</div><div class="strip-lbl">Stores across Texas</div></div>
+    <div class="strip-item"><div class="strip-num">5</div><div class="strip-lbl">Distinct access roles</div></div>
+    <div class="strip-item"><div class="strip-num">2</div><div class="strip-lbl">Platforms: mobile + admin web</div></div>
+    <div class="strip-item"><div class="strip-num r">$0</div><div class="strip-lbl">Cost to the customer</div></div>
+  </div>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>The Project</div>
+    <h2 class="section-title" data-reveal>A loyalty platform for a real 12-store chain</h2>
+    <div class="prose" data-reveal>
+      <p>Lucky Stop is a Texas gas-station chain. Their loyalty app is free for customers, earns cashback on every purchase, and gives stores a full operations layer underneath it: staff scheduling, inventory requests, daily reporting, and store-to-store messaging, all gated by exactly who is allowed to see and do what.</p>
+      <p>The platform pays for itself the same way it pays the business: stores cover a monthly subscription plus a small platform fee on the cashback they issue. Customers never pay a cent.</p>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>How It's Built</div>
+    <h2 class="section-title" data-reveal>Tech stack</h2>
+    <div class="stack-grid" data-reveal>
+      <div class="stack-row"><span class="stack-k">Mobile</span><span class="stack-v">React Native + Expo (iOS &amp; Android)</span></div>
+      <div class="stack-row"><span class="stack-k">Admin web</span><span class="stack-v">React + Vite + TypeScript</span></div>
+      <div class="stack-row"><span class="stack-k">Backend</span><span class="stack-v">Node.js + Express + TypeScript</span></div>
+      <div class="stack-row"><span class="stack-k">Database</span><span class="stack-v">PostgreSQL + Prisma ORM</span></div>
+      <div class="stack-row"><span class="stack-k">Auth</span><span class="stack-v">Firebase (phone verification) + JWT sessions</span></div>
+      <div class="stack-row"><span class="stack-k">Push &amp; storage</span><span class="stack-v">Firebase Cloud Messaging + Cloudinary</span></div>
+      <div class="stack-row" style="grid-column: span 2"><span class="stack-k">Hosting</span><span class="stack-v">Render (API) · Vercel (admin) · Expo EAS (mobile)</span></div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>System Design</div>
+    <h2 class="section-title" data-reveal>Two front ends, one backend, one source of truth</h2>
+    <div class="arch" data-reveal>
+      <div class="arch-row">
+        <div class="arch-box"><div class="arch-box-title">Mobile app (React Native)</div><div class="arch-box-sub">Store Manager · Employee · Customer</div></div>
+        <div class="arch-box"><div class="arch-box-title">Admin web (React)</div><div class="arch-box-sub">DevAdmin · SuperAdmin</div></div>
+      </div>
+      <div style="display:flex; gap:calc(50% - 0.5px); width:100%; max-width:640px; justify-content:center">
+        <div class="arch-connector"></div><div class="arch-connector"></div>
+      </div>
+      <div class="arch-box wide arch-core"><div class="arch-box-title">Node.js + Express API</div><div class="arch-box-sub">Every role and store check happens here, not on the client</div></div>
+      <div class="arch-connector"></div>
+      <div class="arch-row">
+        <div class="arch-box"><div class="arch-box-title">PostgreSQL (Prisma)</div><div class="arch-box-sub">Source of truth</div></div>
+        <div class="arch-box"><div class="arch-box-title">Firebase Auth + FCM</div><div class="arch-box-sub">Identity &amp; push</div></div>
+      </div>
+    </div>
+    <p class="arch-note" data-reveal>DevAdmin and SuperAdmin work entirely from the admin web app. Store Manager, Employee, and Customer work entirely from the mobile app. Both talk to the same backend and the same role checks, so access rules can never drift between the two.</p>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>Access Control</div>
+    <h2 class="section-title" data-reveal>Five roles. One hierarchy.</h2>
+    <p class="section-sub" data-reveal>Enforced at the API, on every request — not just hidden in the UI.</p>
+
+    <div class="ladder-row" data-reveal>
+      <div class="ladder">
+        <div class="rung"><span class="rung-rank">RANK 4</span><span class="rung-name">DevAdmin</span></div>
+        <div class="rung"><span class="rung-rank">RANK 3</span><span class="rung-name">SuperAdmin</span></div>
+        <div class="rung"><span class="rung-rank">RANK 2</span><span class="rung-name">Store Manager</span></div>
+        <div class="rung"><span class="rung-rank">RANK 1</span><span class="rung-name">Employee / Cashier</span></div>
+        <div class="rung"><span class="rung-rank">RANK 0</span><span class="rung-name">Customer</span></div>
+      </div>
+      <div>
+        <p style="font-size:14px; color:var(--muted2); line-height:1.8;"><code class="mono" style="color:var(--red-lt)">requireRole(minRole)</code> — one generic rule per route. Any role ranked at or above the minimum passes automatically, no per-route allow-lists to keep in sync.</p>
+      </div>
+    </div>
+
+    <div class="code-block mono" data-reveal style="margin-top:32px">
+<span class="cm">// One rank list, every route checks against it</span>
+<span class="kw">const</span> ROLE_HIERARCHY = [
+  CUSTOMER, EMPLOYEE, STORE_MANAGER,
+  SUPER_ADMIN, DEV_ADMIN,
+];
+
+<span class="kw">function</span> <span class="fn">hasMinRole</span>(userRole, minRole) {
+  <span class="kw">return</span> roleRank(userRole) &gt;= roleRank(minRole);
+}
+
+<span class="cm">// applied per route, e.g.:</span>
+router.post(<span class="str">'/billing'</span>, authenticate,
+  requireRole(DEV_ADMIN), createBillingRecord);</div>
+
+    <div class="callout" data-reveal>
+      <div class="callout-label">Why this scales</div>
+      <p>224+ routes gated this way across the API, every one declares only its minimum role. Adding a new role, or promoting a permission, never means hunting down a scattered allow-list. A store-scoped route adds a second check on top: not just "what role," but "which store."</p>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>Permission Matrix</div>
+    <h2 class="section-title" data-reveal>What each role can actually reach</h2>
+    <p class="matrix-hint" data-reveal>Swipe to see every role →</p>
+    <div class="matrix-wrap" data-reveal>
+      <table class="matrix">
+        <thead><tr><th>Feature</th><th>DevAdmin</th><th>SuperAdmin</th><th>Store Mgr</th><th>Employee</th><th>Customer</th></tr></thead>
+        <tbody id="matrix-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>Multi-Store Scoping</div>
+    <h2 class="section-title" data-reveal>One account, several stores, correctly scoped</h2>
+    <div class="prose" data-reveal>
+      <p>A Store Manager or Employee can belong to more than one Lucky Stop location. A join table, <code class="mono" style="color:var(--red-lt)">UserStoreRole</code>, links a user to every store they can access, and a single <code class="mono" style="color:var(--red-lt)">allStoresAccess</code> flag lets one designated chain-wide manager bypass the check entirely. Access is looked up live from this table on every store-scoped request, so a change takes effect immediately, not at next login.</p>
+    </div>
+    <div class="chip-row" data-reveal>
+      <span class="chip mgr">Store Manager</span>
+      <span class="chip">Lucky Stop #4</span>
+      <span class="chip">Lucky Stop #7</span>
+      <span class="chip">Lucky Truck Stop</span>
+    </div>
+    <div class="callout amber" data-reveal>
+      <div class="callout-label">Real bug, real fix</div>
+      <p>A multi-store manager's Scheduling and Chat pages once queried only <code class="mono">storeIds[0]</code>, their first assigned store, so their other stores silently never loaded. Fixed once it was found, and swept for the same pattern across the rest of the codebase.</p>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section section-narrow">
+    <div class="eyebrow" data-reveal>Five Roles, In Detail</div>
+    <h2 class="section-title" data-reveal>What each person actually sees</h2>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="role-grid" id="role-grid" data-reveal></div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section section-narrow">
+    <div class="eyebrow" data-reveal>What You Don't See</div>
+    <h2 class="section-title" data-reveal>The security layer</h2>
+    <p class="section-sub" data-reveal>The parts a demo never shows, but a real business depends on.</p>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="sec-grid" data-reveal>
+      <div class="sec-card">
+        <div class="sec-card-title">Sessions re-earn trust every request</div>
+        <p>A JWT signature alone was never enough. A deactivated or deleted account's token could keep working for up to 7 days, most visibly on iOS where Keychain survives a reinstall. Every authenticated request now re-checks the account is still active directly against the database.</p>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-title">Fraud has to work harder than the fix</div>
+        <p>No receipt photo, no points — enforced server-side regardless of what the app's UI allows, and the same photo can never be reused across two transactions. A fraud engine hard-rejects duplicate customer/employee pairs within 2 minutes or purchases over $2,000, soft-flags unusual velocity to a manager, and routes anything over $800 to SuperAdmin.</p>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-title">A misconfigured rate can't bleed the business</div>
+        <p>Tiered cashback, category bonuses, and promotions can stack, so every grant's effective rate is hard-capped at 10% server-side, even if a rate gets misconfigured upstream.</p>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-title">PINs can't be guessed or quietly reused</div>
+        <p>A blocklist of common PINs, bcrypt hashing, account lockout after 5 failed attempts, and a 3-entry PIN history that blocks immediate reuse — enforced even when an admin resets a PIN on someone's behalf.</p>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-title">High-risk actions leave a trail</div>
+        <p>Deactivating a user, resetting a PIN, removing store access, deleting an offer: all written to an audit log with who, what, and when, surfaced to SuperAdmin as a live high-risk action feed.</p>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-title">Store access is checked live</div>
+        <p>A manager's assigned stores are looked up fresh from the database on every store-scoped request, so adding or removing a store from someone's access takes effect immediately, not after their next login.</p>
+      </div>
+    </div>
+
+    <div class="callout amber" data-reveal>
+      <div class="callout-label">Self-identified, fixed same day</div>
+      <p>An early build of the forgot-PIN flow returned the one-time verification code in the API response, and the admin login screen auto-filled it in dev mode. A focused security pass found and closed all three issues in one commit: the OTP no longer round-trips to the client at all, and recovery codes are delivered by email instead.</p>
+    </div>
+
+    <div style="margin-top:36px" data-reveal>
+      <div class="eyebrow" style="margin-bottom:16px">Layered Defenses</div>
+      <div class="hardening-grid">
+        <div class="hardening-item">Login attempts rate-limited: 10 per 15 minutes</div>
+        <div class="hardening-item">Helmet + a strict CORS origin allowlist</div>
+        <div class="hardening-item">Every request body validated with Zod, 78+ endpoints</div>
+        <div class="hardening-item">Request bodies capped at 5MB</div>
+        <div class="hardening-item">PINs hashed with bcrypt at cost factor 12</div>
+        <div class="hardening-item">Constant-time compare defeats login timing attacks</div>
+        <div class="hardening-item">In-store hardware keys expire after 15 minutes</div>
+        <div class="hardening-item">Max 5 concurrent reward redemptions per customer</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>Not a Mockup</div>
+    <h2 class="section-title" data-reveal>The rates engine and the audit log, live</h2>
+    <p class="section-sub" data-reveal>Real screenshots from the actual admin console, not wireframes.</p>
+    <div class="shots" data-reveal>
+      <div class="shot-frame">
+        <div class="shot-chrome"><span class="shot-dot"></span><span class="shot-dot"></span><span class="shot-dot"></span></div>
+        <img src="img/rates-console.png" alt="Live tiered cashback and category bonus rate configuration in the admin console" loading="lazy"/>
+        <div class="shot-label">Tiered cashback + category bonus configuration</div>
+      </div>
+      <div class="shot-frame">
+        <div class="shot-chrome"><span class="shot-dot"></span><span class="shot-dot"></span><span class="shot-dot"></span></div>
+        <img src="img/audit-log.png" alt="SuperAdmin audit log and high-risk action feed in the admin console" loading="lazy"/>
+        <div class="shot-label">SuperAdmin audit log and high-risk action feed</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>Business Model</div>
+    <h2 class="section-title" data-reveal>How the platform actually makes money</h2>
+    <div class="f-grid" data-reveal>
+      <div class="f-card"><span class="f-card-icon">📍</span><h3>Scale</h3><p>12 stores, Texas.</p></div>
+      <div class="f-card"><span class="f-card-icon">💳</span><h3>Revenue model</h3><p>Free for customers. Stores pay a monthly subscription plus a small platform fee on cashback issued.</p></div>
+      <div class="f-card"><span class="f-card-icon">🏆</span><h3>Cashback</h3><p>Tiered cashback (5 tiers) plus per-category bonus rates, with a flat cents-per-gallon mode available for gas and diesel.</p></div>
+      <div class="f-card"><span class="f-card-icon">🎁</span><h3>Redemption</h3><p>Points redeem for real product credits in-store, not a third-party gift card.</p></div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>Cashback Engine</div>
+    <h2 class="section-title" data-reveal>Five tiers, plus category and fuel bonuses on top</h2>
+    <div class="tiers" data-reveal>
+      <div class="tier-card t-bronze"><div class="tier-badge">🥉</div><div class="tier-name">Bronze</div><div class="tier-pct">1%</div><div class="tier-req">From 0 · All 12 locations</div><div class="tier-bar b-bronze"></div></div>
+      <div class="tier-card t-silver"><div class="tier-badge">🥈</div><div class="tier-name">Silver</div><div class="tier-pct">2%</div><div class="tier-req">From 5,000 pts · 7 free fountain refills</div><div class="tier-bar b-silver"></div></div>
+      <div class="tier-card t-gold"><div class="tier-badge">🥇</div><div class="tier-name">Gold</div><div class="tier-pct">3%</div><div class="tier-req">From 15,000 pts · +5¢/gal on gas</div><div class="tier-bar b-gold"></div></div>
+      <div class="tier-card t-diamond"><div class="tier-badge">💎</div><div class="tier-name">Diamond</div><div class="tier-pct">4%</div><div class="tier-req">From 30,000 pts · +7¢/gal, early access</div><div class="tier-bar b-diamond"></div></div>
+      <div class="tier-card t-plat"><div class="tier-badge">👑</div><div class="tier-name">Platinum</div><div class="tier-pct">5%</div><div class="tier-req">From 45,000 pts · +10¢/gal, top-tier vault</div><div class="tier-bar b-plat"></div></div>
+    </div>
+    <p class="arch-note" data-reveal style="margin-top:24px; text-align:left; max-width:none;">Rates, category bonuses, and a flat cents-per-gallon mode for gas and diesel are all configured live by SuperAdmin/DevAdmin, never hardcoded — the screenshot above is this exact table.</p>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>Engineering Highlights</div>
+    <h2 class="section-title" data-reveal>Built for real hardware and real releases</h2>
+    <div class="f-grid" data-reveal>
+      <div class="f-card"><span class="f-card-icon">🖨️</span><h3>Hardware integration</h3><p>Serial (RS-232C, DTR/DSR handshake) link to Verifone and Topaz in-store receipt printers, so a customer can self-grant points straight from a printed receipt.</p></div>
+      <div class="f-card"><span class="f-card-icon">⚙️</span><h3>Full CI/CD, both platforms</h3><p>Android: signed release builds with R8/ProGuard minification. iOS: automated build, archive, export, and upload to App Store Connect.</p></div>
+      <div class="f-card"><span class="f-card-icon">📍</span><h3>Location-aware pricing</h3><p>GPS-based store detection automatically surfaces the correct gas/diesel prices for the customer's actual physical location, reusing the app's existing age-verification location gate.</p></div>
+      <div class="f-card"><span class="f-card-icon">🧮</span><h3>Real fraud economics</h3><p>Every grant carries a computed dev-cut / store-cost split, so the platform fee model is enforced at the transaction level, not just on a monthly invoice.</p></div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>Where It Stands</div>
+    <h2 class="section-title" data-reveal>Live, in production, still shipping</h2>
+    <div class="proof-list" data-reveal>
+      <div class="proof-item"><span class="proof-dot"></span><p>All 12 stores on the platform today, running real daily transaction volume</p></div>
+      <div class="proof-item"><span class="proof-dot"></span><p>Shelf and price label printing, chain-wide catalog, store-scoped inventory requests</p></div>
+      <div class="proof-item"><span class="proof-dot"></span><p>Location-aware fuel pricing and a hardware integration with in-store receipt printers</p></div>
+      <div class="proof-item"><span class="proof-dot"></span><p>Customer dispute handling, staff scheduling, and manager-to-manager chat</p></div>
+      <div class="proof-item"><span class="proof-dot"></span><p>Android release builds ship with R8/ProGuard minification; iOS ships through an automated build-and-upload pipeline</p></div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+  <section class="section">
+    <div class="eyebrow" data-reveal>My Role</div>
+    <h2 class="section-title" data-reveal>What I built</h2>
+    <div class="f-grid" data-reveal>
+      <div class="f-card"><span class="f-card-icon">📱</span><h3>Mobile app (React Native + Expo)</h3><p>All 3 mobile-facing roles: Customer, Employee, and Store Manager experiences, including the QR scan and mandatory receipt-photo flow.</p></div>
+      <div class="f-card"><span class="f-card-icon">🖥️</span><h3>Admin web (React)</h3><p>DevAdmin and SuperAdmin dashboards, role-gated routing, and the permission model enforced in the UI.</p></div>
+      <div class="f-card"><span class="f-card-icon">🚀</span><h3>CI/CD pipelines</h3><p>Android release signing and R8/ProGuard minification, plus an iOS pipeline that builds, archives, and auto-uploads to App Store Connect.</p></div>
+      <div class="f-card"><span class="f-card-icon">🔌</span><h3>Hardware integration</h3><p>Serial (RS-232C) integration with in-store Verifone and Topaz receipt printers for the QR self-grant flow.</p></div>
+      <div class="f-card"><span class="f-card-icon">🔐</span><h3>RBAC-aware UX</h3><p>Every screen, tab, and button reflects the caller's real role and store access, not just a hidden route.</p></div>
+    </div>
+  </section>
+
+  <div class="closing">
+    <div class="eyebrow" data-reveal style="justify-content:center">Thank You</div>
+    <h2 data-reveal>Lucky Stop: RBAC and security architecture</h2>
+    <p data-reveal><strong style="color:var(--text)">Sajid Ali</strong> · Full-Stack &amp; Mobile Engineer</p>
+    <p class="who" data-reveal>sksajidali1279@gmail.com</p>
+    <div class="closing-ctas" data-reveal>
+      <a href="/" class="cta-secondary">← Back to Lucky Stop Rewards</a>
+      <a href="mailto:sksajidali1279@gmail.com" class="cta-primary">Get in touch →</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Lucky Stop Rewards · Built by <a href="https://cliffindus.com" style="color:var(--muted2);text-decoration:none">Cliff Industries</a></p>
+    <div class="footer-links">
+      <a href="/">Lucky Stop Rewards</a>
+      <a href="https://admin.luckystop.cliffindus.com" target="_blank">Store Admin</a>
+      <a href="https://cliffindus.com" target="_blank">Cliff Industries</a>
+    </div>
+  </footer>
+
+  <script>
+    // Liquid metal background: scroll parallax (rAF-throttled)
+    (function () {
+      const blobs = document.querySelectorAll('.liquid-blob');
+      if (!blobs.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      let ticking = false;
+      function apply() {
+        const y = window.scrollY || window.pageYOffset;
+        blobs.forEach(b => {
+          const f = parseFloat(b.dataset.parallax) || 0;
+          b.style.transform = `translateY(${y * f}px)`;
+        });
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(apply); ticking = true; } }, { passive: true });
+      apply();
+    })();
+
+    // Permission matrix — built from data so the ✓ pattern is easy to audit/update
+    const MATRIX_ROWS = [
+      ['Platform billing & dev-cut rate',        [1,0,0,0,0]],
+      ['Business analytics & promotions',        [1,0,0,0,0]],
+      ['Store roster & staff management',        [1,1,0,0,0]],
+      ['Tiered cashback / category rates',       [1,1,0,0,0]],
+      ['Approve $800+ flagged transaction',      [1,1,0,0,0]],
+      ['Store offers, banners, catalog',         [1,1,1,0,0]],
+      ['Approve/reject flagged grants',          [1,1,1,0,0]],
+      ['Order list & stock requests',            [1,1,1,1,0]],
+      ['Scan & grant customer points',           [1,1,1,1,0]],
+      ['Own QR code, rewards & disputes',        [1,1,1,1,1]],
+    ];
+    const matrixBody = document.getElementById('matrix-body');
+    if (matrixBody) {
+      matrixBody.innerHTML = MATRIX_ROWS.map(([label, cells]) => `
+        <tr><td>${label}</td>${cells.map(c => `<td>${c ? '<span class="yes-dot"></span>' : '<span style="color:var(--border2)">—</span>'}</td>`).join('')}</tr>
+      `).join('');
+    }
+
+    // Role deep-dive cards
+    const ROLES = [
+      { rank: 'RANK 4 · 1 of 5', platform: 'Admin web only', name: 'DevAdmin', tag: 'The developer/owner. Full platform access plus billing.', bullets: [
+        'Everything SuperAdmin can do, across all 12 stores',
+        'View and edit platform-wide billing and subscription pricing per store',
+        'View business analytics and manage business promotions',
+        'Set the platform fee ("dev cut") rate charged to each store',
+        "Regenerate a store's hardware API key (printer integration)",
+      ]},
+      { rank: 'RANK 3 · 2 of 5', platform: 'Admin web only', name: 'SuperAdmin', tag: 'Lucky Stop HQ staff. Chain-wide operations across all 12 stores.', bullets: [
+        'Manage offers, banners, and promotions for all stores',
+        'Configure tiered cashback rates and category bonus rates',
+        'View and manage the full customer list and staff roster',
+        'Approve high-value (over $800) flagged transactions',
+        'View the platform audit log and high-risk action feed',
+      ]},
+      { rank: 'RANK 2 · 3 of 5', platform: 'Mobile app only', name: 'Store Manager', tag: 'Runs one store, or several for a designated chain-wide manager.', bullets: [
+        "Review and approve/reject flagged point grants for their store(s)",
+        "Manage their store's offers, banners, catalog, and notices",
+        'Open/close the daily order list and review stock requests',
+        'Schedule staff and message their team through in-app chat',
+        "See only the store(s) they're assigned to, unless flagged chain-wide",
+      ]},
+      { rank: 'RANK 1 · 4 of 5', platform: 'Mobile app only', name: 'Employee / Cashier', tag: 'Front-line staff. Scans customers and grants points at the register.', bullets: [
+        'Scan a customer QR code and grant points for a purchase',
+        'Must attach a receipt photo before any points can post, no exceptions',
+        "View their daily report and store's daily task checklist",
+        'Submit stock requests and print shelf/price labels',
+      ]},
+      { rank: 'RANK 0 · 5 of 5', platform: 'Mobile app only', name: 'Customer', tag: 'The loyalty-program member. Free to join, no cost to use.', bullets: [
+        'Show their QR code in-store to earn cashback on any purchase',
+        'Track tier progress, redeem credits, and browse the rewards catalog',
+        'File a dispute on a transaction or request a product be stocked',
+        'Self-grant points from a store printer receipt (rate-limited, still fraud-checked)',
+      ]},
+    ];
+    const roleGrid = document.getElementById('role-grid');
+    if (roleGrid) {
+      roleGrid.innerHTML = ROLES.map(r => `
+        <div class="role-card">
+          <div class="role-card-top"><span class="role-rank-badge">${r.rank}</span><span class="role-platform">${r.platform}</span></div>
+          <div class="role-card-title">${r.name}</div>
+          <div class="role-card-tag">${r.tag}</div>
+          <ul>${r.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+        </div>
+      `).join('');
+    }
+
+    // Reveal-on-scroll (attach after dynamic content is injected)
+    const reveals = document.querySelectorAll('[data-reveal]');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
