@@ -355,6 +355,19 @@
       footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
     }
 
+    /* Nav overflow fix: 4 items wrapped to 2 lines on narrow screens and
+       overlapped the hero below (fixed-height nav, same failure mode
+       already fixed on the /rbac/ page). "How it works" and "Tiers" just
+       scroll the same page, so they're the ones safe to drop; "Deep Dive"
+       and "Store Login" go to different pages/subdomains and stay. */
+    @media (max-width: 640px) {
+      nav { padding: 0 16px; }
+      a[href="#how-it-works"], a[href="#tiers"] { display: none; }
+      .nav-link { font-size: 13px; padding: 6px 8px; white-space: nowrap; }
+      .nav-btn-login { font-size: 12px; padding: 6px 10px; white-space: nowrap; }
+      .nav-wordmark { font-size: 14px; }
+    }
+
     @media (max-width: 560px) {
       .biz-grid { grid-template-columns: 1fr; }
     }
@@ -385,6 +398,7 @@
     <div class="nav-right">
       <a href="#how-it-works" class="nav-link">How it works</a>
       <a href="#tiers" class="nav-link">Tiers</a>
+      <a href="/rbac/" class="nav-link">Deep Dive</a>
       <a href="https://admin.luckystop.cliffindus.com" target="_blank" class="nav-btn-login">Store Login →</a>
     </div>
   </nav>
