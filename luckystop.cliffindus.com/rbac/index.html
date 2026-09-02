@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lucky Stop · RBAC &amp; Security Architecture</title>
-  <meta name="description" content="How Lucky Stop's role-based access control, fraud engine, and security architecture actually work under the hood — a technical deep-dive for investors, partners, and engineers."/>
+  <meta name="description" content="How Lucky Stop's role-based access control, fraud engine, and security architecture actually work under the hood, a technical deep-dive for investors, partners, and engineers."/>
   <link rel="canonical" href="https://luckystop.cliffindus.com/rbac/"/>
   <meta name="theme-color" content="#0F1C2E"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230F1C2E'/%3E%3Ccircle cx='50' cy='50' r='24' fill='%23E63946'/%3E%3C/svg%3E"/>
@@ -89,8 +89,15 @@
     .hero h1 { font-size: clamp(34px, 5.4vw, 60px); font-weight: 900; line-height: 1.08; letter-spacing: -2px; margin-bottom: 18px; }
     .hero h1 .sub { display: block; font-size: 0.52em; font-weight: 700; color: var(--muted2); letter-spacing: -0.5px; margin-top: 8px; }
     .hero p.lead { font-size: 17px; color: var(--muted2); line-height: 1.75; max-width: 640px; margin: 0 auto 32px; }
-    .hero-byline { display: inline-flex; align-items: center; gap: 12px; padding: 10px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 13px; color: var(--muted2); }
+    .hero-byline { display: inline-flex; align-items: center; gap: 12px; padding: 10px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 13px; color: var(--muted2); flex-wrap: wrap; justify-content: center; }
     .hero-byline strong { color: var(--text); font-weight: 700; }
+
+    /* PRESENTER TOGGLE */
+    .presenter-toggle { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .pt-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+    .pt-btn { background: rgba(255,255,255,0.04); border: 1px solid var(--border2); color: var(--muted2); font-size: 12.5px; font-weight: 600; padding: 6px 14px; border-radius: 100px; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
+    .pt-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .pt-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
 
     /* STRIP */
     .strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
@@ -270,6 +277,12 @@
       .arch-row { grid-template-columns: 1fr; }
       .ladder-row { grid-template-columns: 1fr; gap: 20px; }
       .matrix-hint { display: block; }
+      /* A pill shape (border-radius:100px) looks like a blob once the
+         byline text wraps to 2-3 lines on a narrow screen, so switch to
+         a rounded-card shape instead once wrapping is likely. */
+      .hero-byline { border-radius: 18px; text-align: center; }
+      .byline-sep { display: none; }
+      .presenter-toggle { flex-wrap: wrap; justify-content: center; row-gap: 6px; }
       .tiers { grid-template-columns: repeat(2,1fr); }
       .tiers .tier-card:last-child { grid-column: span 2; }
       .shots { grid-template-columns: 1fr; }
@@ -325,11 +338,13 @@
       <div class="hero-badge"><div class="badge-dot"></div><span>RBAC · Inventory · Advertising · DBA</span></div>
       <h1 data-reveal>Role-Based Access Control<span class="sub">and the security architecture behind it</span></h1>
       <p class="lead" data-reveal data-d="1">A production loyalty and store-operations platform built for a real 12-store gas station chain, examined role by role, security layer by security layer.</p>
-      <div class="hero-byline" data-reveal data-d="2">
-        <span><strong>Sajid Ali</strong> · Full-Stack &amp; Mobile Engineer</span>
-        <span style="color:var(--border2)">|</span>
-        <span>Mobile app, admin web, RBAC UI, CI/CD, and hardware integration</span>
+
+      <div class="presenter-toggle" data-reveal data-d="2">
+        <span class="pt-label">Presented by</span>
+        <button class="pt-btn" data-person="sajid">Sajid Ali</button>
+        <button class="pt-btn" data-person="siri">Siri Chandana Siripurapu</button>
       </div>
+      <div class="hero-byline" id="hero-byline" data-reveal data-d="2"></div>
     </div>
   </section>
 
@@ -391,7 +406,7 @@
   <section class="section">
     <div class="eyebrow" data-reveal>Access Control</div>
     <h2 class="section-title" data-reveal>Five roles. One hierarchy.</h2>
-    <p class="section-sub" data-reveal>Enforced at the API, on every request — not just hidden in the UI.</p>
+    <p class="section-sub" data-reveal>Enforced at the API, on every request, not just hidden in the UI.</p>
 
     <div class="ladder-row" data-reveal>
       <div class="ladder">
@@ -402,7 +417,7 @@
         <div class="rung"><span class="rung-rank">RANK 0</span><span class="rung-name">Customer</span></div>
       </div>
       <div>
-        <p style="font-size:14px; color:var(--muted2); line-height:1.8;"><code class="mono" style="color:var(--red-lt)">requireRole(minRole)</code> — one generic rule per route. Any role ranked at or above the minimum passes automatically, no per-route allow-lists to keep in sync.</p>
+        <p style="font-size:14px; color:var(--muted2); line-height:1.8;"><code class="mono" style="color:var(--red-lt)">requireRole(minRole)</code>: one generic rule per route. Any role ranked at or above the minimum passes automatically, no per-route allow-lists to keep in sync.</p>
       </div>
     </div>
 
@@ -482,7 +497,7 @@ router.post(<span class="str">'/billing'</span>, authenticate,
       </div>
       <div class="sec-card">
         <div class="sec-card-title">Fraud has to work harder than the fix</div>
-        <p>No receipt photo, no points — enforced server-side regardless of what the app's UI allows, and the same photo can never be reused across two transactions. A fraud engine hard-rejects duplicate customer/employee pairs within 2 minutes or purchases over $2,000, soft-flags unusual velocity to a manager, and routes anything over $800 to SuperAdmin.</p>
+        <p>No receipt photo, no points. Enforced server-side regardless of what the app's UI allows, and the same photo can never be reused across two transactions. A fraud engine hard-rejects duplicate customer/employee pairs within 2 minutes or purchases over $2,000, soft-flags unusual velocity to a manager, and routes anything over $800 to SuperAdmin.</p>
       </div>
       <div class="sec-card">
         <div class="sec-card-title">A misconfigured rate can't bleed the business</div>
@@ -490,7 +505,7 @@ router.post(<span class="str">'/billing'</span>, authenticate,
       </div>
       <div class="sec-card">
         <div class="sec-card-title">PINs can't be guessed or quietly reused</div>
-        <p>A blocklist of common PINs, bcrypt hashing, account lockout after 5 failed attempts, and a 3-entry PIN history that blocks immediate reuse — enforced even when an admin resets a PIN on someone's behalf.</p>
+        <p>A blocklist of common PINs, bcrypt hashing, account lockout after 5 failed attempts, and a 3-entry PIN history that blocks immediate reuse, enforced even when an admin resets a PIN on someone's behalf.</p>
       </div>
       <div class="sec-card">
         <div class="sec-card-title">High-risk actions leave a trail</div>
@@ -564,7 +579,7 @@ router.post(<span class="str">'/billing'</span>, authenticate,
       <div class="tier-card t-diamond"><div class="tier-badge">💎</div><div class="tier-name">Diamond</div><div class="tier-pct">4%</div><div class="tier-req">From 30,000 pts · +7¢/gal, early access</div><div class="tier-bar b-diamond"></div></div>
       <div class="tier-card t-plat"><div class="tier-badge">👑</div><div class="tier-name">Platinum</div><div class="tier-pct">5%</div><div class="tier-req">From 45,000 pts · +10¢/gal, top-tier vault</div><div class="tier-bar b-plat"></div></div>
     </div>
-    <p class="arch-note" data-reveal style="margin-top:24px; text-align:left; max-width:none;">Rates, category bonuses, and a flat cents-per-gallon mode for gas and diesel are all configured live by SuperAdmin/DevAdmin, never hardcoded — the screenshot above is this exact table.</p>
+    <p class="arch-note" data-reveal style="margin-top:24px; text-align:left; max-width:none;">Rates, category bonuses, and a flat cents-per-gallon mode for gas and diesel are all configured live by SuperAdmin/DevAdmin, never hardcoded. The screenshot above is this exact table.</p>
   </section>
 
   <hr class="section-divider"/>
@@ -596,20 +611,14 @@ router.post(<span class="str">'/billing'</span>, authenticate,
   <section class="section">
     <div class="eyebrow" data-reveal>My Role</div>
     <h2 class="section-title" data-reveal>What I built</h2>
-    <div class="f-grid" data-reveal>
-      <div class="f-card"><span class="f-card-icon">📱</span><h3>Mobile app (React Native + Expo)</h3><p>All 3 mobile-facing roles: Customer, Employee, and Store Manager experiences, including the QR scan and mandatory receipt-photo flow.</p></div>
-      <div class="f-card"><span class="f-card-icon">🖥️</span><h3>Admin web (React)</h3><p>DevAdmin and SuperAdmin dashboards, role-gated routing, and the permission model enforced in the UI.</p></div>
-      <div class="f-card"><span class="f-card-icon">🚀</span><h3>CI/CD pipelines</h3><p>Android release signing and R8/ProGuard minification, plus an iOS pipeline that builds, archives, and auto-uploads to App Store Connect.</p></div>
-      <div class="f-card"><span class="f-card-icon">🔌</span><h3>Hardware integration</h3><p>Serial (RS-232C) integration with in-store Verifone and Topaz receipt printers for the QR self-grant flow.</p></div>
-      <div class="f-card"><span class="f-card-icon">🔐</span><h3>RBAC-aware UX</h3><p>Every screen, tab, and button reflects the caller's real role and store access, not just a hidden route.</p></div>
-    </div>
+    <div class="f-grid" id="my-role-grid" data-reveal></div>
   </section>
 
   <div class="closing">
     <div class="eyebrow" data-reveal style="justify-content:center">Thank You</div>
     <h2 data-reveal>Lucky Stop: RBAC and security architecture</h2>
-    <p data-reveal><strong style="color:var(--text)">Sajid Ali</strong> · Full-Stack &amp; Mobile Engineer</p>
-    <p class="who" data-reveal>sksajidali1279@gmail.com</p>
+    <p data-reveal id="closing-name"></p>
+    <p class="who" data-reveal>Cliff Industries</p>
     <div class="closing-ctas" data-reveal>
       <a href="/" class="cta-secondary">← Back to Lucky Stop Rewards</a>
       <a href="mailto:sksajidali1279@gmail.com" class="cta-primary">Get in touch →</a>
@@ -643,7 +652,7 @@ router.post(<span class="str">'/billing'</span>, authenticate,
       apply();
     })();
 
-    // Permission matrix — built from data so the ✓ pattern is easy to audit/update
+    // Permission matrix: built from data so the checkmark pattern is easy to audit/update
     const MATRIX_ROWS = [
       ['Platform billing & dev-cut rate',        [1,0,0,0,0]],
       ['Business analytics & promotions',        [1,0,0,0,0]],
@@ -659,7 +668,7 @@ router.post(<span class="str">'/billing'</span>, authenticate,
     const matrixBody = document.getElementById('matrix-body');
     if (matrixBody) {
       matrixBody.innerHTML = MATRIX_ROWS.map(([label, cells]) => `
-        <tr><td>${label}</td>${cells.map(c => `<td>${c ? '<span class="yes-dot"></span>' : '<span style="color:var(--border2)">—</span>'}</td>`).join('')}</tr>
+        <tr><td>${label}</td>${cells.map(c => `<td>${c ? '<span class="yes-dot"></span>' : '<span style="color:var(--border2)">·</span>'}</td>`).join('')}</tr>
       `).join('');
     }
 
@@ -710,6 +719,52 @@ router.post(<span class="str">'/billing'</span>, authenticate,
         </div>
       `).join('');
     }
+
+    // Two people built this system; the deck itself is nearly identical
+    // between them, only the byline and "My Role" section actually differ.
+    const PEOPLE = {
+      sajid: {
+        name: 'Sajid Ali',
+        title: 'Full-Stack &amp; Mobile Engineer',
+        tagline: 'Mobile app, admin web, RBAC UI, CI/CD, and hardware integration',
+        role: [
+          { icon: '📱', h: 'Mobile app (React Native + Expo)', p: 'All 3 mobile-facing roles: Customer, Employee, and Store Manager experiences, including the QR scan and mandatory receipt-photo flow.' },
+          { icon: '🖥️', h: 'Admin web (React)', p: 'DevAdmin and SuperAdmin dashboards, role-gated routing, and the permission model enforced in the UI.' },
+          { icon: '🚀', h: 'CI/CD pipelines', p: 'Android release signing and R8/ProGuard minification, plus an iOS pipeline that builds, archives, and auto-uploads to App Store Connect.' },
+          { icon: '🔌', h: 'Hardware integration', p: 'Serial (RS-232C) integration with in-store Verifone and Topaz receipt printers for the QR self-grant flow.' },
+          { icon: '🔐', h: 'RBAC-aware UX', p: "Every screen, tab, and button reflects the caller's real role and store access, not just a hidden route." },
+        ],
+      },
+      siri: {
+        name: 'Siri Chandana Siripurapu',
+        title: 'Backend &amp; Database Engineer',
+        tagline: 'API architecture, database schema, and security enforcement',
+        role: [
+          { icon: '🔐', h: 'RBAC middleware', p: 'The rank-based role hierarchy and per-store access checks that gate all 224+ API routes.' },
+          { icon: '🗄️', h: 'Database schema (PostgreSQL + Prisma)', p: 'The User, Store, UserStoreRole, BillingRecord, and AuditLog models that make multi-store, multi-role access possible.' },
+          { icon: '🛡️', h: 'Fraud-detection engine', p: 'Auto-reject and soft-flag rules for grant velocity, purchase size, and duplicate-pair abuse, plus the high-value escalation path.' },
+          { icon: '💰', h: 'Financial integrity', p: 'The tiered cashback and platform-fee logic, with a hard cap that protects the business even if a rate is misconfigured.' },
+          { icon: '🔑', h: 'Session and account security', p: 'JWT issuance, live DB re-validation on every request, PIN handling, and lockout logic.' },
+        ],
+      },
+    };
+
+    function setPerson(id) {
+      const p = PEOPLE[id];
+      if (!p) return;
+      document.getElementById('hero-byline').innerHTML = `
+        <span><strong>${p.name}</strong> · ${p.title}</span>
+        <span class="byline-sep" style="color:var(--border2)">|</span>
+        <span>${p.tagline}</span>
+      `;
+      document.getElementById('my-role-grid').innerHTML = p.role.map(r => `
+        <div class="f-card"><span class="f-card-icon">${r.icon}</span><h3>${r.h}</h3><p>${r.p}</p></div>
+      `).join('');
+      document.getElementById('closing-name').innerHTML = `<strong style="color:var(--text)">${p.name}</strong> · ${p.title}`;
+      document.querySelectorAll('.pt-btn').forEach(b => b.classList.toggle('active', b.dataset.person === id));
+    }
+    document.querySelectorAll('.pt-btn').forEach(b => b.addEventListener('click', () => setPerson(b.dataset.person)));
+    setPerson('sajid');
 
     // Reveal-on-scroll (attach after dynamic content is injected)
     const reveals = document.querySelectorAll('[data-reveal]');
