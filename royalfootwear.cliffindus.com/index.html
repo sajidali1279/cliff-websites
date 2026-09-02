@@ -7,7 +7,7 @@
   <meta name="description" content="Royal Footwear supplies general, sports, school, health, and indoor footwear to retailers at wholesale prices, with GST-compliant invoicing and flexible case-based bulk ordering. Based in Tenali, Andhra Pradesh."/>
   <link rel="canonical" href="https://royalfootwear.cliffindus.com/"/>
   <meta name="theme-color" content="#1A1410"/>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231A1410'/%3E%3Ccircle cx='50' cy='50' r='24' fill='%23C8853A'/%3E%3C/svg%3E"/>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231A1410'/%3E%3Cg transform='translate(9,9) scale(0.82)'%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='%23C8853A' stroke-width='4'/%3E%3Cg transform='translate(0,8)'%3E%3Ctext x='50' y='76' font-family='Georgia, serif' font-weight='900' font-size='48' fill='%23C8853A' text-anchor='middle'%3ER%3C/text%3E%3Cpath d='M35,33 L35,28 L39,25 L43,30 L50,19 L57,30 L61,25 L65,28 L65,33 Z' fill='%23E0A868'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="Royal Footwear"/>
   <meta property="og:title" content="Royal Footwear · Wholesale &amp; Retail Footwear Supplier"/>
@@ -22,7 +22,7 @@
   <meta name="twitter:image" content="https://royalfootwear.cliffindus.com/og.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cinzel:wght@900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -69,11 +69,10 @@
     }
     .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
     .nav-mark {
-      width: 30px; height: 30px; border-radius: 9px;
-      background: var(--amber-dim); border: 1px solid rgba(200,133,58,0.22);
+      width: 30px; height: 30px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
     }
+    .nav-mark svg { width: 30px; height: auto; }
     .nav-wordmark { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
     .nav-wordmark span { color: var(--amber-lt); }
     .nav-right { display: flex; align-items: center; gap: 8px; }
@@ -255,7 +254,19 @@
 
   <nav>
     <a href="/" class="nav-brand">
-      <span class="nav-mark">👞</span>
+      <span class="nav-mark">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="var(--amber)" stroke-width="3"/>
+          <circle cx="50" cy="50" r="38" fill="none" stroke="var(--amber)" stroke-width="1.2" stroke-dasharray="2.2 2.8"/>
+          <g transform="translate(0,8)">
+            <text x="50" y="76" font-family="Cinzel" font-weight="900" font-size="48" fill="var(--amber)" text-anchor="middle">R</text>
+            <path d="M35,33 L35,28 L39,25 L43,30 L50,19 L57,30 L61,25 L65,28 L65,33 Z" fill="var(--amber-lt)"/>
+            <circle cx="41" cy="30.5" r="1" fill="var(--amber)"/>
+            <circle cx="50" cy="30.5" r="1" fill="var(--amber)"/>
+            <circle cx="59" cy="30.5" r="1" fill="var(--amber)"/>
+          </g>
+        </svg>
+      </span>
       <span class="nav-wordmark">Royal <span>Footwear</span></span>
     </a>
     <div class="nav-right">
