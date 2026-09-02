@@ -7,7 +7,7 @@
   <meta name="description" content="Cliff Industries builds mobile apps, web dashboards, and backend systems for local businesses."/>
   <link rel="canonical" href="https://cliffindus.com/"/>
   <meta name="theme-color" content="#09090B"/>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2318181B'/%3E%3Crect x='30' y='30' width='40' height='40' rx='9' fill='%23FAFAFA'/%3E%3C/svg%3E"/>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2309090B'/%3E%3Cg transform='translate(15,32) scale(0.833)'%3E%3Cpolygon points='2,40 2,14 18,4 24,40' fill='%23A1A1AA'/%3E%3Crect x='27' y='25' width='8' height='15' fill='%23A1A1AA'/%3E%3Crect x='38' y='15' width='7' height='25' fill='%23D4D4D8'/%3E%3Crect x='48' y='30' width='12' height='10' fill='%23A1A1AA'/%3E%3Ccircle cx='18' cy='4' r='2.8' fill='%23FF8A5C'/%3E%3C/g%3E%3C/svg%3E"/>
   <!-- Open Graph / social -->
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="Cliff Industries"/>
@@ -39,6 +39,7 @@
       --z200: #E4E4E7;
       --z100: #F4F4F5;
       --z50:  #FAFAFA;
+      --ember: #FF8A5C;
       /* Borders */
       --b1: rgba(255,255,255,0.06);
       --b2: rgba(255,255,255,0.10);
@@ -128,6 +129,31 @@
       width: 28px; height: 28px;
       display: flex; align-items: center; justify-content: center;
     }
+    .nav-mark svg { width: 28px; height: auto; overflow: visible; }
+
+    /* Mark motion: plays once on load (~3.5s), then holds a fully static
+       resting frame, no infinite loops. A splash, not a screensaver. */
+    .mark-peak { transform-box: fill-box; transform-origin: 100% 100%; animation: markSettle 1.1s cubic-bezier(.22,1.4,.36,1) forwards; }
+    @keyframes markSettle { 0% { transform: translate(0,-10px) scale(0.94); opacity: 0; } 60% { opacity: 1; } 100% { transform: translate(0,0) scale(1); opacity: 1; } }
+
+    .mark-beacon { opacity: 0; transform-box: fill-box; transform-origin: 50% 50%; animation: markBeaconIn .4s ease forwards 1.05s, markBeaconSettle 2s ease-in-out forwards 1.4s; }
+    @keyframes markBeaconIn { to { opacity: 1; } }
+    @keyframes markBeaconSettle {
+      0%   { transform: scale(1);    filter: drop-shadow(0 0 0px var(--ember)); }
+      20%  { transform: scale(1.45); filter: drop-shadow(0 0 5px var(--ember)); }
+      40%  { transform: scale(1);    filter: drop-shadow(0 0 0px var(--ember)); }
+      60%  { transform: scale(1.45); filter: drop-shadow(0 0 5px var(--ember)); }
+      80%  { transform: scale(1);    filter: drop-shadow(0 0 0px var(--ember)); }
+      100% { transform: scale(1.18); filter: drop-shadow(0 0 3px var(--ember)); }
+    }
+
+    .mark-cell { opacity: 0; transform-box: fill-box; transform-origin: 50% 100%; animation: markCellGrow .6s cubic-bezier(.3,1.5,.6,1) forwards; animation-delay: calc(1.1s + var(--d, 0s)); }
+    @keyframes markCellGrow { 0% { opacity: 0; transform: scale(0.35); } 65% { opacity: 1; transform: scale(1.06); } 100% { opacity: 1; transform: scale(1); } }
+
+    .mark-shimmer-a { stop-color: var(--z400); stop-opacity: 0; }
+    .mark-shimmer-b { stop-color: var(--z100); stop-opacity: 0.85; }
+    .mark-shimmer-g { animation: markShimmerFade .6s ease forwards 2.5s; }
+    @keyframes markShimmerFade { to { opacity: 0; } }
     .nav-wordmark {
       font-size: 14px; font-weight: 700; letter-spacing: -0.2px; color: var(--z50);
     }
@@ -678,17 +704,31 @@
   <nav>
     <a href="/" class="nav-logo">
       <div class="nav-mark">
-        <svg viewBox="0 0 44 40" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="2,38 2,4 28,4 28,20 40,38" fill="#3F3F46"/>
-          <polygon points="28,4 36,4 36,20 28,20" fill="#52525B"/>
-          <line x1="2" y1="4" x2="28" y2="4" stroke="#A1A1AA" stroke-width="2" stroke-linecap="round"/>
-          <polygon points="2,38 2,4 28,4 28,20 40,38" fill="url(#lg)" opacity="0.5"/>
+        <svg viewBox="0 0 84 44" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#E4E4E7"/>
-              <stop offset="100%" stop-color="#52525B"/>
+            <linearGradient id="markShim" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop class="mark-shimmer-a" offset="0%"/><stop class="mark-shimmer-b" offset="50%"/><stop class="mark-shimmer-a" offset="100%"/>
+              <animateTransform attributeName="gradientTransform" type="translate" from="-1.6 0" to="1.6 0" dur="1.8s" begin="1.1s" repeatCount="1" fill="freeze"/>
             </linearGradient>
+            <mask id="markPeakMask">
+              <polygon points="2,40 2,14 18,4 24,40" fill="white"/>
+              <rect x="27" y="25" width="8"  height="15" fill="white"/>
+              <rect x="38" y="15" width="7"  height="25" fill="white"/>
+              <rect x="48" y="30" width="12" height="10" fill="white"/>
+            </mask>
           </defs>
+
+          <polygon class="mark-peak" points="2,40 2,14 18,4 24,40" fill="var(--z400)"/>
+
+          <g fill="var(--z400)">
+            <rect class="mark-cell" x="27" y="25" width="8"  height="15" style="--d:0s"/>
+            <rect class="mark-cell" x="38" y="15" width="7"  height="25" fill="var(--z300)" style="--d:.3s"/>
+            <rect class="mark-cell" x="48" y="30" width="12" height="10" style="--d:.55s"/>
+          </g>
+
+          <g class="mark-shimmer-g" mask="url(#markPeakMask)"><rect x="-20" y="-20" width="124" height="84" fill="url(#markShim)"/></g>
+
+          <circle class="mark-beacon" cx="18" cy="4" r="2.4" fill="var(--ember)"/>
         </svg>
       </div>
       <span class="nav-wordmark">Cliff <em>Industries</em></span>
