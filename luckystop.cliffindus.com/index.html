@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lucky Stop Rewards · Earn cashback at every visit</title>
-  <meta name="description" content="Lucky Stop Rewards gives you 5% cashback on every purchase at Lucky Stop convenience stores. Free on Google Play and the App Store."/>
+  <meta name="description" content="Earn up to 5% cashback at Lucky Stop, with a free treat every day of your first week and perks at every tier. Free on Google Play and the App Store."/>
   <link rel="canonical" href="https://luckystop.cliffindus.com/"/>
   <meta name="theme-color" content="#0F1C2E"/>
   <link rel="icon" href="/icon-32.png"/>
@@ -12,15 +12,15 @@
   <!-- Open Graph / social -->
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="Lucky Stop"/>
-  <meta property="og:title" content="Lucky Stop · 5% back on every stop"/>
-  <meta property="og:description" content="Earn 5% cashback on gas, groceries, and coffee. Redeem credits for real products in-store. Now on Google Play and the App Store."/>
+  <meta property="og:title" content="Lucky Stop · Up to 5% back on every stop"/>
+  <meta property="og:description" content="Earn up to 5% cashback on gas, groceries, and hot food. New members get a free treat every day for a week. Now on Google Play and the App Store."/>
   <meta property="og:url" content="https://luckystop.cliffindus.com/"/>
   <meta property="og:image" content="https://luckystop.cliffindus.com/og.png"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="Lucky Stop · 5% back on every stop"/>
-  <meta name="twitter:description" content="Earn 5% cashback, redeem for real products in-store. Now on Google Play and the App Store."/>
+  <meta name="twitter:title" content="Lucky Stop · Up to 5% back on every stop"/>
+  <meta name="twitter:description" content="Earn up to 5% cashback and redeem for free items in-store. Now on Google Play and the App Store."/>
   <meta name="twitter:image" content="https://luckystop.cliffindus.com/og.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -154,7 +154,7 @@
     .cta-ios:hover { background: rgba(255,255,255,0.09); transform: translateY(-2px); }
 
     .hero-stats { display: flex; gap: 32px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
-    .hero-stat-num { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+    .hero-stat-num { font-size: 28px; font-weight: 800; letter-spacing: -1px; white-space: nowrap; }
     .hero-stat-num .r { color: var(--red-lt); }
     .hero-stat-lbl { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
 
@@ -232,17 +232,26 @@
     .tier-name { font-size: 13px; font-weight: 700; letter-spacing: .5px; }
     .tier-req { font-size: 11px; color: var(--muted); line-height: 1.4; }
     .tier-bar { width: 100%; height: 2px; border-radius: 1px; margin-top: auto; }
+    .tier-pct { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; line-height: 1; }
+    .tier-pct span { font-size: 12px; font-weight: 600; letter-spacing: 0; color: var(--muted); margin-left: 5px; }
+    .t-bronze .tier-pct { color: #E0A86A; } .t-silver .tier-pct { color: #C7C8CC; } .t-gold .tier-pct { color: #FFD24A; }
+    .t-diamond .tier-pct { color: #7DD8F8; } .t-plat .tier-pct { color: #ECEBE9; }
+    .tier-perks { list-style: none; display: flex; flex-direction: column; gap: 7px; margin: 2px 0 10px; }
+    .tier-perks li { font-size: 12px; color: var(--muted2); line-height: 1.45; padding-left: 12px; position: relative; }
+    .tier-perks li::before { content: ''; position: absolute; left: 0; top: .62em; width: 4px; height: 4px; border-radius: 50%; background: var(--muted); }
+    .tier-note { margin-top: 22px; max-width: 760px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+    .up { font-size: .5em; font-weight: 600; letter-spacing: 0; color: var(--muted); margin-right: 3px; }
 
     .t-bronze  { background: rgba(180,120,60,0.08);  border-color: rgba(180,120,60,0.2);  }
     .t-silver  { background: rgba(160,160,160,0.08); border-color: rgba(160,160,160,0.2); }
     .t-gold    { background: rgba(245,158,11,0.08);  border-color: rgba(245,158,11,0.2);  }
-    .t-plat    { background: rgba(99,179,237,0.08);  border-color: rgba(99,179,237,0.2);  }
-    .t-diamond { background: rgba(168,85,247,0.08);  border-color: rgba(168,85,247,0.2);  }
+    .t-diamond { background: rgba(125,216,248,0.08); border-color: rgba(125,216,248,0.22); }
+    .t-plat    { background: rgba(229,228,226,0.08); border-color: rgba(229,228,226,0.22); }
     .b-bronze  { background: #B47C3C; }
     .b-silver  { background: #A0A0A0; }
     .b-gold    { background: #F59E0B; }
-    .b-plat    { background: #63B3ED; }
-    .b-diamond { background: #A855F7; }
+    .b-diamond { background: #7DD8F8; }
+    .b-plat    { background: #E5E4E2; }
 
     /* BUSINESS PITCH */
     .biz-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; position: relative; }
@@ -371,6 +380,8 @@
 
     @media (max-width: 560px) {
       .biz-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 16px; }
+      .hero-stat-lbl { font-size: 11px; }
     }
   </style>
 </head>
@@ -421,7 +432,7 @@
         </h1>
 
         <p>
-          Earn 5% cashback on every purchase at Lucky Stop. Redeem credits for free products like gas, snacks, and drinks, right at the register.
+          Earn up to 5% cashback at Lucky Stop, and your rate grows with every tier you climb. Redeem your points for free items, right at the register.
         </p>
 
         <div class="hero-ctas">
@@ -443,8 +454,8 @@
 
         <div class="hero-stats">
           <div class="hero-stat">
-            <div class="hero-stat-num"><span class="r">5%</span></div>
-            <div class="hero-stat-lbl">Cashback every purchase</div>
+            <div class="hero-stat-num"><span class="r"><span class="up">Up to</span> 5%</span></div>
+            <div class="hero-stat-lbl">Cashback, by tier</div>
           </div>
           <div class="hero-stat">
             <div class="hero-stat-num">12+</div>
@@ -522,16 +533,16 @@
 
   <div class="strip">
     <div class="strip-item">
-      <div class="strip-num r">5%</div>
-      <div class="strip-lbl">Cashback rate</div>
+      <div class="strip-num r"><span class="up">Up to</span> 5%</div>
+      <div class="strip-lbl">Cashback, by tier</div>
     </div>
     <div class="strip-item">
       <div class="strip-num">12+</div>
       <div class="strip-lbl">Store locations</div>
     </div>
     <div class="strip-item">
-      <div class="strip-num">7</div>
-      <div class="strip-lbl">Product categories</div>
+      <div class="strip-num">5</div>
+      <div class="strip-lbl">Reward tiers</div>
     </div>
     <div class="strip-item">
       <div class="strip-num r">Free</div>
@@ -549,13 +560,13 @@
       <div class="f-card b8" data-reveal style="min-height:200px">
         <span class="f-card-icon">📲</span>
         <h3>Scan &amp; earn instantly</h3>
-        <p>Show your QR code at checkout. The cashier scans it, enters your purchase, and your credits appear immediately. No waiting, no approval required.</p>
+        <p>Show your QR code at checkout. The cashier scans it, enters your purchase, and your credits appear right away.</p>
       </div>
 
       <div class="f-card b4" data-reveal style="display:flex;flex-direction:column;justify-content:space-between;gap:20px;min-height:200px">
         <div>
-          <div class="highlight-num">5%</div>
-          <div class="highlight-sub">back on every purchase, every time</div>
+          <div class="highlight-num"><span class="up">Up to</span> 5%</div>
+          <div class="highlight-sub">back on every purchase, and your rate grows with every tier</div>
         </div>
         <div style="border-top:1px solid var(--border);padding-top:16px">
           <div class="highlight-num" style="font-size:32px">$0</div>
@@ -563,10 +574,28 @@
         </div>
       </div>
 
-      <div class="f-card b6" data-reveal>
+      <div class="f-card b4" data-reveal>
         <span class="f-card-icon">🎁</span>
-        <h3>Redeem for real products</h3>
-        <p>Credits go toward free gas, snacks, drinks, and more at any participating Lucky Stop location.</p>
+        <h3>Week one's on us</h3>
+        <p>New members get a free item every day for their first 7 days: a fountain drink, a coffee, a 12oz soda or a hot food snack. Pick one in the app and show the code at the register.</p>
+      </div>
+
+      <div class="f-card b4" data-reveal data-d="1">
+        <span class="f-card-icon">🔥</span>
+        <h3>Order hot food ahead</h3>
+        <p>Order from the hot food menu in the app at participating stores. The team gets it right away and has it ready for you shortly.</p>
+      </div>
+
+      <div class="f-card b4" data-reveal data-d="2">
+        <span class="f-card-icon">⛽</span>
+        <h3>Gas prices at your store</h3>
+        <p>See today's gas and diesel prices for your store, plus any active gas offers, right on your home screen.</p>
+      </div>
+
+      <div class="f-card b6" data-reveal>
+        <span class="f-card-icon">🛍️</span>
+        <h3>Redeem for real rewards</h3>
+        <p>Spend your points on free items from the rewards catalog, or ask the cashier to apply your balance to a purchase. Works at any Lucky Stop location.</p>
       </div>
 
       <div class="f-card b6" data-reveal>
@@ -612,13 +641,13 @@
         <div class="step-num">Step 03</div>
         <span class="step-icon">⛽</span>
         <h4>Shop at Lucky Stop</h4>
-        <p>Show your QR code at checkout. Cashier enters the amount and you earn credits.</p>
+        <p>Show your QR code at checkout. The cashier scans it and you earn points on the purchase.</p>
       </div>
       <div class="step">
         <div class="step-num">Step 04</div>
         <span class="step-icon">🎉</span>
         <h4>Redeem your credits</h4>
-        <p>Tell the cashier you want to redeem. They apply your credits right at the register.</p>
+        <p>Open Redeem Rewards in the app, pick an item and show the code. The cashier scans your QR to confirm.</p>
       </div>
     </div>
   </section>
@@ -723,40 +752,66 @@
   <section id="tiers" class="section">
     <div class="eyebrow" data-reveal>Rewards Tiers</div>
     <h2 class="section-title" data-reveal>Spend more, earn more</h2>
-    <p class="section-sub" data-reveal>Your tier level unlocks bonus cashback and exclusive perks. Tiers are based on your last 12 months of spending.</p>
+    <p class="section-sub" data-reveal>Your tier sets your cashback rate and unlocks perks. Earn points to move up, and the progress bar in the app always shows how close you are to the next tier.</p>
 
     <div class="tiers" data-reveal>
       <div class="tier-card t-bronze">
         <div class="tier-badge">🥉</div>
         <div class="tier-name">Bronze</div>
-        <div class="tier-req">Starting tier · All members begin here</div>
+        <div class="tier-pct">1%<span>back</span></div>
+        <ul class="tier-perks">
+          <li>Where every member starts</li>
+          <li>Works at every Lucky Stop location</li>
+          <li>Member-only deals and promotions</li>
+        </ul>
         <div class="tier-bar b-bronze"></div>
       </div>
       <div class="tier-card t-silver">
         <div class="tier-badge">🥈</div>
         <div class="tier-name">Silver</div>
-        <div class="tier-req">$250+ spending</div>
+        <div class="tier-pct">2%<span>back</span></div>
+        <ul class="tier-perks">
+          <li>7 free fountain refills each period</li>
+          <li>Silver-only offers and rewards</li>
+        </ul>
         <div class="tier-bar b-silver"></div>
       </div>
       <div class="tier-card t-gold">
         <div class="tier-badge">🥇</div>
         <div class="tier-name">Gold</div>
-        <div class="tier-req">$500+ spending + bonus events</div>
+        <div class="tier-pct">3%<span>back</span></div>
+        <ul class="tier-perks">
+          <li>A free fountain refill every day</li>
+          <li>+5¢ per gallon on gas</li>
+          <li>Gold-only catalog items</li>
+        </ul>
         <div class="tier-bar b-gold"></div>
       </div>
-      <div class="tier-card t-plat">
-        <div class="tier-badge">💎</div>
-        <div class="tier-name">Platinum</div>
-        <div class="tier-req">$1,000+ · Priority offers</div>
-        <div class="tier-bar b-plat"></div>
-      </div>
       <div class="tier-card t-diamond">
-        <div class="tier-badge">👑</div>
+        <div class="tier-badge">💎</div>
         <div class="tier-name">Diamond</div>
-        <div class="tier-req">$2,500+ · Top-tier perks</div>
+        <div class="tier-pct">4%<span>back</span></div>
+        <ul class="tier-perks">
+          <li>A free fountain refill every day</li>
+          <li>+7¢ per gallon on gas</li>
+          <li>Limited drops and early access to new rewards</li>
+        </ul>
         <div class="tier-bar b-diamond"></div>
       </div>
+      <div class="tier-card t-plat">
+        <div class="tier-badge">👑</div>
+        <div class="tier-name">Platinum</div>
+        <div class="tier-pct">5%<span>back</span></div>
+        <ul class="tier-perks">
+          <li>A free fountain refill every day</li>
+          <li>+10¢ per gallon on gas</li>
+          <li>The Platinum vault: top-tier rewards only</li>
+        </ul>
+        <div class="tier-bar b-plat"></div>
+      </div>
     </div>
+
+    <p class="tier-note" data-reveal>Tiers run in six-month seasons, January to June and July to December. Each new season starts one tier lower than you finished, so every point you earn helps you climb back and keep your perks. Category bonuses and store promotions stack on top of your tier rate, and free refills are for your own cup.</p>
   </section>
 
   <hr class="section-divider"/>
