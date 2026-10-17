@@ -43,7 +43,7 @@
   <div class="wrapper">
     <p class="meta">Legal</p>
     <h1>Privacy Policy</h1>
-    <p class="effective">Effective Date: June 1, 2026 &nbsp;·&nbsp; Last Updated: October 11, 2026 &nbsp;·&nbsp; Version 1.1</p>
+    <p class="effective">Effective Date: June 1, 2026 &nbsp;·&nbsp; Last Updated: October 16, 2026 &nbsp;·&nbsp; Version 1.2</p>
 
     <h2>1. Who We Are</h2>
     <p>Lucky Stop Rewards is a loyalty platform operated by <strong>Cliff Industries</strong> on behalf of Lucky Stop convenience store locations throughout the United States. Cliff Industries is the data controller for purposes of this Privacy Policy.</p>
@@ -64,7 +64,8 @@
     <ul>
       <li><strong>Transaction history</strong>: purchases, credit balances, and redemptions</li>
       <li><strong>Location (optional)</strong>: used to show your nearest Lucky Stop location; only collected while the app is open and only if you grant permission. For store staff, it also checks you in at the store you are working at during a shift: the store, the time and the distance are recorded, never your coordinates</li>
-      <li><strong>Receipt photos</strong>: uploaded by employees to verify transactions; stored securely</li>
+      <li><strong>Receipt photos</strong>: taken by store staff to verify a purchase, or by you when you scan your own receipt in the app (where offered)</li>
+      <li><strong>Details read from a receipt</strong>: the store, date and time, items and amounts, the register's transaction numbers, and how it was paid, including the card brand and the last 4 digits of the card. We never see or keep the full card number</li>
       <li><strong>Device token</strong>: used to send you push notifications</li>
       <li><strong>Promotions and challenges</strong>: which promotion applied to a purchase, the extra cashback it paid you (for promotions with a daily limit), and your challenge progress</li>
       <li><strong>Hot food orders</strong>: the items you order for pick-up, any note, the store and the order status</li>
@@ -79,7 +80,7 @@
       <li>To show relevant store locations near you</li>
       <li>To decide which promotions you can use: some are only for a tier and up, new customers, customers who have not visited in a while, or your birthday month. This is worked out inside Lucky Stop from your tier, purchase dates and birthday month, and is never shared with advertisers</li>
       <li>To track challenges and credit their rewards</li>
-      <li>To detect and prevent fraud</li>
+      <li>To detect and prevent fraud, including checking that a receipt is used only once and is yours: we compare receipt transaction numbers, and the card brand and last 4 digits, across accounts</li>
       <li>To generate store-level analytics for store managers and administrators</li>
     </ul>
 
@@ -94,12 +95,12 @@
       <li><strong>Cloudflare</strong>: domain name service and network protection</li>
       <li><strong>Vercel</strong>: hosting for the admin portal (staff only)</li>
       <li><strong>Resend</strong>: email delivery (account recovery emails)</li>
-      <li><strong>Anthropic</strong>: suggested Spanish translations of promotion text for our staff; it never receives customer information</li>
+      <li><strong>Anthropic</strong>: its Claude AI reads receipt photos (when you scan a receipt, or when store staff send one to our head office) to fill in the store, date, items, totals and payment details, and suggests Spanish translations of promotion text for our staff. It receives the receipt photo only, never your name or phone number</li>
     </ul>
     <p>All third-party providers are contractually required to process data only as directed by us and to maintain appropriate security standards.</p>
 
     <h2>6. Data Retention</h2>
-    <p>We retain your account data for as long as your account is active. If you delete your account, your personal information is deleted within 30 days. Transaction records are kept for 7 years for financial record-keeping, without your name or phone number once your account is deleted. Receipt photos are deleted automatically 2 years after the purchase.</p>
+    <p>We retain your account data for as long as your account is active. If you delete your account, your personal information is deleted within 30 days. Transaction records are kept for 7 years for financial record-keeping, without your name or phone number once your account is deleted. Receipt photos are deleted automatically 2 years after the purchase. The details read from a receipt, including the card brand and last 4 digits, are kept with the transaction record.</p>
 
     <h2>7. Your Rights</h2>
     <ul>
@@ -113,7 +114,7 @@
     <p>Lucky Stop Rewards is intended for users 18 years of age and older. We do not knowingly collect personal information from anyone under 18. If we become aware that a user is under 18, we will delete their account promptly.</p>
 
     <h2>9. Security</h2>
-    <p>All data is transmitted over HTTPS. Phone numbers and sensitive fields are encrypted at rest. Receipt photos are stored in a private cloud bucket not accessible to the public. We conduct periodic security reviews of our infrastructure.</p>
+    <p>All data is transmitted over HTTPS. Phone numbers and sensitive fields are encrypted at rest. Receipt photos are stored with Cloudinary at long, random web addresses that are not listed or searchable; only staff and admin screens link to them. We conduct periodic security reviews of our infrastructure.</p>
 
     <h2>10. Changes to This Policy</h2>
     <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last Updated" date above and notify active users via push notification or in-app message if the changes are material.</p>
