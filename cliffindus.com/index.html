@@ -45,6 +45,9 @@
       --b1: rgba(255,255,255,0.06);
       --b2: rgba(255,255,255,0.10);
       --b3: rgba(255,255,255,0.16);
+      /* Motion */
+      --ease: cubic-bezier(.16,1,.3,1);
+      --spring: cubic-bezier(.34,1.56,.64,1);
     }
 
     html { scroll-behavior: smooth; }
@@ -172,6 +175,14 @@
     }
     .nav-cta:hover { background: var(--z200) !important; }
 
+    /* Reading-progress line along the bottom edge of the nav */
+    .scroll-progress {
+      position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+      transform-origin: 0 50%; transform: scaleX(var(--sp, 0));
+      background: linear-gradient(90deg, rgba(228,228,231,0.1), var(--z300) 75%, var(--ember));
+      pointer-events: none;
+    }
+
     /* ── HERO ────────────────────────────────────────────── */
     .hero {
       position: relative;
@@ -202,7 +213,38 @@
       top: 50%; left: 50%; transform: translate(-50%, -60%);
     }
 
-    .hero-content { position: relative; z-index: 1; max-width: 860px; }
+    .hero-content { position: relative; z-index: 1; max-width: 1000px; }
+
+    /* Two very faint glows (one zinc, one ember) drifting behind the brain */
+    .hero-aurora { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .hero-aurora span { position: absolute; left: 50%; top: 50%; border-radius: 50%; }
+    .hero-aurora span:nth-child(1) {
+      width: 620px; height: 620px; margin: -360px 0 0 -560px;
+      background: radial-gradient(circle, rgba(228,228,231,0.055), transparent 65%);
+      animation: auroraA 24s ease-in-out infinite;
+    }
+    .hero-aurora span:nth-child(2) {
+      width: 520px; height: 520px; margin: -200px 0 0 40px;
+      background: radial-gradient(circle, rgba(255,138,92,0.06), transparent 65%);
+      animation: auroraB 28s ease-in-out infinite;
+    }
+    @keyframes auroraA { 0%, 100% { translate: 0 0; scale: 1; } 50% { translate: 90px 50px; scale: 1.15; } }
+    @keyframes auroraB { 0%, 100% { translate: 0 0; scale: 1; } 50% { translate: -100px -40px; scale: .9; } }
+
+    /* Hero entrance: each line sharpens out of a soft blur, in sequence */
+    @keyframes heroIn {
+      from { opacity: 0; translate: 0 .45em; filter: blur(12px); }
+      to   { opacity: 1; translate: 0 0;     filter: blur(0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes brainIn { from { opacity: 0; scale: .9; } to { opacity: 1; scale: 1; } }
+    .hero-badge          { animation: heroIn .9s var(--ease) .15s backwards; }
+    .hero-h1 .line1      { animation: heroIn 1.1s var(--ease) .3s backwards; }
+    .hero-h1 .line2      { animation: heroIn 1.1s var(--ease) .45s backwards; }
+    .hero-sub            { animation: heroIn .9s var(--ease) .7s backwards; }
+    .hero-ctas           { animation: heroIn .9s var(--ease) .85s backwards; }
+    .scroll-cue          { animation: fadeIn 1s ease 1.5s backwards; }
+    #brainCanvas         { animation: brainIn 1.8s var(--ease) .1s backwards; }
 
     /* Announcement badge */
     .hero-badge {
@@ -231,10 +273,10 @@
 
     /* Hero heading */
     h1.hero-h1 {
-      font-size: clamp(42px, 7.5vw, 88px);
+      font-size: clamp(38px, 6.6vw, 84px);
       font-weight: 900;
       line-height: 1.0;
-      letter-spacing: -4px;
+      letter-spacing: -0.045em;
       margin-bottom: 24px;
     }
     .hero-h1 .line1 { display: block; color: var(--z50); }
@@ -248,7 +290,7 @@
     .hero-sub {
       font-size: clamp(15px, 1.8vw, 18px);
       color: #FFFFFF;
-      max-width: 460px; margin: 0 auto 36px;
+      max-width: 560px; margin: 0 auto 36px;
       line-height: 1.75; font-weight: 400;
       letter-spacing: -0.1px;
     }
@@ -261,7 +303,15 @@
       font-size: 13px; font-weight: 600;
       text-decoration: none; border: none; cursor: pointer;
       transition: all .15s; letter-spacing: -0.1px;
+      position: relative; overflow: hidden;
     }
+    /* A soft band of light sweeps across the primary button on hover */
+    .btn-primary::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(110deg, transparent 35%, rgba(161,161,170,0.35) 50%, transparent 65%);
+      translate: -120% 0;
+    }
+    .btn-primary:hover::after { translate: 120% 0; transition: translate .75s var(--ease); }
     .btn-primary {
       background: var(--z50); color: var(--z950);
       box-shadow: 0 0 0 1px var(--z200);
@@ -313,7 +363,10 @@
       font-size: 12px; font-weight: 500;
       color: var(--z600); letter-spacing: .3px;
       text-transform: uppercase;
+      transition: color .2s;
     }
+    .ticker-wrap:hover .ticker-track { animation-play-state: paused; }
+    .ticker-item:hover { color: var(--z300); }
     .ticker-item::before {
       content: '·'; color: var(--z700); font-size: 16px;
     }
@@ -386,6 +439,39 @@
     .s-early .wc-status-dot { background: var(--z600); }
 
     .wc-icon { font-size: 36px; margin-bottom: 14px; display: block; line-height: 1; }
+
+    /* Product line icons: each stroke draws itself in when the card is
+       revealed, then the icon lifts slightly on hover. */
+    .wc-svg {
+      width: 36px; height: 36px; color: var(--z300);
+      transition: color .25s, transform .4s var(--spring);
+    }
+    .wc-svg > * { stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; }
+    .work-card.on .wc-svg > * { animation: drawIn 1.3s var(--ease) .3s forwards; }
+    .work-card.on .wc-svg > :nth-child(2) { animation-delay: .45s; }
+    .work-card.on .wc-svg > :nth-child(3) { animation-delay: .6s; }
+    .work-card.on .wc-svg > :nth-child(4) { animation-delay: .75s; }
+    .work-card.on .wc-svg > :nth-child(5) { animation-delay: .9s; }
+    .work-card.on .wc-svg > :nth-child(n+6) { animation-delay: 1.05s; }
+    @keyframes drawIn {
+      0%   { stroke-dashoffset: 1; opacity: 0; }
+      8%   { opacity: 1; }
+      100% { stroke-dashoffset: 0; opacity: 1; }
+    }
+    .wc-svg .ember { color: var(--ember); }
+    .work-card:hover .wc-svg { color: var(--z50); transform: translateY(-2px) rotate(-4deg); }
+
+    /* Spotlight border: a soft highlight on the card's edge follows the cursor */
+    .spot { position: relative; }
+    .spot::after {
+      content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+      background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.22), transparent 60%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+      opacity: 0; transition: opacity .3s; pointer-events: none;
+    }
+    .spot:hover::after { opacity: 1; }
     .wc-title { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; color: var(--z50); }
     .wc-desc { font-size: 13px; color: var(--z400); line-height: 1.7; margin-bottom: 16px; }
 
@@ -394,7 +480,9 @@
       font-size: 10px; font-weight: 600; letter-spacing: .3px;
       background: rgba(255,255,255,0.04); border: 1px solid var(--b2);
       color: var(--z400); padding: 2px 8px; border-radius: 5px;
+      transition: color .2s, border-color .2s, translate .2s;
     }
+    .tag:hover { color: var(--z200); border-color: var(--b3); translate: 0 -1px; }
 
     .wc-link {
       display: inline-flex; align-items: center; gap: 5px;
@@ -411,6 +499,7 @@
     .wc-stat { padding: 16px 0; }
     .wc-stat + .wc-stat { border-top: 1px solid var(--b1); }
     .wc-stat-n { font-size: 42px; font-weight: 800; letter-spacing: -2px; line-height: 1; color: var(--z200); }
+    [data-count] { font-variant-numeric: tabular-nums; }
     .wc-stat-l { font-size: 12px; color: var(--z600); margin-top: 2px; }
 
     .wc-side-inner { display: flex; flex-direction: column; height: 100%; }
@@ -521,6 +610,13 @@
       background: var(--b1); border: 1px solid var(--b1); border-radius: 16px;
       overflow: hidden; margin-bottom: 56px; position: relative;
     }
+    /* A line draws across the top of the four steps, ending in ember */
+    .proc-grid::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; z-index: 3;
+      background: linear-gradient(90deg, transparent, var(--z300) 70%, var(--ember));
+      transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+    }
+    .proc-grid.on::after { transform: scaleX(1); transition: transform 1.8s var(--ease) .35s; }
     .proc-step { background: var(--z950); padding: 28px 24px; transition: background .25s, transform .25s; position: relative; }
     .proc-step:hover { background: var(--z900); transform: translateY(-2px); z-index: 2; }
     .proc-icon { width: 26px; height: 26px; color: var(--z500, #71717A); margin-bottom: 16px; display: block; transition: color .25s, transform .25s; }
@@ -602,7 +698,20 @@
       font-weight: 800; color: var(--z300);
       font-family: 'Inter', sans-serif; letter-spacing: -1px;
       user-select: none;
+      position: relative;
     }
+    /* On card hover, an ember arc circles the avatar */
+    @property --ring-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+    .team-avatar::before {
+      content: ''; position: absolute; inset: -1px; border-radius: 12px; padding: 1px;
+      background: conic-gradient(from var(--ring-a), transparent 0 65%, var(--ember) 90%, transparent);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+      opacity: 0; transition: opacity .3s; pointer-events: none;
+    }
+    .team-card:hover .team-avatar::before { opacity: 1; animation: ringSpin 2.4s linear infinite; }
+    @keyframes ringSpin { to { --ring-a: 360deg; } }
     .team-name { font-size: 16px; font-weight: 700; color: var(--z50); letter-spacing: -0.3px; margin-bottom: 3px; }
     .team-role { font-size: 12px; color: var(--z600); font-weight: 500; margin-bottom: 16px; }
     .team-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; }
@@ -638,6 +747,19 @@
       position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
       background: linear-gradient(to right, transparent, var(--z700), transparent);
     }
+    /* Slow signal rings expanding out from behind the email button */
+    .contact-rings { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+    .contact-rings span {
+      position: absolute; width: 320px; height: 320px; border-radius: 50%;
+      border: 1px solid rgba(228,228,231,0.10); opacity: 0;
+      animation: ringOut 7.5s cubic-bezier(.2,.6,.3,1) infinite;
+      animation-play-state: paused;
+    }
+    .contact-rings span:nth-child(2) { animation-delay: 2.5s; }
+    .contact-rings span:nth-child(3) { animation-delay: 5s; border-color: rgba(255,138,92,0.14); }
+    .contact-block.on .contact-rings span { animation-play-state: running; }
+    @keyframes ringOut { 0% { scale: .3; opacity: 0; } 15% { opacity: 1; } 100% { scale: 2.4; opacity: 0; } }
+    .contact-block > :not(.contact-rings) { position: relative; z-index: 1; }
     .contact-block .s-title { margin-bottom: 8px; }
     .contact-block p { font-size: 15px; color: var(--z400); margin-bottom: 28px; }
     .contact-email {
@@ -645,7 +767,7 @@
       background: rgba(255,255,255,0.04); border: 1px solid var(--b2);
       color: var(--z200); font-size: 14px; font-weight: 600;
       padding: 12px 22px; border-radius: 11px; text-decoration: none;
-      transition: background .15s, border-color .15s, transform .15s;
+      transition: background .15s, border-color .15s, transform .15s, translate .2s;
       letter-spacing: -0.1px;
     }
     .contact-email:hover { background: rgba(255,255,255,0.07); border-color: var(--b3); transform: translateY(-2px); }
@@ -663,15 +785,39 @@
     .footer-links a:hover { color: var(--z400); }
 
     /* ── REVEAL ─────────────────────────────────────────── */
-    [data-r] {
-      opacity: 0; transform: translateY(18px);
-      transition: opacity .65s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1);
+    /* Reveals run as animations on the `translate` property, not as
+       transitions on `transform`, so they never override a card's own
+       hover transition (lift, tilt) or leave a delay on it afterwards.
+       [data-r] reveals one element; [data-stagger] reveals its children
+       one after another (JS gives each child its --i index). */
+    @keyframes revealUp {
+      from { opacity: 0; translate: 0 22px; filter: blur(5px); }
+      to   { opacity: 1; translate: 0 0;    filter: blur(0); }
     }
-    [data-r].on { opacity: 1; transform: translateY(0); }
-    [data-r][data-d="1"] { transition-delay: .08s; }
-    [data-r][data-d="2"] { transition-delay: .16s; }
-    [data-r][data-d="3"] { transition-delay: .24s; }
-    [data-r][data-d="4"] { transition-delay: .32s; }
+    @keyframes lineGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    [data-r]:not(.on), [data-stagger]:not(.on) > * { opacity: 0; }
+    [data-r].on { animation: revealUp .9s var(--ease) backwards; }
+    [data-r][data-d="1"].on { animation-delay: .08s; }
+    [data-r][data-d="2"].on { animation-delay: .16s; }
+    [data-r][data-d="3"].on { animation-delay: .24s; }
+    [data-r][data-d="4"].on { animation-delay: .32s; }
+    [data-stagger].on > * { animation: revealUp .8s var(--ease) backwards; animation-delay: calc(var(--i, 0) * 75ms); }
+    .eyebrow::before { transform-origin: 0 50%; }
+    .eyebrow.on::before { animation: lineGrow .8s var(--ease) .25s backwards; }
+
+    /* ── REDUCED MOTION ─────────────────────────────────── */
+    /* Everything shows in its final state; nothing drifts, loops or tilts. */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      [data-r]:not(.on), [data-stagger]:not(.on) > * { opacity: 1; }
+      [data-r].on, [data-stagger].on > *, .eyebrow.on::before,
+      .hero-badge, .hero-h1 .line1, .hero-h1 .line2, .hero-sub, .hero-ctas, .scroll-cue, #brainCanvas,
+      .hero-aurora span, .ticker-track, .scroll-cue-wheel, .badge-ping::before,
+      .s-live .wc-status-dot, .proc-dot::before { animation: none !important; }
+      .wc-svg > * { animation: none !important; stroke-dashoffset: 0; opacity: 1; }
+      .proc-grid::after { transform: scaleX(1); transition: none; }
+      .contact-rings, .btn-primary::after, .team-avatar::before { display: none; }
+    }
 
     /* ── RESPONSIVE ─────────────────────────────────────── */
     /* Nav overflow fix: 5 links plus the wordmark wrapped to 2 lines on
@@ -752,10 +898,12 @@
       <a href="#about">About</a>
       <a href="#contact" class="nav-cta btn">Contact →</a>
     </div>
+    <span class="scroll-progress" aria-hidden="true"></span>
   </nav>
 
   <!-- ── HERO ───────────────────────────────────────── -->
   <section class="hero">
+    <div class="hero-aurora" aria-hidden="true"><span></span><span></span></div>
     <div class="hero-brain" aria-hidden="true">
       <canvas id="brainCanvas"></canvas>
     </div>
@@ -768,17 +916,17 @@
       </div>
 
       <h1 class="hero-h1">
-        <span class="line1">Systems that run</span>
-        <span class="line2">local business</span>
+        <span class="line1">Full-stack engineers.</span>
+        <span class="line2">Proven in production.</span>
       </h1>
 
       <p class="hero-sub">
-        Mobile apps, web dashboards, and backend infrastructure built for the businesses that serve your community.
+        We design, build and maintain software end to end: React Native apps on iOS and Android, React dashboards, and Node.js and PostgreSQL backends running across 12+ live locations.
       </p>
 
       <div class="hero-ctas">
-        <a href="#work" class="btn btn-primary">See our work →</a>
-        <a href="#contact" class="btn btn-ghost">Get in touch</a>
+        <a href="#work" class="btn btn-primary" data-magnetic>See our work →</a>
+        <a href="#contact" class="btn btn-ghost" data-magnetic>Get in touch</a>
       </div>
 
     </div>
@@ -842,11 +990,17 @@
       <div class="work-grid">
 
         <!-- Lucky Stop · primary -->
-        <div class="work-card wc-featured" data-r>
+        <div class="work-card wc-featured spot" data-r data-tilt="2.5">
           <div class="wc-status s-live">
             <div class="wc-status-dot"></div> Live · iOS &amp; Android
           </div>
-          <span class="wc-icon">⛽</span>
+          <svg class="wc-icon wc-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path pathLength="1" d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/>
+            <path pathLength="1" d="M2.5 21h13"/>
+            <rect pathLength="1" x="6.5" y="6" width="5" height="4" rx=".6"/>
+            <path pathLength="1" d="M14 9.5h1.5a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0V8.5L18 6"/>
+            <circle class="ember" pathLength="1" cx="9" cy="14.5" r="1.2" stroke="var(--ember)"/>
+          </svg>
           <div class="wc-title">Lucky Stop Rewards</div>
           <p class="wc-desc">
             Full-stack loyalty and operations platform for a regional gas station convenience store chain with 12+ locations. Customers earn up to 5% cashback, order hot food ahead and keep coming back for streaks, weekly challenges and flash deals, in English or Spanish. Cashiers, managers and HQ each run their part of the day in the same system, and AI reads receipt photos and turns vendor invoices into back-office import files.
@@ -873,22 +1027,22 @@
         </div>
 
         <!-- Stats -->
-        <div class="work-card wc-side" data-r data-d="1">
+        <div class="work-card wc-side spot" data-r data-d="1" data-tilt="3">
           <div class="wc-side-inner">
             <div class="wc-status s-live">
               <div class="wc-status-dot"></div> iOS &amp; Android + Web
             </div>
             <div class="wc-stats">
               <div class="wc-stat">
-                <div class="wc-stat-n">12+</div>
+                <div class="wc-stat-n"><span data-count="12">12</span>+</div>
                 <div class="wc-stat-l">Store locations running Lucky Stop</div>
               </div>
               <div class="wc-stat">
-                <div class="wc-stat-n">5</div>
+                <div class="wc-stat-n"><span data-count="5">5</span></div>
                 <div class="wc-stat-l">Reward tiers, from 1% to 5% cashback</div>
               </div>
               <div class="wc-stat">
-                <div class="wc-stat-n">3</div>
+                <div class="wc-stat-n"><span data-count="3">3</span></div>
                 <div class="wc-stat-l">Platforms: iOS · Android · Web Admin</div>
               </div>
             </div>
@@ -896,11 +1050,18 @@
         </div>
 
         <!-- BMS Auto -->
-        <div class="work-card wc-half" data-r>
+        <div class="work-card wc-half spot" data-r data-tilt="3">
           <div class="wc-status s-early">
             <div class="wc-status-dot"></div> Paused
           </div>
-          <span class="wc-icon">🚗</span>
+          <svg class="wc-icon wc-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path pathLength="1" d="M5 16.5H3v-3.2a2 2 0 0 1 1.3-1.9L6.2 7.4A2 2 0 0 1 8 6.2h8a2 2 0 0 1 1.8 1.2l1.9 4a2 2 0 0 1 1.3 1.9v3.2h-2"/>
+            <path pathLength="1" d="M9 16.5h6"/>
+            <path pathLength="1" d="M5.6 11.5h12.8"/>
+            <circle pathLength="1" cx="7" cy="16.5" r="2"/>
+            <circle pathLength="1" cx="17" cy="16.5" r="2"/>
+            <circle class="ember" pathLength="1" cx="19.2" cy="13.6" r=".5" stroke="var(--ember)"/>
+          </svg>
           <div class="wc-title">BMS Auto Sales</div>
           <p class="wc-desc">
             End-to-end platform for a used car dealership: public inventory browsing with search and filtering, customer credit applications, financing portal, and a full dealer admin dashboard covering inventory, invoices, payments, leads, documents, and reporting.
@@ -918,11 +1079,17 @@
         </div>
 
         <!-- Royal Footwear -->
-        <div class="work-card wc-half" data-r data-d="1">
+        <div class="work-card wc-half spot" data-r data-d="1" data-tilt="3">
           <div class="wc-status s-live">
             <div class="wc-status-dot"></div> Live · B2B Platform
           </div>
-          <span class="wc-icon">👞</span>
+          <svg class="wc-icon wc-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path pathLength="1" d="M3 18.5V8h5l2.6 3.4 6.4 1.7a4.2 4.2 0 0 1 4 4.2v1.2Z"/>
+            <path pathLength="1" d="M3 15.8h17.8"/>
+            <path pathLength="1" d="M9.6 10.6l1.6-1.3"/>
+            <path pathLength="1" d="M11.8 12.2l1.6-1.3"/>
+            <path class="ember" pathLength="1" d="M3 8h5" stroke="var(--ember)"/>
+          </svg>
           <div class="wc-title">Royal Footwear</div>
           <p class="wc-desc">
             Wholesale and retail footwear supply platform for a regional distributor. Full admin dashboard covering catalog management, tiered wholesale pricing, GST-compliant invoicing, retailer credit ledgers, restock workflows, and sales analytics.
@@ -940,11 +1107,17 @@
         </div>
 
         <!-- PROJECTCLIFFAPP -->
-        <div class="work-card wc-early" data-r data-d="2">
+        <div class="work-card wc-early spot" data-r data-d="2" data-tilt="1.5">
           <div class="wc-status s-early">
             <div class="wc-status-dot"></div> Early Stage
           </div>
-          <span class="wc-icon">🏗️</span>
+          <svg class="wc-icon wc-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path pathLength="1" d="M4 10v11h16V10"/>
+            <path pathLength="1" d="M2.5 21h19"/>
+            <path pathLength="1" d="M3 10l2-6h14l2 6Z"/>
+            <path pathLength="1" d="M9.5 21v-5.5h5V21"/>
+            <path class="ember" pathLength="1" d="M8 4l-1 6M16 4l1 6M12 4v6" stroke="var(--ember)"/>
+          </svg>
           <div class="wc-title">Marketplace Platform</div>
           <p class="wc-desc">
             Multi-tenant marketplace infrastructure with authentication, credit systems, product catalogues, and analytics. Django backend prototype architecture and data models in progress.
@@ -968,9 +1141,9 @@
       <h2 class="s-title" data-r data-d="1">What the people running the store actually see</h2>
       <p class="s-sub" data-r data-d="2">Lucky Stop's admin isn't a settings page bolted onto an app. It's the operational core for 12+ stores. Hover to look inside.</p>
 
-      <div class="admin-grid" data-r>
+      <div class="admin-grid" data-stagger>
 
-        <div class="admin-card">
+        <div class="admin-card spot">
           <svg class="admin-card-icon icon-box" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="4" y="11" width="16" height="9" rx="1.2" stroke="currentColor" stroke-width="1.6"/>
             <path class="flap-l" d="M4 11L11.5 11L8 5.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
@@ -987,7 +1160,7 @@
           </div>
         </div>
 
-        <div class="admin-card">
+        <div class="admin-card spot">
           <svg class="admin-card-icon icon-badge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2.5L19 6V12C19 16.5 15.9 19.8 12 21C8.1 19.8 5 16.5 5 12V6L12 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
             <path class="check" d="M8.3 12L10.8 14.5L15.7 9.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -1003,7 +1176,7 @@
           </div>
         </div>
 
-        <div class="admin-card">
+        <div class="admin-card spot">
           <svg class="admin-card-icon icon-trophy" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path class="cup" d="M6.5 4h11v6a5.5 5.5 0 0 1-11 0V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
             <path d="M6.5 5H3.5v2a3.8 3.8 0 0 0 3 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -1023,7 +1196,7 @@
           </div>
         </div>
 
-        <div class="admin-card">
+        <div class="admin-card spot">
           <svg class="admin-card-icon icon-chart" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 20V4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
             <path d="M4 20H20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -1042,7 +1215,7 @@
           </div>
         </div>
 
-        <div class="admin-card">
+        <div class="admin-card spot">
           <svg class="admin-card-icon icon-shield" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path class="outline" d="M12 2.5L19.5 5.5V11C19.5 16 16.3 19.8 12 21.5C7.7 19.8 4.5 16 4.5 11V5.5L12 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
             <path class="check" d="M8.3 11.8L10.8 14.3L15.7 9.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -1058,7 +1231,7 @@
           </div>
         </div>
 
-        <div class="admin-card">
+        <div class="admin-card spot">
           <svg class="admin-card-icon icon-bell" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g class="body">
               <path d="M6 11C6 7.5 8.5 5 12 5C15.5 5 18 7.5 18 11V14.5L19.5 17H4.5L6 14.5V11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
@@ -1096,7 +1269,7 @@
       <h2 class="s-title" data-r data-d="1">Want this built for your business?</h2>
       <p class="s-sub" data-r data-d="2">Lucky Stop is proof, not a pitch deck. 12+ real store locations run their entire operation on a system we designed, built, and still maintain. We build the same for other local businesses.</p>
 
-      <div class="proc-grid" data-r>
+      <div class="proc-grid" data-stagger>
         <div class="proc-step">
           <svg class="proc-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="10.2" cy="10.2" r="6.2" stroke="currentColor" stroke-width="1.6"/>
@@ -1138,8 +1311,8 @@
         </div>
       </div>
 
-      <div class="svc-grid" data-r data-d="1">
-        <div class="svc-card">
+      <div class="svc-grid" data-stagger>
+        <div class="svc-card spot">
           <svg class="svc-card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="1.6"/>
             <line x1="11" y1="18" x2="13" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -1147,7 +1320,7 @@
           <div class="svc-card-title">Mobile App</div>
           <div class="svc-card-desc">iOS and Android, built with React Native and shipped through the App Store and Google Play. Not a wrapped webpage, a real native app your customers keep on their phone.</div>
         </div>
-        <div class="svc-card">
+        <div class="svc-card spot">
           <svg class="svc-card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
             <line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="1.6"/>
@@ -1155,7 +1328,7 @@
           <div class="svc-card-title">Web Dashboard</div>
           <div class="svc-card-desc">A real admin console your team logs into every day, built around the way your operation actually runs, not a generic template with your logo swapped in.</div>
         </div>
-        <div class="svc-card">
+        <div class="svc-card spot">
           <svg class="svc-card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <ellipse cx="12" cy="6" rx="7" ry="3" stroke="currentColor" stroke-width="1.6"/>
             <path d="M5 6v12c0 1.66 3.13 3 7 3s7-1.34 7-3V6" stroke="currentColor" stroke-width="1.6"/>
@@ -1164,7 +1337,7 @@
           <div class="svc-card-title">Backend &amp; Database</div>
           <div class="svc-card-desc">Node.js and PostgreSQL, built to hold up under real transaction volume, the same infrastructure processing cashback for 12+ live stores today.</div>
         </div>
-        <div class="svc-card">
+        <div class="svc-card spot">
           <svg class="svc-card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 12a8 8 0 0 1 14.5-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
             <path d="M20 12a8 8 0 0 1-14.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -1178,21 +1351,21 @@
 
       <div class="svc-proof" data-r data-d="2">
         <div class="svc-proof-item">
-          <div class="svc-proof-num">2</div>
+          <div class="svc-proof-num"><span data-count="2">2</span></div>
           <div class="svc-proof-lbl">Developers, every layer of the stack</div>
         </div>
         <div class="svc-proof-item">
-          <div class="svc-proof-num">4</div>
+          <div class="svc-proof-num"><span data-count="4">4</span></div>
           <div class="svc-proof-lbl">Products shipped this exact way</div>
         </div>
         <div class="svc-proof-item">
-          <div class="svc-proof-num">12+</div>
+          <div class="svc-proof-num"><span data-count="12">12</span>+</div>
           <div class="svc-proof-lbl">Store locations running on it today</div>
         </div>
       </div>
 
       <div class="svc-cta-row" data-r data-d="3">
-        <a href="#contact" class="btn btn-primary">Start a conversation →</a>
+        <a href="#contact" class="btn btn-primary" data-magnetic>Start a conversation →</a>
         <a href="#capabilities" class="wc-link">See what's inside the dashboard <span class="wc-link-arrow">↑</span></a>
       </div>
     </section>
@@ -1220,23 +1393,23 @@
             Based in <strong>Texas, USA.</strong> Named for the cliff and the Indus: elevation and flow, structure and ambition.
           </p>
         </div>
-        <div class="about-aside" data-r data-d="3">
-          <div class="aside-card">
+        <div class="about-aside" data-stagger>
+          <div class="aside-card spot">
             <div class="aside-label">Products</div>
-            <div class="aside-val">4</div>
+            <div class="aside-val"><span data-count="4">4</span></div>
             <div class="aside-sub">In production or active development</div>
           </div>
-          <div class="aside-card">
+          <div class="aside-card spot">
             <div class="aside-label">Tech stack</div>
             <div class="aside-val">Full</div>
             <div class="aside-sub">Mobile · Web · Backend · Infra</div>
           </div>
-          <div class="aside-card">
+          <div class="aside-card spot">
             <div class="aside-label">Platforms shipped</div>
             <div class="aside-val">iOS · Android · Web</div>
             <div class="aside-sub">Google Play · App Store · Vercel</div>
           </div>
-          <div class="aside-card">
+          <div class="aside-card spot">
             <div class="aside-label">Based in</div>
             <div class="aside-val">Texas</div>
             <div class="aside-sub">United States</div>
@@ -1257,7 +1430,7 @@
       <div class="team-grid">
 
         <!-- Sajid -->
-        <div class="team-card" data-r>
+        <div class="team-card spot" data-r>
           <div class="team-avatar">SA</div>
           <div class="team-name">Sajid Ali</div>
           <div class="team-role">Co-founder · Full-stack &amp; Mobile</div>
@@ -1285,7 +1458,7 @@
         </div>
 
         <!-- Siri -->
-        <div class="team-card" data-r data-d="1">
+        <div class="team-card spot" data-r data-d="1">
           <div class="team-avatar">SC</div>
           <div class="team-name">Siri Chandana Siripurapu</div>
           <div class="team-role">Co-founder · Back-end &amp; DBMS</div>
@@ -1317,10 +1490,11 @@
   <div class="max-w">
     <section id="contact" class="section">
       <div class="contact-block" data-r>
+        <div class="contact-rings" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="eyebrow">Contact</div>
         <h2 class="s-title">Let's build something</h2>
         <p>Have a local business that needs a mobile app, an operations tool, or a platform built from the ground up? Reach out.</p>
-        <a href="mailto:sksajidali1279@gmail.com" class="contact-email">
+        <a href="mailto:sksajidali1279@gmail.com" class="contact-email" data-magnetic>
           ✉ &nbsp;sksajidali1279@gmail.com
         </a>
       </div>
@@ -1406,27 +1580,45 @@
       const RANGE = 260;
       const startElev = 0.08, endElev = 1.45, azimuth = 0.5, radius = 4.2;
 
+      // Pointer parallax: the camera leans a few degrees toward the cursor,
+      // eased every frame so it drifts rather than snaps. Mouse/trackpad
+      // only; touch devices keep the plain scroll orbit.
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      let targetX = 0, targetY = 0, leanX = 0, leanY = 0;
+      if (finePointer && !reduceMotion) {
+        window.addEventListener('pointermove', e => {
+          targetX = e.clientX / window.innerWidth - 0.5;
+          targetY = e.clientY / window.innerHeight - 0.5;
+        }, { passive: true });
+      }
+
       function updateCamera() {
         const y = window.scrollY || window.pageYOffset;
         const p = Math.min(y / RANGE, 1);
-        const elev = reduceMotion ? startElev : startElev + (endElev - startElev) * p;
+        leanX += (targetX - leanX) * 0.05;
+        leanY += (targetY - leanY) * 0.05;
+        const elev = reduceMotion
+          ? startElev
+          : Math.min(startElev + (endElev - startElev) * p + leanY * 0.25, 1.5);
+        const az = azimuth + leanX * 0.6;
         camera.position.set(
-          radius * Math.cos(elev) * Math.sin(azimuth),
+          radius * Math.cos(elev) * Math.sin(az),
           radius * Math.sin(elev),
-          radius * Math.cos(elev) * Math.cos(azimuth)
+          radius * Math.cos(elev) * Math.cos(az)
         );
         camera.lookAt(0, 0, 0);
       }
       updateCamera();
 
-      let ticking = false;
-      window.addEventListener('scroll', () => {
-        if (!ticking) { requestAnimationFrame(() => { updateCamera(); ticking = false; }); ticking = true; }
-      }, { passive: true });
+      // Skip rendering entirely once the hero has scrolled off screen.
+      let onScreen = true;
+      new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(canvas);
 
       let t = 0;
       function animate() {
         requestAnimationFrame(animate);
+        if (!onScreen) return;
+        updateCamera();
         if (!reduceMotion) {
           t += 0.012;
           riders.forEach(r => {
@@ -1444,21 +1636,96 @@
   </script>
 
   <script>
-    // Scroll reveal
-    const items = document.querySelectorAll('[data-r]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    // Scroll reveal. [data-stagger] children get an index so CSS can
+    // delay each one a little more than the last.
+    document.querySelectorAll('[data-stagger]').forEach(group => {
+      [...group.children].forEach((child, i) => child.style.setProperty('--i', i));
+    });
+    const items = document.querySelectorAll('[data-r], [data-stagger]');
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
     }, { threshold: 0.07, rootMargin: '0px 0px -30px 0px' });
     items.forEach(el => io.observe(el));
 
-    // Card mouse-tracking glow
-    document.querySelectorAll('.work-card').forEach(card => {
-      card.addEventListener('mousemove', e => {
+    // Reading-progress line under the nav
+    (function () {
+      const nav = document.querySelector('nav');
+      let ticking = false;
+      function update() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        nav.style.setProperty('--sp', max > 0 ? Math.min(window.scrollY / max, 1) : 0);
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+      }, { passive: true });
+      update();
+    })();
+
+    // Cursor-tracking glow (inner glow on work cards, spotlight border on .spot)
+    document.querySelectorAll('.spot').forEach(card => {
+      card.addEventListener('pointermove', e => {
         const r = card.getBoundingClientRect();
         card.style.setProperty('--mx', `${e.clientX - r.left}px`);
         card.style.setProperty('--my', `${e.clientY - r.top}px`);
       });
     });
+
+    if (finePointer && !reduceMotion) {
+      // Gentle 3D tilt toward the cursor (data-tilt = max degrees)
+      document.querySelectorAll('[data-tilt]').forEach(card => {
+        const max = parseFloat(card.dataset.tilt) || 3;
+        card.addEventListener('pointermove', e => {
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          card.style.transform = `perspective(1000px) rotateX(${(-py * max).toFixed(2)}deg) rotateY(${(px * max).toFixed(2)}deg) translateY(-2px)`;
+        });
+        card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+      });
+
+      // Magnetic buttons: drift a few px toward the cursor
+      document.querySelectorAll('[data-magnetic]').forEach(el => {
+        el.addEventListener('pointermove', e => {
+          const r = el.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width - 0.5;
+          const y = (e.clientY - r.top) / r.height - 0.5;
+          el.style.translate = `${(x * 8).toFixed(1)}px ${(y * 6).toFixed(1)}px`;
+        });
+        el.addEventListener('pointerleave', () => { el.style.translate = ''; });
+      });
+    }
+
+    // Count-up numbers. The real value stays in the HTML; it is only
+    // zeroed here, right before it is about to animate.
+    (function () {
+      const counters = document.querySelectorAll('[data-count]');
+      if (reduceMotion || !counters.length) return;
+      const fmt = (el, v) => v.toFixed(parseInt(el.dataset.decimals || '0', 10));
+      function run(el) {
+        const end = parseFloat(el.dataset.count);
+        const dur = 1400;
+        let t0 = null;
+        function step(t) {
+          if (t0 === null) t0 = t;
+          const p = Math.min((t - t0) / dur, 1);
+          el.textContent = fmt(el, end * (1 - Math.pow(1 - p, 4)));
+          if (p < 1) requestAnimationFrame(step); else el.textContent = el.dataset.final;
+        }
+        setTimeout(() => requestAnimationFrame(step), parseInt(el.dataset.delay || '200', 10));
+      }
+      const cio = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { cio.unobserve(e.target); run(e.target); } });
+      }, { threshold: 0.6 });
+      counters.forEach(el => {
+        el.dataset.final = el.textContent;
+        el.textContent = fmt(el, 0);
+        cio.observe(el);
+      });
+    })();
 
     // Admin cards: tap-to-toggle on touch devices (no hover available)
     if (window.matchMedia('(hover: none)').matches) {

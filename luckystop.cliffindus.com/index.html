@@ -39,6 +39,9 @@
       --border: rgba(255,255,255,0.07);
       --border2:rgba(255,255,255,0.12);
       --surface:rgba(255,255,255,0.04);
+      /* Motion */
+      --ease: cubic-bezier(.16,1,.3,1);
+      --spring: cubic-bezier(.34,1.56,.64,1);
     }
 
     html { scroll-behavior: smooth; }
@@ -115,6 +118,14 @@
     .nav-btn-login { background: rgba(255,255,255,0.06); border: 1px solid var(--border2); color: var(--text); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 8px; text-decoration: none; transition: background .15s; }
     .nav-btn-login:hover { background: rgba(255,255,255,0.1); }
 
+    /* Reading-progress line along the bottom edge of the nav */
+    .scroll-progress {
+      position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+      transform-origin: 0 50%; transform: scaleX(var(--sp, 0));
+      background: linear-gradient(90deg, rgba(230,57,70,0.2), var(--red) 60%, #FF8F59);
+      pointer-events: none;
+    }
+
     /* HERO */
     .hero {
       position: relative; min-height: 100vh;
@@ -144,13 +155,44 @@
 
     .hero-text h1 { font-size: clamp(38px, 6vw, 72px); font-weight: 900; line-height: 1.05; letter-spacing: -2.5px; margin-bottom: 20px; }
     .red-gradient { background: linear-gradient(135deg, #FF6B74 0%, #E63946 50%, #FF8F59 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* Hero entrance: each piece sharpens out of a soft blur, in sequence.
+       The headline's red line also slowly flows through its gradient. */
+    @keyframes heroIn {
+      from { opacity: 0; translate: 0 .45em; filter: blur(12px); }
+      to   { opacity: 1; translate: 0 0;     filter: blur(0); }
+    }
+    @keyframes phoneIn { from { opacity: 0; translate: 0 40px; scale: .94; } to { opacity: 1; translate: 0 0; scale: 1; } }
+    @keyframes gradFlow { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+    .h1-line { display: inline-block; }
+    .hero-badge              { animation: heroIn .9s var(--ease) .1s backwards; }
+    .hero-text h1 .h1-line:first-child { animation: heroIn 1.1s var(--ease) .25s backwards; }
+    .hero-text h1 .red-gradient {
+      background-image: linear-gradient(110deg, #FF6B74, #E63946, #FF8F59, #E63946, #FF6B74);
+      background-size: 200% 100%;
+      animation: heroIn 1.1s var(--ease) .4s backwards, gradFlow 9s ease-in-out 1.5s infinite alternate;
+    }
+    .hero-text p             { animation: heroIn .9s var(--ease) .6s backwards; }
+    .hero-ctas               { animation: heroIn .9s var(--ease) .75s backwards; }
+    .hero-stats              { animation: heroIn .9s var(--ease) .9s backwards; }
+    .phone-wrap              { animation: phoneIn 1.2s var(--ease) .35s backwards; }
+
+    /* Store buttons: a band of light sweeps across on hover */
+    .cta-play, .cta-ios, .store-cta-btn { position: relative; overflow: hidden; }
+    .cta-play::after, .cta-ios::after, .store-cta-btn::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,0.28) 50%, transparent 65%);
+      translate: -120% 0;
+    }
+    .cta-play::after { background: linear-gradient(110deg, transparent 35%, rgba(15,28,46,0.12) 50%, transparent 65%); }
+    .cta-play:hover::after, .cta-ios:hover::after, .store-cta-btn:hover::after { translate: 120% 0; transition: translate .75s var(--ease); }
     .hero-text p { font-size: 17px; color: var(--muted2); line-height: 1.7; max-width: 440px; margin-bottom: 36px; }
 
     .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
-    .cta-play { display: inline-flex; align-items: center; gap: 10px; background: var(--text); color: var(--navy); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 12px; text-decoration: none; transition: transform .15s, background .15s; letter-spacing: -0.2px; }
+    .cta-play { display: inline-flex; align-items: center; gap: 10px; background: var(--text); color: var(--navy); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 12px; text-decoration: none; transition: transform .15s, background .15s, translate .2s; letter-spacing: -0.2px; }
     .cta-play:hover { background: #E2E8F0; transform: translateY(-2px); }
     .cta-play-icon { font-size: 20px; }
-    .cta-ios { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border2); color: var(--text); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s; }
+    .cta-ios { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border2); color: var(--text); font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s, translate .2s; }
     .cta-ios:hover { background: rgba(255,255,255,0.09); transform: translateY(-2px); }
 
     .hero-stats { display: flex; gap: 32px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
@@ -159,7 +201,49 @@
     .hero-stat-lbl { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
 
     /* PHONE MOCKUP */
-    .phone-wrap { position: relative; flex-shrink: 0; }
+    .phone-wrap { position: relative; flex-shrink: 0; transition: transform .5s var(--ease); }
+
+    /* Phone screen comes alive: history rows slide in, their badges pop,
+       and a red scan line sweeps the QR code. */
+    @keyframes rowIn { from { opacity: 0; translate: 16px 0; } to { opacity: 1; translate: 0 0; } }
+    @keyframes popIn { 0% { opacity: 0; scale: .4; } 70% { opacity: 1; scale: 1.12; } 100% { opacity: 1; scale: 1; } }
+    .phone-row { animation: rowIn .6s var(--ease) backwards; }
+    .phone-row:nth-child(1) { animation-delay: 1.1s; }
+    .phone-row:nth-child(2) { animation-delay: 1.25s; }
+    .phone-row:nth-child(3) { animation-delay: 1.4s; }
+    .phone-row-badge { animation: popIn .5s var(--spring) backwards; }
+    .phone-row:nth-child(1) .phone-row-badge { animation-delay: 1.4s; }
+    .phone-row:nth-child(2) .phone-row-badge { animation-delay: 1.55s; }
+    .phone-row:nth-child(3) .phone-row-badge { animation-delay: 1.7s; }
+    .qr-scan {
+      position: absolute; left: 3px; right: 3px; top: 6px; height: 2px; border-radius: 2px;
+      background: var(--red-lt); box-shadow: 0 0 8px 1px rgba(230,57,70,0.75);
+      animation: qrScan 2.4s ease-in-out infinite alternate;
+    }
+    @keyframes qrScan { from { translate: 0 0; } to { translate: 0 70px; } }
+
+    /* Floating reward chips around the phone */
+    .phone-chip {
+      position: absolute; z-index: 3; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 700; color: var(--text); letter-spacing: -0.1px;
+      padding: 8px 12px; border-radius: 12px;
+      background: rgba(26,46,69,0.78); border: 1px solid var(--border2);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.45);
+      animation: chipIn .7s var(--spring) backwards, chipFloat 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .phone-chip .chip-amt { color: #4ADE80; }
+    .chip-1 { top: 190px; left: -118px; animation-delay: 1.9s, 0s; }
+    .chip-2 { top: 36px;  right: -48px; animation-delay: 2.15s, -2s; }
+    .chip-3 { bottom: -18px; right: -56px; animation-delay: 2.4s, -4s; }
+    @keyframes chipIn { from { opacity: 0; scale: .6; } to { opacity: 1; scale: 1; } }
+    @keyframes chipFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+    @media (max-width: 1140px) {
+      .chip-2 { right: -14px; }
+      .chip-3 { right: -20px; }
+    }
     .phone-glow { position: absolute; inset: -40px; background: radial-gradient(circle, rgba(230,57,70,0.12), transparent 70%); border-radius: 50%; pointer-events: none; }
     .phone { position: relative; width: 230px; height: 460px; background: linear-gradient(145deg, #1A2E45, #0F1C2E); border-radius: 44px; border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08); overflow: hidden; animation: phoneFloat 6s ease-in-out infinite; }
     @keyframes phoneFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
@@ -186,7 +270,9 @@
     .strip-item { padding: 28px 16px; }
     .strip-item + .strip-item { border-left: 1px solid var(--border); }
     .strip-item:hover { background: var(--surface); }
+    .strip-item { transition: background .2s; }
     .strip-num { font-size: 32px; font-weight: 800; letter-spacing: -1.5px; }
+    [data-count] { font-variant-numeric: tabular-nums; }
     .strip-num.r { color: var(--red-lt); }
     .strip-lbl { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 4px; }
 
@@ -209,14 +295,41 @@
     .f-card::after { content:''; position:absolute; inset:0; border-radius:inherit; background: radial-gradient(400px circle at var(--x,50%) var(--y,50%), rgba(230,57,70,0.05), transparent 60%); opacity:0; transition: opacity .3s; pointer-events:none; }
     .f-card:hover { border-color: var(--border2); transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
     .f-card:hover::after { opacity: 1; }
-    .f-card-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+    .f-card-icon { font-size: 32px; margin-bottom: 16px; display: block; width: fit-content; }
+    /* Emoji icons give a small happy wiggle on hover */
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0) scale(1); }
+      25% { transform: rotate(-10deg) scale(1.12); }
+      55% { transform: rotate(7deg) scale(1.12); }
+      80% { transform: rotate(-3deg) scale(1.05); }
+    }
+    .f-card:hover .f-card-icon, .step:hover .step-icon { animation: wiggle .6s ease; }
+
+    /* Spotlight border: a soft red highlight on the card's edge follows the cursor */
+    .f-card::before, .biz-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+      background: radial-gradient(260px circle at var(--x, 50%) var(--y, 50%), rgba(255,107,116,0.45), transparent 60%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+      opacity: 0; transition: opacity .3s; pointer-events: none;
+    }
+    .f-card:hover::before, .biz-card:hover::before { opacity: 1; }
     .f-card h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 8px; }
     .f-card p { font-size: 14px; color: var(--muted2); line-height: 1.7; }
     .highlight-num { font-size: 52px; font-weight: 800; letter-spacing: -2px; line-height: 1; color: var(--red-lt); }
     .highlight-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
 
     /* HOW IT WORKS */
-    .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; position: relative; }
+    /* A red line draws across the top of the four steps */
+    .steps::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 2;
+      background: linear-gradient(90deg, transparent, var(--red) 65%, #FF8F59);
+      transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+    }
+    .steps.on::after { transform: scaleX(1); transition: transform 1.8s var(--ease) .35s; }
+    .step-icon { width: fit-content; }
     .step { background: var(--navy); padding: 32px 24px; transition: background .2s; }
     .step:hover { background: rgba(255,255,255,0.03); }
     .step-num { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--red-lt); text-transform: uppercase; margin-bottom: 14px; }
@@ -229,6 +342,19 @@
     .tier-card { border: 1px solid var(--border); border-radius: 14px; padding: 20px 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; position: relative; overflow: hidden; transition: transform .2s, border-color .2s; }
     .tier-card:hover { transform: translateY(-4px); }
     .tier-badge { font-size: 20px; }
+    /* Tier bars fill left to right, one tier after another, when revealed */
+    .tier-bar { transform-origin: 0 50%; }
+    @keyframes barFill { from { scale: 0 1; } to { scale: 1 1; } }
+    .tiers.on .tier-bar { animation: barFill 1s var(--ease) backwards; animation-delay: calc(var(--i, 0) * 110ms + .4s); }
+    /* Hover: a sheen crosses the card and the medal bobs */
+    .tier-card::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.09) 50%, transparent 70%);
+      translate: -110% 0;
+    }
+    .tier-card:hover::after { translate: 110% 0; transition: translate .9s var(--ease); }
+    @keyframes bob { 0%, 100% { transform: translateY(0) rotate(0); } 40% { transform: translateY(-5px) rotate(-8deg); } 70% { transform: translateY(1px) rotate(4deg); } }
+    .tier-card:hover .tier-badge { animation: bob .7s var(--ease); }
     .tier-name { font-size: 13px; font-weight: 700; letter-spacing: .5px; }
     .tier-req { font-size: 11px; color: var(--muted); line-height: 1.4; }
     .tier-bar { width: 100%; height: 2px; border-radius: 1px; margin-top: auto; }
@@ -313,7 +439,7 @@
     .biz-card:hover .icon-shield .outline, .biz-card.is-open .icon-shield .outline { transform: scale(1.06); }
     .icon-shield .check { stroke-dasharray: 16; stroke-dashoffset: 16; transition: stroke-dashoffset .35s ease .1s; }
     .biz-card:hover .icon-shield .check, .biz-card.is-open .icon-shield .check { stroke-dashoffset: 0; }
-    .store-cta-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; background: var(--red); color: #fff; font-size: 14px; font-weight: 700; padding: 12px 24px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s; white-space: nowrap; }
+    .store-cta-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; background: var(--red); color: #fff; font-size: 14px; font-weight: 700; padding: 12px 24px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s, translate .2s; white-space: nowrap; }
     .store-cta-btn:hover { background: #D62F3C; transform: translateY(-2px); }
 
     /* FOOTER */
@@ -324,11 +450,36 @@
     .footer-links a:hover { color: var(--muted2); }
 
     /* REVEAL */
-    [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
-    [data-reveal].revealed { opacity: 1; transform: translateY(0); }
-    [data-reveal][data-d="1"] { transition-delay: .08s; }
-    [data-reveal][data-d="2"] { transition-delay: .16s; }
-    [data-reveal][data-d="3"] { transition-delay: .24s; }
+    /* Reveals run as animations on the `translate` property, not as
+       transitions on `transform`, so they never override a card's own
+       hover transition (lift, tilt) or leave a delay on it afterwards.
+       [data-reveal] reveals one element; [data-stagger] reveals its
+       children one after another (JS gives each child its --i index). */
+    @keyframes revealUp {
+      from { opacity: 0; translate: 0 24px; filter: blur(5px); }
+      to   { opacity: 1; translate: 0 0;    filter: blur(0); }
+    }
+    [data-reveal]:not(.revealed), [data-stagger]:not(.on) > * { opacity: 0; }
+    [data-reveal].revealed { animation: revealUp .85s var(--ease) backwards; }
+    [data-reveal][data-d="1"].revealed { animation-delay: .08s; }
+    [data-reveal][data-d="2"].revealed { animation-delay: .16s; }
+    [data-reveal][data-d="3"].revealed { animation-delay: .24s; }
+    [data-stagger].on > * { animation: revealUp .8s var(--ease) backwards; animation-delay: calc(var(--i, 0) * 80ms); }
+    .eyebrow::before { transform-origin: 0 50%; }
+    @keyframes lineGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    .eyebrow.revealed::before { animation: lineGrow .8s var(--ease) .25s backwards; }
+
+    /* REDUCED MOTION: everything in its final state; nothing drifts, loops or tilts */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      [data-reveal]:not(.revealed), [data-stagger]:not(.on) > * { opacity: 1; }
+      [data-reveal].revealed, [data-stagger].on > *, .eyebrow.revealed::before,
+      .hero-badge, .hero-text h1 .h1-line, .hero-text h1 .red-gradient, .hero-text p, .hero-ctas, .hero-stats,
+      .phone-wrap, .phone, .phone-row, .phone-row-badge, .phone-chip,
+      .hero-orb-1, .hero-orb-2, .badge-dot, .tiers.on .tier-bar { animation: none !important; }
+      .qr-scan, .cta-play::after, .cta-ios::after, .store-cta-btn::after, .tier-card::after { display: none; }
+      .steps::after { transform: scaleX(1); transition: none; }
+    }
 
     /* ROLES connecting flow (desktop only) */
     #roles .biz-grid { position: relative; }
@@ -413,6 +564,7 @@
       <a href="/rbac/" class="nav-link">Deep Dive</a>
       <a href="https://admin.luckystop.cliffindus.com" target="_blank" class="nav-btn-login">Store Login →</a>
     </div>
+    <span class="scroll-progress" aria-hidden="true"></span>
   </nav>
 
   <section class="hero">
@@ -427,8 +579,8 @@
         </div>
 
         <h1>
-          Every stop<br/>
-          <span class="red-gradient">earns you more</span>
+          <span class="h1-line">Every stop</span><br/>
+          <span class="h1-line red-gradient">earns you more</span>
         </h1>
 
         <p>
@@ -436,14 +588,14 @@
         </p>
 
         <div class="hero-ctas">
-          <a href="https://play.google.com/store/apps/details?id=com.luckystop.app" target="_blank" class="cta-play">
+          <a href="https://play.google.com/store/apps/details?id=com.luckystop.app" target="_blank" class="cta-play" data-magnetic>
             <span class="cta-play-icon">▶</span>
             <div>
               <div style="font-size:10px;font-weight:500;opacity:0.7;margin-bottom:1px">GET IT ON</div>
               <div>Google Play</div>
             </div>
           </a>
-          <a href="https://apps.apple.com/app/id6787270736" target="_blank" class="cta-ios">
+          <a href="https://apps.apple.com/app/id6787270736" target="_blank" class="cta-ios" data-magnetic>
             <span class="cta-play-icon"></span>
             <div>
               <div style="font-size:10px;font-weight:500;opacity:0.7;margin-bottom:1px">DOWNLOAD ON THE</div>
@@ -458,7 +610,7 @@
             <div class="hero-stat-lbl">Cashback, by tier</div>
           </div>
           <div class="hero-stat">
-            <div class="hero-stat-num">12+</div>
+            <div class="hero-stat-num"><span data-count="12" data-delay="1100">12</span>+</div>
             <div class="hero-stat-lbl">Store locations</div>
           </div>
           <div class="hero-stat">
@@ -470,12 +622,15 @@
 
       <div class="phone-wrap">
         <div class="phone-glow"></div>
+        <div class="phone-chip chip-1" aria-hidden="true"><span class="chip-amt">+$1.20</span> earned at the pump</div>
+        <div class="phone-chip chip-2" aria-hidden="true">🔥 4-week streak</div>
+        <div class="phone-chip chip-3" aria-hidden="true">🥇 Gold · 3% back</div>
         <div class="phone">
           <div class="phone-notch"></div>
           <div class="phone-screen">
             <div class="phone-header">
               <div class="phone-header-lbl">Your balance</div>
-              <div class="phone-header-val">$12.40</div>
+              <div class="phone-header-val">$<span data-count="12.40" data-decimals="2" data-delay="700">12.40</span></div>
               <div class="phone-header-sub">credits available</div>
             </div>
 
@@ -487,6 +642,7 @@
                   <div style="position:absolute;top:8px;left:8px;width:20px;height:20px;background:#fff;border:4px solid #0F1C2E;border-radius:4px"></div>
                   <div style="position:absolute;top:8px;right:8px;width:20px;height:20px;background:#fff;border:4px solid #0F1C2E;border-radius:4px"></div>
                   <div style="position:absolute;bottom:8px;left:8px;width:20px;height:20px;background:#fff;border:4px solid #0F1C2E;border-radius:4px"></div>
+                  <div class="qr-scan" aria-hidden="true"></div>
                 </div>
                 <div style="font-size:7px;color:var(--muted);margin-top:8px;letter-spacing:2px">LS-0047-3821</div>
               </div>
@@ -533,15 +689,15 @@
 
   <div class="strip">
     <div class="strip-item">
-      <div class="strip-num r"><span class="up">Up to</span> 5%</div>
+      <div class="strip-num r"><span class="up">Up to</span> <span data-count="5">5</span>%</div>
       <div class="strip-lbl">Cashback, by tier</div>
     </div>
     <div class="strip-item">
-      <div class="strip-num">12+</div>
+      <div class="strip-num"><span data-count="12">12</span>+</div>
       <div class="strip-lbl">Store locations</div>
     </div>
     <div class="strip-item">
-      <div class="strip-num">5</div>
+      <div class="strip-num"><span data-count="5">5</span></div>
       <div class="strip-lbl">Reward tiers</div>
     </div>
     <div class="strip-item">
@@ -565,7 +721,7 @@
 
       <div class="f-card b4" data-reveal style="display:flex;flex-direction:column;justify-content:space-between;gap:20px;min-height:200px">
         <div>
-          <div class="highlight-num"><span class="up">Up to</span> 5%</div>
+          <div class="highlight-num"><span class="up">Up to</span> <span data-count="5">5</span>%</div>
           <div class="highlight-sub">back on every purchase, and your rate grows with every tier</div>
         </div>
         <div style="border-top:1px solid var(--border);padding-top:16px">
@@ -681,7 +837,7 @@
     <h2 class="section-title" data-reveal>How it works</h2>
     <p class="section-sub" data-reveal>Four simple steps from download to free products.</p>
 
-    <div class="steps" data-reveal>
+    <div class="steps" data-stagger>
       <div class="step">
         <div class="step-num">Step 01</div>
         <span class="step-icon">📥</span>
@@ -813,7 +969,7 @@
     <h2 class="section-title" data-reveal>Spend more, earn more</h2>
     <p class="section-sub" data-reveal>Your tier sets your cashback rate and unlocks perks. Earn points to move up, and the progress bar in the app always shows how close you are to the next tier.</p>
 
-    <div class="tiers" data-reveal>
+    <div class="tiers" data-stagger>
       <div class="tier-card t-bronze">
         <div class="tier-badge">🥉</div>
         <div class="tier-name">Bronze</div>
@@ -879,7 +1035,7 @@
     <h2 class="section-title" data-reveal>Your store. Your brand. This system.</h2>
     <p class="section-sub" data-reveal>Lucky Stop Rewards is a full operations platform running live across 12+ locations, built and maintained by Cliff Industries. We can build the same caliber of system for your business, under your own name.</p>
 
-    <div class="biz-grid" data-reveal>
+    <div class="biz-grid" data-stagger>
 
       <div class="biz-card">
         <svg class="biz-card-icon icon-box" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -950,7 +1106,7 @@
 
     <div class="biz-proof" data-reveal>
       <div class="biz-proof-item">
-        <div class="biz-proof-num">12+</div>
+        <div class="biz-proof-num"><span data-count="12">12</span>+</div>
         <div class="biz-proof-lbl">Locations live today</div>
       </div>
       <div class="biz-proof-item">
@@ -958,13 +1114,13 @@
         <div class="biz-proof-lbl">Every platform covered</div>
       </div>
       <div class="biz-proof-item">
-        <div class="biz-proof-num">100%</div>
+        <div class="biz-proof-num"><span data-count="100">100</span>%</div>
         <div class="biz-proof-lbl">Of point grants receipt-verified</div>
       </div>
     </div>
 
     <div class="biz-cta-row" data-reveal>
-      <a href="mailto:sksajidali1279@gmail.com" class="store-cta-btn">Get a system built for your business →</a>
+      <a href="mailto:sksajidali1279@gmail.com" class="store-cta-btn" data-magnetic>Get a system built for your business →</a>
       <a href="/rbac/" class="biz-cta-link">Want the full technical breakdown? See the RBAC and security architecture deep-dive →</a>
     </div>
   </section>
@@ -998,19 +1154,113 @@
       apply();
     })();
 
-    const reveals = document.querySelectorAll('[data-reveal]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    // Scroll reveal. [data-reveal] gets .revealed; [data-stagger] gets .on
+    // and its children an index so CSS can delay each one a bit more.
+    document.querySelectorAll('[data-stagger]').forEach(group => {
+      [...group.children].forEach((child, i) => child.style.setProperty('--i', i));
+    });
+    const reveals = document.querySelectorAll('[data-reveal], [data-stagger]');
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); } });
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add(e.target.hasAttribute('data-stagger') ? 'on' : 'revealed');
+        observer.unobserve(e.target);
+      });
     }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
     reveals.forEach(el => observer.observe(el));
 
-    document.querySelectorAll('.f-card').forEach(card => {
-      card.addEventListener('mousemove', e => {
+    // Reading-progress line under the nav
+    (function () {
+      const nav = document.querySelector('nav');
+      let ticking = false;
+      function update() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        nav.style.setProperty('--sp', max > 0 ? Math.min(window.scrollY / max, 1) : 0);
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+      }, { passive: true });
+      update();
+    })();
+
+    // Cursor-tracking glow (inner glow + spotlight border)
+    document.querySelectorAll('.f-card, .biz-card').forEach(card => {
+      card.addEventListener('pointermove', e => {
         const r = card.getBoundingClientRect();
         card.style.setProperty('--x', `${e.clientX - r.left}px`);
         card.style.setProperty('--y', `${e.clientY - r.top}px`);
       });
     });
+
+    if (finePointer && !reduceMotion) {
+      // Feature cards: gentle 3D tilt toward the cursor (wide cards tilt less)
+      document.querySelectorAll('.f-card').forEach(card => {
+        const max = card.classList.contains('b8') || card.classList.contains('b12') ? 2 : 3.5;
+        card.addEventListener('pointermove', e => {
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          card.style.transform = `perspective(1000px) rotateX(${(-py * max).toFixed(2)}deg) rotateY(${(px * max).toFixed(2)}deg) translateY(-3px)`;
+        });
+        card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+      });
+
+      // Hero phone leans toward the cursor anywhere in the hero
+      const hero = document.querySelector('.hero');
+      const phoneWrap = document.querySelector('.phone-wrap');
+      if (hero && phoneWrap) {
+        hero.addEventListener('pointermove', e => {
+          const r = hero.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          phoneWrap.style.transform = `perspective(1200px) rotateY(${(px * 12).toFixed(2)}deg) rotateX(${(-py * 8).toFixed(2)}deg)`;
+        });
+        hero.addEventListener('pointerleave', () => { phoneWrap.style.transform = ''; });
+      }
+
+      // Magnetic buttons: drift a few px toward the cursor
+      document.querySelectorAll('[data-magnetic]').forEach(el => {
+        el.addEventListener('pointermove', e => {
+          const r = el.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width - 0.5;
+          const y = (e.clientY - r.top) / r.height - 0.5;
+          el.style.translate = `${(x * 8).toFixed(1)}px ${(y * 6).toFixed(1)}px`;
+        });
+        el.addEventListener('pointerleave', () => { el.style.translate = ''; });
+      });
+    }
+
+    // Count-up numbers. The real value stays in the HTML; it is only
+    // zeroed here, right before it is about to animate.
+    (function () {
+      const counters = document.querySelectorAll('[data-count]');
+      if (reduceMotion || !counters.length) return;
+      const fmt = (el, v) => v.toFixed(parseInt(el.dataset.decimals || '0', 10));
+      function run(el) {
+        const end = parseFloat(el.dataset.count);
+        const dur = 1400;
+        let t0 = null;
+        function step(t) {
+          if (t0 === null) t0 = t;
+          const p = Math.min((t - t0) / dur, 1);
+          el.textContent = fmt(el, end * (1 - Math.pow(1 - p, 4)));
+          if (p < 1) requestAnimationFrame(step); else el.textContent = el.dataset.final;
+        }
+        setTimeout(() => requestAnimationFrame(step), parseInt(el.dataset.delay || '200', 10));
+      }
+      const cio = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { cio.unobserve(e.target); run(e.target); } });
+      }, { threshold: 0.6 });
+      counters.forEach(el => {
+        el.dataset.final = el.textContent;
+        el.textContent = fmt(el, 0);
+        cio.observe(el);
+      });
+    })();
 
     // Business pitch cards: tap-to-toggle on touch devices (no hover available)
     if (window.matchMedia('(hover: none)').matches) {
